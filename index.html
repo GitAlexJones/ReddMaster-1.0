@@ -115,11 +115,11 @@ main{max-width:720px;margin:0 auto;padding:15px 13px 8px}
 .f:last-child{margin-bottom:0}
 .f > .lab{display:block;font:700 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
   color:var(--tx2);margin-bottom:6px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px}
 .g2>*{min-width:0}
 .f,.unitrow{min-width:0}
 input[type=text],input[type=number],input[type=date],input[type=time],select.in,textarea{
-  width:100%;min-width:0;height:var(--tap);padding:0 11px;border-radius:var(--r-sm);background:var(--surf2);
+  width:100%;min-width:0;max-width:100%;height:var(--tap);padding:0 11px;border-radius:var(--r-sm);background:var(--surf2);
   border:1.5px solid var(--line2);font:500 16px/1 var(--mono);color:var(--tx);
   transition:border-color .12s,box-shadow .12s,background .12s}
 textarea{height:auto;min-height:80px;padding:11px;line-height:1.55;resize:vertical;
@@ -152,24 +152,38 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:34px;
 .seg.sm button{min-height:42px;min-width:0;font-size:13px;padding:6px 9px}
 
 /* ---------------- upper/lower grid (mirrors the printed box) ---------------- */
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
 .row3>*{min-width:0}
-.ulgrid{display:grid;grid-template-columns:52px 1fr 84px 74px;gap:6px;align-items:center}
-.ulh{font:700 9.5px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--tx2);
-  text-align:center;padding-bottom:2px}
-.ull{font:700 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--tx)}
-.ulc{display:flex;gap:4px;min-width:0}
-.ulc input{height:46px;padding:0 8px;font-size:14px;min-width:0;flex:1}
-.ulnow{flex:0 0 auto;width:40px;height:46px;border:1.5px solid var(--tx);border-radius:var(--r-sm);
-  background:var(--surf3);font:700 9.5px/1 var(--mono);letter-spacing:.04em;color:var(--tx)}
-.ulnow:active{background:var(--cover)}
+.ulrow{border:1.5px solid var(--line2);border-radius:var(--r-sm);background:var(--surf2);
+  padding:9px 10px 10px;margin-bottom:9px}
+.ulhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.ultag{font:700 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--tx)}
+.ulnow{flex:0 0 auto;min-height:44px;padding:0 13px;border:1.5px solid var(--tx);
+  border-radius:var(--r-sm);background:var(--surf3);color:var(--tx);
+  font:700 10px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase}
+.ulnow:active{background:var(--cover);transform:translate(1px,1px)}
+.ulfields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ulfields>label:first-child{grid-column:1 / -1}
+.ulfields>label{display:block;min-width:0}
+.ulfields input{width:100%;min-width:0;max-width:100%;height:48px;padding:0 8px;font-size:15px}
+/* iOS gives date/time inputs a wide intrinsic size — keep them inside their track */
+input[type=time],input[type=date]{-webkit-appearance:none;appearance:none;
+  min-width:0;max-width:100%;flex:1 1 auto}
+.unitrow{min-width:0}.unitrow input{min-width:0;flex:1 1 auto}
+.ulcap{display:block;font:700 9px/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--tx2);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* narrow phones or large system text: stack rather than squeeze */
+/* small phones and large system text: paired fields stack rather than collide */
+@media (max-width:400px){.g2{grid-template-columns:minmax(0,1fr)}
+  .row3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .row3>label:last-child{grid-column:1 / -1}}
 
 /* ---------------- tally rows (one river mile per line) ---------------- */
 .totbox{background:var(--tx);color:var(--bg);border:1.5px solid var(--tx);border-radius:var(--r);
   padding:10px 11px;margin-bottom:12px;box-shadow:var(--sh)}
 .totbox .th{font:700 9.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;
   color:var(--cover);margin-bottom:9px}
-.totgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.totgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
 .totgrid div{text-align:center}
 .totgrid .tv{font:700 19px/1 var(--mono);font-variant-numeric:tabular-nums}
 .totgrid .tk{font:700 8.5px/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;
@@ -189,8 +203,8 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:34px;
 .rowhead .x:active{background:var(--sal);border-color:var(--sal);color:#FBF8EE}
 .subhead{font:700 9.5px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--tx2);
   padding:9px 10px 5px;background:var(--surf2);border-top:1px solid var(--line)}
-.cg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
-.cg2{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.cg3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}
+.cg2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0}
 .rownotes{padding:9px 10px 10px;border-top:1px solid var(--line);background:var(--surf2)}
 .rownotes input{height:44px;font-size:14px}
 
@@ -203,7 +217,7 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:34px;
 .sphead .tot{font:700 13px/1 var(--mono);color:var(--tx);background:var(--cover);
   border:1.5px solid var(--tx);padding:4px 9px;min-width:40px;text-align:center}
 .sphead .tot.zero{color:var(--tx3);background:var(--surf2);border-color:var(--line)}
-.t3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.t3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}
 .tcell{background:var(--surf);padding:0 0 9px;text-align:center;border-right:1px solid var(--line)}
 .tcell:last-child{border-right:none}
 .tcell .cap{font:700 9.5px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
@@ -673,18 +687,29 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
 
     <div class="card">
       <div class="secthead"><span class="sn">3</span><span class="st">Upper &amp; lower readings</span></div>
-      <div class="ulgrid">
-        <span class="ulh"></span><span class="ulh">Time</span><span class="ulh">Temp <em class="u">&deg;</em></span><span class="ulh">RM</span>
-        <span class="ull">Upper</span>
-        <span class="ulc"><input type="time" data-h="upTime"><button class="ulnow" data-act="now" data-k="upTime">NOW</button></span>
-        <span class="ulc"><input type="number" inputmode="decimal" step="0.1" data-h="upTemp" placeholder="0.0"></span>
-        <span class="ulc"><input type="number" inputmode="decimal" step="0.1" data-h="upRM" placeholder="RM"></span>
-        <span class="ull">Lower</span>
-        <span class="ulc"><input type="time" data-h="loTime"><button class="ulnow" data-act="now" data-k="loTime">NOW</button></span>
-        <span class="ulc"><input type="number" inputmode="decimal" step="0.1" data-h="loTemp" placeholder="0.0"></span>
-        <span class="ulc"><input type="number" inputmode="decimal" step="0.1" data-h="loRM" placeholder="RM"></span>
+      <div class="ulrow">
+        <div class="ulhead"><span class="ultag">Upper</span>
+          <button class="ulnow" data-act="now" data-k="upTime">Set now</button></div>
+        <div class="ulfields">
+          <label><span class="ulcap">Time</span><input type="time" data-h="upTime"></label>
+          <label><span class="ulcap">Water temp <em class="u">°<span class="unitLbl">C</span></em></span>
+            <input type="number" inputmode="decimal" step="0.1" data-h="upTemp" placeholder="0.0"></label>
+          <label><span class="ulcap">River mile</span>
+            <input type="number" inputmode="decimal" step="0.1" data-h="upRM" placeholder="0.0"></label>
+        </div>
       </div>
-      <p class="hint">Temperature in °<span id="unitLbl">C</span> <button class="chip mute" data-act="unit" style="margin-left:6px">switch</button></p>
+      <div class="ulrow">
+        <div class="ulhead"><span class="ultag">Lower</span>
+          <button class="ulnow" data-act="now" data-k="loTime">Set now</button></div>
+        <div class="ulfields">
+          <label><span class="ulcap">Time</span><input type="time" data-h="loTime"></label>
+          <label><span class="ulcap">Water temp <em class="u">°<span class="unitLbl">C</span></em></span>
+            <input type="number" inputmode="decimal" step="0.1" data-h="loTemp" placeholder="0.0"></label>
+          <label><span class="ulcap">River mile</span>
+            <input type="number" inputmode="decimal" step="0.1" data-h="loRM" placeholder="0.0"></label>
+        </div>
+      </div>
+      <p class="hint">Temperatures in °<span class="unitLbl">C</span> <button class="chip mute" data-act="unit" style="margin-left:6px">Switch to °F</button></p>
     </div>
 
     <div class="card">
@@ -1115,7 +1140,7 @@ function fillHeader(){
   $("#subRateWrap").hidden=h.subsampling!=="Y";
   ["species","fork","waterType","surveyType","visibility","subsampling","subRate","reverseNotes"]
     .forEach(k=>paintSeg(k,h[k]));
-  $("#unitLbl").textContent=DB.unit;
+  $$(".unitLbl").forEach(e=>e.textContent=DB.unit);
   renderChrome();
 }
 document.addEventListener("input",e=>{
@@ -2752,8 +2777,9 @@ document.addEventListener("click",e=>{
       $("#reddLiveCt").textContent=DRAFT.liveOnRedd;revalidate();saveDraft();hap(8);break;}
     case "now": {const el=$('[data-h="'+k+'"]');el.value=nowHM();S().header[k]=el.value;save();hap(8);break;}
     case "nowdate": {const el=$('[data-h="date"]');el.value=today();S().header.date=el.value;save();renderChrome();hap(8);break;}
-    case "unit": {DB.unit=DB.unit==="C"?"F":"C";$("#unitLbl").textContent=DB.unit;save();hap(8);break;}
-    case "unitset": {DB.unit=v;$("#unitLbl").textContent=v;save();openSettings();break;}
+    case "unit": {DB.unit=DB.unit==="C"?"F":"C";
+      $$(".unitLbl").forEach(e=>e.textContent=DB.unit);save();hap(8);break;}
+    case "unitset": {DB.unit=v;$$(".unitLbl").forEach(e=>e.textContent=v);save();openSettings();break;}
     case "theme": DB.theme=v;applyTheme();save();openSettings();break;
     case "tog": {DB[k]=!DB[k];save();if(k==="keepAwake")setWake(DB[k]);openSettings();break;}
     case "graph": {DB.charts=DB.charts||{};DB.charts[k]=!DB.charts[k];save();
@@ -2839,6 +2865,17 @@ function doRestore(){DB=window.__imp;load();save();closeSheet();applyTheme();fil
 
 /* ══════════════ boot ══════════════ */
 load();applyTheme();fillHeader();repaintAll();paintChips();paintViewChips();showTab("survey");
+/* home-screen shortcuts: ?new=1 starts a survey, ?finish=1 opens the end-of-day sheet */
+(function(){
+  try{
+    const q=new URLSearchParams(location.search);
+    if(q.get("new")==="1"){
+      const s=blankSurvey();DB.surveys[s.id]=s;DB.current=s.id;save();
+      fillHeader();repaintAll();showTab("survey");toast("New survey started");
+    }else if(q.get("finish")==="1"){openFinish();}
+    if(q.toString()&&history.replaceState)history.replaceState(null,"",location.pathname);
+  }catch(e){}
+})();
 if(DB.keepAwake)setWake(true);
 window.addEventListener("pagehide",flush);
 window.addEventListener("beforeunload",flush);
