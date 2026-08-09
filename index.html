@@ -1,0 +1,2807 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#FFC72C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<meta name="application-name" content="Nooksack Survey">
+<meta name="apple-mobile-web-app-title" content="Nooksack">
+<meta name="description" content="Offline field data collection for Nooksack salmon spawning ground surveys.">
+<title>Nooksack Spawning Survey</title>
+<style>
+/* ============================================================
+   Nooksack Spawning Survey — all-weather field book
+   Yellow Polydura cover · black print · brown-ink grid page.
+   Square corners, hairline rules, stamped buttons: a printed
+   form, not an app screen.
+   ============================================================ */
+:root[data-theme="light"]{
+  --bg:#EFEADA; --grid:rgba(122,104,64,.15);
+  --surf:#FBF8EE; --surf2:#FFFDF6; --surf3:#EFE9D7;
+  --line:#C3B896; --line2:#8C8264;
+  --tx:#17150E; --tx2:#4E462F; --tx3:#6B6146;
+  --ac:#17150E; --ac-dim:#3A3524; --ac-ghost:rgba(23,21,14,.075); --ac-ink:#FFC72C;
+  --sal:#A63229; --sal-ghost:rgba(166,50,41,.10);
+  --amb:#B07C00; --ok:#2E6B3E;
+  --sh:2px 2px 0 rgba(23,21,14,.10);
+  --sh-lift:3px 3px 0 rgba(23,21,14,.16);
+}
+:root[data-theme="dark"]{
+  --bg:#131209; --grid:rgba(240,234,218,.055);
+  --surf:#1D1B12; --surf2:#242116; --surf3:#2C2818;
+  --line:#3B3626; --line2:#5A5238;
+  --tx:#F2ECDC; --tx2:#C0B694; --tx3:#A2977D;
+  --ac:#FFC72C; --ac-dim:#D9A600; --ac-ghost:rgba(255,199,44,.13); --ac-ink:#17150E;
+  --sal:#E4695C; --sal-ghost:rgba(228,105,92,.14);
+  --amb:#FFC72C; --ok:#5CB878;
+  --sh:2px 2px 0 rgba(0,0,0,.45);
+  --sh-lift:3px 3px 0 rgba(0,0,0,.55);
+}
+:root{
+  --cover:#FFC72C; --coverInk:#17150E; --band:#17150E;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,"Roboto Mono",Menlo,Consolas,monospace;
+  --sans:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+  --cond:"Arial Narrow","Helvetica Neue Condensed","Roboto Condensed",system-ui,Arial,sans-serif;
+  --r:4px; --r-sm:3px; --tap:54px;
+  --ease:cubic-bezier(.2,.9,.3,1);
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;color:var(--tx);font:400 16px/1.4 var(--sans);
+  overscroll-behavior-y:none;-webkit-text-size-adjust:100%}
+body{background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;background-position:-1px -1px;
+  padding-bottom:calc(84px + var(--safe-b));transition:background-color .2s}
+button{font-family:var(--sans);cursor:pointer;color:inherit;border:none;background:none}
+input,select,textarea{font-family:var(--sans);font-size:16px;color:var(--tx)}
+svg.i{width:22px;height:22px;stroke:currentColor;stroke-width:1.9;fill:none;
+  stroke-linecap:round;stroke-linejoin:round;display:block}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.eyebrow{font:700 10px/1 var(--mono);letter-spacing:.19em;text-transform:uppercase;color:var(--tx3)}
+
+/* ---------------- cover band (header) ---------------- */
+header{position:sticky;top:0;z-index:40;background:var(--cover);color:var(--coverInk);
+  border-bottom:3px solid var(--band);padding:calc(env(safe-area-inset-top,0px) + 9px) 13px 9px}
+.hrow{display:flex;align-items:stretch;gap:8px;max-width:720px;margin:0 auto;min-height:48px}
+.reach{flex:1;min-width:0;min-height:48px;display:flex;align-items:center;gap:9px;padding:7px 10px;
+  background:rgba(255,255,255,.5);border:1.5px solid var(--band);border-radius:var(--r-sm);
+  transition:transform .1s var(--ease)}
+.reach:active{transform:translate(1px,1px)}
+.reach .rmeta{min-width:0;flex:1;text-align:left}
+.reach .rt{font:700 14.5px/1.1 var(--cond);letter-spacing:.02em;text-transform:uppercase;
+  color:var(--coverInk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reach .rs{font:600 10px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  color:#5A4E28;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reach .chev{color:var(--coverInk);flex:0 0 auto;opacity:.65}
+.hbtn{flex:0 0 auto;width:46px;min-height:48px;border:1.5px solid var(--band);border-radius:var(--r-sm);
+  background:rgba(255,255,255,.5);color:var(--coverInk);display:grid;place-items:center;
+  transition:all .1s var(--ease)}
+.hbtn:active{transform:translate(1px,1px);background:var(--band);color:var(--cover)}
+.pulse{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--ok);
+  transform:translate(13px,-13px);opacity:0;transition:opacity .2s}
+.pulse.on{opacity:1;background:#8A5B00}
+
+/* ---------------- layout ---------------- */
+main{max-width:720px;margin:0 auto;padding:15px 13px 8px}
+.panel{display:none}
+.panel.on{display:block;animation:in .2s var(--ease)}
+@keyframes in{from{opacity:0}to{opacity:1}}
+
+.sect{margin:2px 0 11px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding-bottom:7px;border-bottom:2px solid var(--tx)}
+.sect h2{margin:0;font:700 19px/1.1 var(--cond);letter-spacing:.045em;text-transform:uppercase}
+.sect .side{font:700 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--tx);background:var(--ac-ghost);border:1px solid var(--line);padding:5px 7px}
+.sbtns{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+
+/* ---------------- form blocks ---------------- */
+.card{background:var(--surf);border:1.5px solid var(--tx);border-radius:var(--r);
+  padding:13px;margin-bottom:13px;box-shadow:var(--sh)}
+.card > .ct{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin:-13px -13px 13px;padding:8px 11px;background:var(--ac-ghost);
+  border-bottom:1.5px solid var(--line)}
+.ct .eyebrow{color:var(--tx)}
+
+.f{display:block;margin-bottom:13px}
+.f:last-child{margin-bottom:0}
+.f > .lab{display:block;font:700 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--tx2);margin-bottom:6px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.g2>*{min-width:0}
+.f,.unitrow{min-width:0}
+input[type=text],input[type=number],input[type=date],input[type=time],select.in,textarea{
+  width:100%;min-width:0;height:var(--tap);padding:0 11px;border-radius:var(--r-sm);background:var(--surf2);
+  border:1.5px solid var(--line2);font:500 16px/1 var(--mono);color:var(--tx);
+  transition:border-color .12s,box-shadow .12s,background .12s}
+textarea{height:auto;min-height:80px;padding:11px;line-height:1.55;resize:vertical;
+  font:400 15px/1.55 var(--sans)}
+input:focus,select.in:focus,textarea:focus{outline:none;border-color:var(--tx);
+  background:var(--surf2);box-shadow:inset 0 -3px 0 var(--cover)}
+input::placeholder,textarea::placeholder{color:var(--tx3)}
+select.in{appearance:none;-webkit-appearance:none;padding-right:34px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%238A7E60' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat;background-position:right 11px center}
+.unitrow{display:flex;gap:8px}
+.unitrow input{flex:1;min-width:0}
+.sidebtn{flex:0 0 auto;min-width:50px;height:var(--tap);padding:0 10px;border-radius:var(--r-sm);
+  background:var(--surf3);border:1.5px solid var(--tx);color:var(--tx);
+  font:700 12.5px/1 var(--mono);letter-spacing:.09em;display:grid;place-items:center;
+  box-shadow:var(--sh);transition:all .1s var(--ease)}
+.sidebtn:active{transform:translate(2px,2px);box-shadow:none;background:var(--cover);color:var(--coverInk)}
+
+/* ---------------- check boxes (segmented) ---------------- */
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{flex:1 1 auto;min-width:70px;min-height:48px;padding:7px 10px;border-radius:var(--r-sm);
+  background:var(--surf2);border:1.5px solid var(--line2);color:var(--tx2);
+  font:600 14px/1.2 var(--sans);display:grid;place-items:center;
+  transition:transform .09s var(--ease),background .12s,color .12s,border-color .12s}
+.seg button:active{transform:translate(1px,1px)}
+.seg button.on{background:var(--cover);border-color:var(--tx);color:var(--coverInk);
+  font-weight:700;box-shadow:inset 0 0 0 1.5px var(--tx)}
+.seg.coral button.on{background:var(--sal);border-color:var(--sal);color:#FBF8EE;
+  box-shadow:inset 0 0 0 1.5px var(--tx)}
+.seg.sm button{min-height:42px;min-width:0;font-size:13px;padding:6px 9px}
+
+/* ---------------- upper/lower grid (mirrors the printed box) ---------------- */
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+.row3>*{min-width:0}
+.ulgrid{display:grid;grid-template-columns:52px 1fr 84px 74px;gap:6px;align-items:center}
+.ulh{font:700 9.5px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;color:var(--tx2);
+  text-align:center;padding-bottom:2px}
+.ull{font:700 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--tx)}
+.ulc{display:flex;gap:4px;min-width:0}
+.ulc input{height:46px;padding:0 8px;font-size:14px;min-width:0;flex:1}
+.ulnow{flex:0 0 auto;width:40px;height:46px;border:1.5px solid var(--tx);border-radius:var(--r-sm);
+  background:var(--surf3);font:700 9.5px/1 var(--mono);letter-spacing:.04em;color:var(--tx)}
+.ulnow:active{background:var(--cover)}
+
+/* ---------------- tally rows (one river mile per line) ---------------- */
+.totbox{background:var(--tx);color:var(--bg);border:1.5px solid var(--tx);border-radius:var(--r);
+  padding:10px 11px;margin-bottom:12px;box-shadow:var(--sh)}
+.totbox .th{font:700 9.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;
+  color:var(--cover);margin-bottom:9px}
+.totgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.totgrid div{text-align:center}
+.totgrid .tv{font:700 19px/1 var(--mono);font-variant-numeric:tabular-nums}
+.totgrid .tk{font:700 8.5px/1.2 var(--mono);letter-spacing:.07em;text-transform:uppercase;
+  opacity:.72;margin-top:4px}
+
+.rowcard{background:var(--surf);border:1.5px solid var(--tx);border-radius:var(--r);
+  margin-bottom:10px;box-shadow:var(--sh);overflow:hidden;
+  content-visibility:auto;contain-intrinsic-size:0 340px}
+.rowhead{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--ac-ghost);
+  border-bottom:1.5px solid var(--line)}
+.rowhead .rmk{font:700 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--tx2)}
+.rowhead input{width:86px;height:40px;padding:0 8px;font:700 15px/1 var(--mono);flex:0 0 auto}
+.rowhead .rsum{flex:1;text-align:right;font:700 10.5px/1.35 var(--mono);letter-spacing:.05em;
+  text-transform:uppercase;color:var(--tx2);min-width:0}
+.rowhead .x{flex:0 0 auto;width:38px;height:38px;border-radius:var(--r-sm);background:var(--surf2);
+  border:1.5px solid var(--line);color:var(--tx3);display:grid;place-items:center}
+.rowhead .x:active{background:var(--sal);border-color:var(--sal);color:#FBF8EE}
+.subhead{font:700 9.5px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--tx2);
+  padding:9px 10px 5px;background:var(--surf2);border-top:1px solid var(--line)}
+.cg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.cg2{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.rownotes{padding:9px 10px 10px;border-top:1px solid var(--line);background:var(--surf2)}
+.rownotes input{height:44px;font-size:14px}
+
+/* ---------------- tally block ---------------- */
+.sprow{border:1.5px solid var(--tx);border-radius:var(--r);background:var(--surf);
+  margin-bottom:9px;overflow:hidden;box-shadow:var(--sh)}
+.sphead{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;
+  background:var(--ac-ghost);border-bottom:1.5px solid var(--line)}
+.sphead .nm{font:700 15px/1 var(--cond);letter-spacing:.05em;text-transform:uppercase}
+.sphead .tot{font:700 13px/1 var(--mono);color:var(--tx);background:var(--cover);
+  border:1.5px solid var(--tx);padding:4px 9px;min-width:40px;text-align:center}
+.sphead .tot.zero{color:var(--tx3);background:var(--surf2);border-color:var(--line)}
+.t3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.tcell{background:var(--surf);padding:0 0 9px;text-align:center;border-right:1px solid var(--line)}
+.tcell:last-child{border-right:none}
+.tcell .cap{font:700 9.5px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--tx3);padding:8px 0 6px}
+.tctl{display:flex;align-items:center;justify-content:center;gap:3px}
+.tctl button{width:42px;height:42px;border-radius:var(--r-sm);display:grid;place-items:center;
+  color:var(--tx);background:var(--surf3);border:1.5px solid var(--line2);
+  font:400 23px/1 var(--mono);transition:transform .08s var(--ease),background .1s}
+.tctl button:active{transform:translate(1px,1px);background:var(--cover);border-color:var(--tx)}
+.tctl .v{flex:1;font:700 21px/1 var(--mono);font-variant-numeric:tabular-nums;min-width:34px;
+  transition:transform .15s var(--ease)}
+.tctl .v.bump{transform:scale(1.25)}
+.tctl .v.zero{color:var(--tx3)}
+
+/* ---------------- tallied totals ---------------- */
+.stats{display:flex;gap:8px;margin-bottom:13px}
+.stat{flex:1;min-width:0;background:var(--surf);border:1.5px solid var(--tx);border-radius:var(--r);
+  padding:10px 11px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--cover)}
+.stat.coral::before{background:var(--sal)}
+.stat.mute::before{background:var(--line2)}
+.stat .n{font:700 26px/1 var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+  padding-left:5px}
+.stat .l{font:700 9.5px/1.2 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--tx2);margin-top:6px;padding-left:5px}
+
+/* ---------------- entry lines ---------------- */
+.list{contain:layout style}
+.rec{display:flex;align-items:center;gap:11px;background:var(--surf);
+  border:1.5px solid var(--line2);border-radius:var(--r);padding:10px 11px;margin-bottom:7px;
+  box-shadow:var(--sh);transition:transform .1s var(--ease);
+  content-visibility:auto;contain-intrinsic-size:0 60px}
+.rec.fresh{animation:pop .22s var(--ease)}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.rec:active{transform:translate(1px,1px)}
+.rec .ix{flex:0 0 auto;width:30px;height:30px;border-radius:2px;background:var(--tx);
+  color:var(--bg);display:grid;place-items:center;font:700 12.5px/1 var(--mono)}
+.rec .bd{flex:1;min-width:0}
+.rec .t1{display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  font:700 14.5px/1.2 var(--cond);letter-spacing:.03em;text-transform:uppercase}
+.rec .t2{font:500 11.5px/1.3 var(--mono);color:var(--tx3);margin-top:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec .x{flex:0 0 auto;width:36px;height:36px;border-radius:var(--r-sm);background:var(--surf3);
+  border:1.5px solid var(--line);color:var(--tx3);display:grid;place-items:center;
+  transition:all .1s var(--ease)}
+.rec .x:active{background:var(--sal);border-color:var(--sal);color:#FBF8EE;transform:translate(1px,1px)}
+.tag{font:700 9.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:4px 6px;
+  border:1px solid var(--line2);background:var(--surf3);color:var(--tx2);border-radius:2px}
+.tag.ac{background:var(--cover);border-color:var(--tx);color:var(--coverInk)}
+.tag.co{background:var(--sal);border-color:var(--sal);color:#FBF8EE}
+.tag.am{background:var(--surf3);border-color:var(--amb);color:var(--amb)}
+
+.empty{text-align:center;padding:30px 18px;border:2px dashed var(--line2);border-radius:var(--r);
+  background:var(--surf)}
+.empty svg{width:28px;height:28px;stroke:var(--tx3);margin:0 auto 11px;stroke-width:1.6}
+.empty b{display:block;font:700 11px/1 var(--mono);letter-spacing:.15em;text-transform:uppercase;
+  color:var(--tx2);margin-bottom:8px}
+.empty span{font:400 13.5px/1.55 var(--sans);color:var(--tx3);max-width:290px;display:inline-block}
+
+/* ---------------- stamped buttons ---------------- */
+.btn{width:100%;min-height:var(--tap);border-radius:var(--r-sm);border:1.5px solid var(--tx);
+  font:700 15px/1 var(--cond);letter-spacing:.07em;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:var(--sh);
+  transition:transform .1s var(--ease),box-shadow .1s var(--ease),background .12s}
+.btn:active{transform:translate(2px,2px);box-shadow:none}
+.btn.pri{background:var(--ac);color:var(--ac-ink)}
+.btn.pri:active{background:var(--ac-dim)}
+.btn.gh{background:var(--surf2);color:var(--tx)}
+.btn.gh:active{background:var(--surf3)}
+.btn.dg{background:var(--surf2);color:var(--sal);border-color:var(--sal)}
+.btn.dg:active{background:var(--sal);color:#FBF8EE}
+.btn.sm{min-height:40px;width:auto;padding:0 13px;font-size:13px}
+
+.fab{position:fixed;right:14px;bottom:calc(94px + var(--safe-b));z-index:35;height:54px;padding:0 20px;
+  border-radius:var(--r);background:var(--cover);color:var(--coverInk);border:2px solid var(--band);
+  font:700 15px/1 var(--cond);letter-spacing:.08em;text-transform:uppercase;
+  display:none;align-items:center;gap:8px;box-shadow:3px 3px 0 var(--band);
+  transition:transform .1s var(--ease),box-shadow .1s var(--ease)}
+.fab.show{display:flex}
+.fab:active{transform:translate(3px,3px);box-shadow:none}
+
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{font:700 11.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:0 12px;
+  min-height:40px;display:inline-flex;align-items:center;
+  border-radius:var(--r-sm);background:var(--cover);color:var(--coverInk);border:1.5px solid var(--tx);
+  transition:transform .09s var(--ease)}
+.chip:active{transform:translate(1px,1px)}
+.chip.mute{background:var(--surf2);color:var(--tx2);border-color:var(--line2)}
+
+.hint{font:400 12.5px/1.6 var(--sans);color:var(--tx3);margin:9px 2px 0}
+.hint b{color:var(--tx2);font-weight:700}
+.rule{height:1.5px;background:var(--line);margin:15px -13px}
+
+/* ---------------- charts ---------------- */
+.chartcard{background:var(--surf);border:1.5px solid var(--tx);border-radius:var(--r);
+  padding:0 12px 10px;margin-bottom:13px;box-shadow:var(--sh)}
+.chartcard .chead{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin:0 -12px 12px;padding:8px 11px;background:var(--ac-ghost);border-bottom:1.5px solid var(--line)}
+.chartcard .chead .eyebrow{color:var(--tx)}
+.chartcard .chead .cn{font:600 10px/1 var(--mono);letter-spacing:.1em;color:var(--tx3);text-transform:uppercase}
+.chartcard svg{display:block;width:100%;height:auto;overflow:visible}
+.chartcard .gridline{stroke:var(--line);stroke-width:1}
+.chartcard .axis{stroke:var(--tx);stroke-width:1.4}
+.chartcard .barlab,.chartcard .axlab{font-family:var(--mono);font-size:9.5px;fill:var(--tx3);letter-spacing:.05em}
+.chartcard .vlab{font-family:var(--mono);font-size:10px;font-weight:700;fill:var(--tx2)}
+.chartcard .bar-in{animation:grow .4s var(--ease) backwards}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.legend{display:flex;gap:13px;flex-wrap:wrap;margin-top:10px;padding-top:9px;border-top:1.5px solid var(--line)}
+.legend span{display:flex;align-items:center;gap:6px;font:700 10px/1 var(--mono);
+  letter-spacing:.1em;text-transform:uppercase;color:var(--tx2)}
+.legend i{width:11px;height:11px;border:1px solid var(--tx);display:block}
+.nodata{text-align:center;padding:20px 10px;font:400 13px/1.55 var(--sans);color:var(--tx3)}
+
+/* ---------------- index tabs ---------------- */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;
+  padding:6px 5px calc(6px + var(--safe-b));background:var(--band);border-top:3px solid var(--cover)}
+nav button{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:7px 2px 6px;border-radius:var(--r-sm);color:#9A9078;transition:color .14s,background .14s}
+nav button .tl{font:700 9px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase}
+nav button.on{color:var(--coverInk);background:var(--cover)}
+nav .bdg{position:absolute;top:1px;left:50%;margin-left:6px;min-width:17px;height:17px;padding:0 4px;
+  border-radius:2px;background:var(--sal);color:#FBF8EE;border:1px solid rgba(0,0,0,.35);
+  font:700 9.5px/15px var(--mono);text-align:center}
+nav button.on .bdg{background:var(--band);color:var(--cover);border-color:var(--band)}
+
+/* ---------------- inserted page (sheet) ---------------- */
+.scrim{position:fixed;inset:0;z-index:70;background:rgba(10,9,5,.62);display:none;
+  align-items:flex-end;justify-content:center}
+.scrim.show{display:flex;animation:fade .16s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.sheet{width:100%;max-width:720px;max-height:92vh;background:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;border-top:4px solid var(--cover);
+  display:flex;flex-direction:column;animation:up .24s var(--ease)}
+@keyframes up{from{transform:translateY(34px)}to{transform:none}}
+.grab{width:44px;height:4px;background:var(--line2);margin:8px auto 2px;flex:0 0 auto}
+.sh-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 11px;
+  flex:0 0 auto;border-bottom:2px solid var(--tx)}
+.sh-head h3{margin:0;font:700 17px/1.15 var(--cond);letter-spacing:.06em;text-transform:uppercase}
+.sh-head .hbtn{height:40px;width:40px;background:var(--surf2)}
+.sh-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:13px 14px 8px;flex:1 1 auto}
+.sh-foot{flex:0 0 auto;display:flex;gap:9px;padding:11px 14px calc(13px + var(--safe-b));
+  border-top:1.5px solid var(--line);background:var(--bg)}
+.sh-foot .btn{flex:1}
+.menu-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px;
+  border-radius:var(--r);background:var(--surf);border:1.5px solid var(--line2);margin-bottom:8px;
+  box-shadow:var(--sh);transition:transform .1s var(--ease),box-shadow .1s var(--ease)}
+.menu-item:active{transform:translate(2px,2px);box-shadow:none}
+.menu-item .mi{width:38px;height:38px;border-radius:var(--r-sm);background:var(--cover);
+  color:var(--coverInk);border:1.5px solid var(--tx);display:grid;place-items:center;flex:0 0 auto}
+.menu-item .mt{flex:1;min-width:0}
+.menu-item .mt b{display:block;font:700 14.5px/1.2 var(--cond);letter-spacing:.04em;text-transform:uppercase}
+.menu-item .mt span{font:400 12.5px/1.45 var(--sans);color:var(--tx3);text-transform:none;letter-spacing:0}
+.menu-item .ma{color:var(--tx3);flex:0 0 auto}
+.toggle{width:50px;height:28px;border-radius:2px;background:var(--surf3);border:1.5px solid var(--line2);
+  position:relative;flex:0 0 auto;transition:background .18s,border-color .18s}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:21px;height:21px;
+  background:var(--line2);transition:transform .2s var(--ease),background .2s}
+.toggle.on{background:var(--cover);border-color:var(--tx)}
+.toggle.on::after{transform:translateX(22px);background:var(--coverInk)}
+
+/* ---------------- field note (toast) ---------------- */
+#toast{position:fixed;left:50%;bottom:calc(100px + var(--safe-b));z-index:80;display:flex;
+  align-items:center;gap:13px;padding:11px 12px 11px 15px;background:var(--band);color:#F7F2E2;
+  border:2px solid var(--cover);font:600 13.5px/1.35 var(--sans);box-shadow:3px 3px 0 rgba(0,0,0,.35);
+  max-width:92vw;transform:translate(-50%,18px);opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s var(--ease)}
+#toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#toast button{font:700 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--coverInk);background:var(--cover);padding:7px 9px;flex:0 0 auto;border-radius:2px}
+
+/* ---------------- colophon ---------------- */
+.appfoot{margin:24px 0 6px;padding:14px 12px;text-align:center;border:1.5px solid var(--line2);
+  border-radius:var(--r);background:var(--surf)}
+.appfoot .by{font:700 11.5px/1.4 var(--cond);letter-spacing:.16em;text-transform:uppercase;color:var(--tx)}
+.appfoot .use{font:400 11.5px/1.6 var(--sans);color:var(--tx3);margin-top:5px}
+.appfoot button{margin-top:10px;font:700 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--tx);background:var(--surf3);border:1.5px solid var(--line2);padding:0 14px;
+  min-height:40px;display:inline-flex;align-items:center;
+  border-radius:var(--r-sm);transition:transform .09s var(--ease)}
+.appfoot button:active{transform:translate(1px,1px);background:var(--cover)}
+.terms h4{font:700 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--tx);
+  margin:18px 0 7px;padding-bottom:5px;border-bottom:1.5px solid var(--line)}
+.terms h4:first-child{margin-top:0}
+.terms p{font:400 13.5px/1.65 var(--sans);color:var(--tx2);margin:0 0 10px}
+.terms ul{margin:0 0 10px;padding-left:19px}
+.terms li{font:400 13.5px/1.65 var(--sans);color:var(--tx2);margin-bottom:6px}
+
+
+/* ---------------- reference & calculators ---------------- */
+.acc{background:var(--surf);border:1.5px solid var(--tx);border-radius:var(--r);margin-bottom:10px;
+  box-shadow:var(--sh);overflow:hidden}
+.acc>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 12px;
+  font:700 14px/1.2 var(--cond);letter-spacing:.05em;text-transform:uppercase;background:var(--ac-ghost)}
+.acc>summary::-webkit-details-marker{display:none}
+.acc>summary::after{content:"+";margin-left:auto;font:400 20px/1 var(--mono);color:var(--tx2)}
+.acc[open]>summary::after{content:"–"}
+.acc>summary .mi{width:32px;height:32px;border-radius:var(--r-sm);background:var(--cover);
+  border:1.5px solid var(--tx);display:grid;place-items:center;flex:0 0 auto;color:var(--coverInk)}
+.accbody{padding:13px 12px;border-top:1.5px solid var(--line)}
+.accbody h5{margin:14px 0 6px;font:700 10.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--tx2)}
+.accbody h5:first-child{margin-top:0}
+.accbody p{margin:0 0 9px;font:400 13.5px/1.6 var(--sans);color:var(--tx2)}
+.accbody ul{margin:0 0 10px;padding-left:18px}
+.accbody li{font:400 13.5px/1.6 var(--sans);color:var(--tx2);margin-bottom:5px}
+.accbody li b,.accbody p b{color:var(--tx);font-weight:700}
+.callout{border-left:5px solid var(--cover);background:var(--surf2);padding:10px 11px;margin:0 0 11px;
+  font:500 13px/1.55 var(--sans);color:var(--tx)}
+.callout.warn{border-left-color:var(--sal)}
+.deftab{width:100%;border-collapse:collapse;margin:0 0 11px;font:500 12.5px/1.35 var(--mono)}
+.deftab th{background:var(--tx);color:var(--bg);font:700 9.5px/1.2 var(--mono);letter-spacing:.1em;
+  text-transform:uppercase;padding:7px 8px;text-align:left}
+.deftab td{border:1px solid var(--line);padding:7px 8px;color:var(--tx2);vertical-align:top}
+.deftab td:first-child{font-weight:700;color:var(--tx);white-space:nowrap}
+.formula{background:var(--tx);color:var(--bg);padding:11px 12px;border-radius:var(--r-sm);margin:0 0 11px;
+  font:700 13.5px/1.5 var(--mono);text-align:center}
+.formula small{display:block;color:var(--cover);font:700 9.5px/1.4 var(--mono);letter-spacing:.12em;
+  text-transform:uppercase;margin-bottom:5px}
+.calcout{background:var(--cover);color:var(--coverInk);border:1.5px solid var(--tx);border-radius:var(--r-sm);
+  padding:11px 12px;margin-top:11px;text-align:center}
+.calcout .cv{font:700 26px/1 var(--mono);font-variant-numeric:tabular-nums}
+.calcout .ck{font:700 9.5px/1.2 var(--mono);letter-spacing:.13em;text-transform:uppercase;margin-top:5px;opacity:.8}
+.flowbox{display:grid;gap:7px;margin-bottom:11px}
+.flowrow{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1.5px solid var(--line2);
+  border-radius:var(--r-sm);background:var(--surf2);font:500 12.5px/1.4 var(--sans)}
+.flowrow b{font:700 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;flex:0 0 auto;
+  padding:5px 7px;border-radius:2px;background:var(--tx);color:var(--bg)}
+.flowrow.full b{background:var(--ok);color:#fff}
+.flowrow.sub b{background:var(--sal);color:#fff}
+.qa{display:flex;align-items:center;gap:10px;padding:10px 11px;border:1.5px solid var(--line2);
+  border-radius:var(--r-sm);background:var(--surf2);margin-bottom:8px}
+.qa .qi{width:26px;height:26px;border-radius:2px;display:grid;place-items:center;flex:0 0 auto;
+  font:700 13px/1 var(--mono);color:#fff}
+.qa.ok .qi{background:var(--ok)} .qa.bad .qi{background:var(--sal)}
+.qa .qt{flex:1;min-width:0;font:500 12.5px/1.4 var(--sans);color:var(--tx2)}
+.qa .qt b{color:var(--tx);font-weight:700}
+.lineup{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}
+.lineup span{width:34px;height:34px;border:1.5px solid var(--line2);border-radius:2px;display:grid;
+  place-items:center;font:700 12px/1 var(--mono);background:var(--surf2);color:var(--tx3)}
+.lineup span.done{background:var(--surf3);color:var(--tx2)}
+.lineup span.pull{background:var(--cover);border-color:var(--tx);color:var(--coverInk)}
+.lineup span.now{outline:3px solid var(--sal);outline-offset:1px;color:var(--tx)}
+
+
+/* ---------------- scientific field format ---------------- */
+.f > .lab .u{font-style:normal;color:var(--tx3);font-weight:600;letter-spacing:.06em}
+.f > .lab .req{color:var(--sal);font-weight:900;margin-left:3px}
+.secthead{display:flex;align-items:center;gap:9px;margin:18px -13px 12px;padding:8px 12px;
+  background:var(--tx);color:var(--bg)}
+.secthead:first-child{margin-top:0}
+.secthead .sn{font:700 11px/1 var(--mono);letter-spacing:.1em;background:var(--cover);color:var(--coverInk);
+  padding:4px 6px;border-radius:2px}
+.secthead .st{font:700 11px/1 var(--mono);letter-spacing:.15em;text-transform:uppercase}
+.vwarn{border:1.5px solid var(--sal);background:var(--sal-ghost);border-radius:var(--r-sm);
+  padding:10px 11px;margin:12px 0 0}
+.vwarn .vh{font:700 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--sal);margin-bottom:6px}
+.vwarn ul{margin:0;padding-left:17px}
+.vwarn li{font:500 12.5px/1.5 var(--sans);color:var(--tx2)}
+.vok{border:1.5px solid var(--ok);background:var(--surf2);border-radius:var(--r-sm);padding:9px 11px;margin:12px 0 0;
+  font:700 11px/1.3 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ok)}
+
+/* ---------------- GPS block ---------------- */
+.gps{border:1.5px solid var(--line2);border-radius:var(--r-sm);background:var(--surf2);padding:10px;margin-bottom:13px}
+.gpsrow{display:flex;align-items:center;gap:8px}
+.gpsval{flex:1;min-width:0;font:700 13px/1.35 var(--mono);color:var(--tx)}
+.gpsval small{display:block;font:600 9.5px/1.3 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--tx3);margin-top:3px}
+.gpsbtn{flex:0 0 auto;height:44px;padding:0 12px;border:1.5px solid var(--tx);border-radius:var(--r-sm);
+  background:var(--cover);color:var(--coverInk);font:700 11px/1 var(--mono);letter-spacing:.08em;
+  display:flex;align-items:center;gap:6px;box-shadow:var(--sh)}
+.gpsbtn:active{transform:translate(2px,2px);box-shadow:none}
+.gpsbtn.alt{background:var(--surf3);color:var(--tx)}
+.gpsacc{font:700 9.5px/1 var(--mono);letter-spacing:.07em;padding:4px 6px;border-radius:2px;
+  background:var(--ok);color:#fff}
+.gpsacc.poor{background:var(--amb)}
+
+/* ---------------- data table view ---------------- */
+.dtwrap{border:1.5px solid var(--tx);border-radius:var(--r);background:var(--surf);overflow:hidden;
+  box-shadow:var(--sh);margin-bottom:12px}
+.dtscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.dt{border-collapse:collapse;width:100%;font:500 12px/1.3 var(--mono);white-space:nowrap}
+table.dt th{background:var(--tx);color:var(--bg);font:700 9px/1.2 var(--mono);letter-spacing:.09em;
+  text-transform:uppercase;padding:8px 7px;text-align:left;position:sticky;top:0}
+table.dt td{border-bottom:1px solid var(--line);padding:8px 7px;color:var(--tx2)}
+table.dt tr:last-child td{border-bottom:none}
+table.dt td.k{font-weight:700;color:var(--tx);background:var(--surf2);position:sticky;left:0;
+  border-right:1.5px solid var(--line)}
+table.dt th.k{position:sticky;left:0;z-index:2}
+table.dt tr:active td{background:var(--ac-ghost)}
+table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border-top:1.5px solid var(--tx)}
+.dthint{font:600 9.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);
+  padding:7px 10px;background:var(--surf2);border-top:1px solid var(--line)}
+
+
+/* ---------------- draft recovery ---------------- */
+.draftbar{display:flex;align-items:center;gap:10px;padding:10px 11px;margin-bottom:11px;
+  border:2px solid var(--amb);border-radius:var(--r);background:var(--surf);box-shadow:var(--sh)}
+.draftbar .di{width:30px;height:30px;border-radius:2px;background:var(--amb);color:#fff;
+  display:grid;place-items:center;flex:0 0 auto}
+.draftbar .dt{flex:1;min-width:0}
+.draftbar .dt b{display:block;font:700 12px/1.2 var(--cond);letter-spacing:.06em;text-transform:uppercase}
+.draftbar .dt span{display:block;font:500 11.5px/1.35 var(--mono);color:var(--tx3);margin-top:3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.draftbar .dbtn{flex:0 0 auto;min-height:38px;padding:0 12px;border:1.5px solid var(--tx);
+  border-radius:var(--r-sm);background:var(--cover);color:var(--coverInk);
+  font:700 11px/1 var(--mono);letter-spacing:.08em;box-shadow:var(--sh)}
+.draftbar .dbtn:active{transform:translate(2px,2px);box-shadow:none}
+.draftbar .dbtn.alt{background:var(--surf2);color:var(--sal);padding:0 9px}
+.dsavebar{display:flex;align-items:center;gap:9px;margin-top:12px;padding:9px 10px;
+  border:1.5px dashed var(--line2);border-radius:var(--r-sm);background:var(--surf2)}
+.dsavebar span:last-child{font:400 11.5px/1.45 var(--sans);color:var(--tx3)}
+.dsave{flex:0 0 auto;font:700 9.5px/1 var(--mono);letter-spacing:.1em;padding:5px 7px;border-radius:2px;
+  background:var(--surf3);color:var(--tx3)}
+.dsave.on{background:var(--ok);color:#fff}
+
+
+/* ---------------- record filter ---------------- */
+.srch{display:flex;gap:7px;margin-bottom:10px}
+.srch input{flex:1;height:46px;border:1.5px solid var(--line2);border-radius:var(--r-sm);
+  background:var(--surf2);padding:0 11px;font:500 14px/1 var(--mono);color:var(--tx)}
+.srch input:focus{outline:none;border-color:var(--tx);box-shadow:inset 0 -3px 0 var(--cover)}
+.srch .dbtn{min-height:46px;padding:0 11px;border:1.5px solid var(--tx);border-radius:var(--r-sm);
+  background:var(--surf3);color:var(--sal)}
+.eod{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:var(--r-sm);
+  border:1.5px solid var(--line2);background:var(--surf2);margin-bottom:8px}
+.eod .ei{width:24px;height:24px;border-radius:2px;display:grid;place-items:center;flex:0 0 auto;
+  font:700 12px/1 var(--mono);color:#fff;background:var(--ok)}
+.eod.bad .ei{background:var(--sal)} .eod.warn .ei{background:var(--amb)}
+.eod span:last-child{font:500 12.5px/1.4 var(--sans);color:var(--tx2)}
+.eod b{color:var(--tx)}
+
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:focus-visible{outline:2.5px solid var(--tx);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-reach" viewBox="0 0 24 24"><path d="M2 7c2.6-2.4 5.2-2.4 7.8 0s5.2 2.4 7.8 0M2 12c2.6-2.4 5.2-2.4 7.8 0s5.2 2.4 7.8 0M2 17c2.6-2.4 5.2-2.4 7.8 0s5.2 2.4 7.8 0"/></symbol>
+  <symbol id="i-fish" viewBox="0 0 24 24"><path d="M2.5 12c3.6-4.6 8.6-6.4 12.5-6.4 2.3 0 4.1.9 5 1.9-.9 1-1.4 2.6-1.4 4.5s.5 3.5 1.4 4.5c-.9 1-2.7 1.9-5 1.9-3.9 0-8.9-1.8-12.5-6.4z"/><circle cx="7.5" cy="11" r=".9" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 3.5h7.6L21 13.9l-7.1 7.1L3.5 10.6z"/><circle cx="7.6" cy="7.6" r="1.4"/></symbol>
+  <symbol id="i-redd" viewBox="0 0 24 24"><circle cx="8" cy="14.5" r="3.2"/><circle cx="15.6" cy="15.4" r="2.6"/><circle cx="12.4" cy="8.6" r="2.9"/></symbol>
+  <symbol id="i-vial" viewBox="0 0 24 24"><path d="M9.5 2.5h5M10.5 2.5v6.2L6.9 16a3.4 3.4 0 0 0 3 5h4.2a3.4 3.4 0 0 0 3-5l-3.6-7.3V2.5"/><path d="M7.7 14.5h8.6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.4" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v13M6 11.5l6 6 6-6M4 21h16"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 20V7M6 12.5l6-6 6 6M4 3h16"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v2.6M12 18.9v2.6M21.5 12h-2.6M5.1 12H2.5M18.7 5.3l-1.8 1.8M7.1 16.9l-1.8 1.8M18.7 18.7l-1.8-1.8M7.1 7.1L5.3 5.3"/></symbol>
+  <symbol id="i-gps" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 1v3M12 20v3M23 12h-3M4 12H1"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M13.5 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8.5z"/><path d="M13.5 2.5v6h6M8.5 13h7M8.5 17h5"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="2.2"/><path d="M15.5 8.5v-3a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3.5 6h17M8.5 6V4.2a1.7 1.7 0 0 1 1.7-1.7h3.6a1.7 1.7 0 0 1 1.7 1.7V6M6 6l1 14.2a1.8 1.8 0 0 0 1.8 1.8h6.4a1.8 1.8 0 0 0 1.8-1.8L18 6"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 1.5v2.4M12 20.1v2.4M22.5 12h-2.4M3.9 12H1.5M19.4 4.6l-1.7 1.7M6.3 17.7l-1.7 1.7M19.4 19.4l-1.7-1.7M6.3 6.3L4.6 4.6"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3.5" width="18" height="17" rx="1.5"/><path d="M3 9h18M3 15h18M9.5 3.5v17"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4.5h6a3 3 0 0 1 3 3v13a2.4 2.4 0 0 0-2.4-2.4H4z"/><path d="M20 4.5h-6a3 3 0 0 0-3 3v13a2.4 2.4 0 0 1 2.4-2.4H20z"/></symbol>
+  <symbol id="i-calc" viewBox="0 0 24 24"><rect x="4.5" y="2.5" width="15" height="19" rx="2"/><path d="M8 6.5h8M8 11h1.5M11.5 11H13M15 11h1M8 14.5h1.5M11.5 14.5H13M15 14.5h1M8 18h1.5M11.5 18H13M15 18h1"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M7.5 3.5v6h8v-6M7.5 21v-6h9v6"/></symbol>
+</svg>
+
+<header>
+  <div class="hrow">
+    <button class="reach" data-act="menu" aria-label="Survey menu">
+      <svg class="i" style="width:19px;height:19px"><use href="#i-reach"/></svg>
+      <span class="rmeta"><span class="rt" id="hTitle">New survey</span><span class="rs" id="hSub">tap to switch</span></span>
+      <svg class="i chev" style="width:15px;height:15px"><use href="#i-chev"/></svg>
+    </button>
+    <button class="hbtn" data-act="newsurvey" aria-label="New survey"><svg class="i"><use href="#i-plus"/></svg><span class="pulse" id="pulse"></span></button>
+    <button class="hbtn" data-act="settings" aria-label="Settings"><svg class="i"><use href="#i-gear"/></svg></button>
+  </div>
+</header>
+
+<main>
+  <!-- ===================== SURVEY HEADER ===================== -->
+  <section class="panel on" id="p-survey">
+    <div class="sect"><h2>Spawner Survey</h2><span class="sbtns"><span class="side">2026 Form</span></span></div>
+
+    <div class="card">
+      <div class="secthead"><span class="sn">1</span><span class="st">Survey identification</span></div><div style="display:flex;justify-content:flex-end;margin:-6px 0 10px"><button class="chip mute" data-act="nowdate">Set today</button></div>
+      <label class="f"><span class="lab">Target species<span class="req">*</span></span>
+        <div class="seg sm" data-hseg="species">
+          <button data-v="CHIN">CHIN</button><button data-v="COHO">COHO</button>
+          <button data-v="CHUM">CHUM</button><button data-v="PINK">PINK</button>
+          <button data-v="SOCK">SOCK</button><button data-v="STHD">STHD</button>
+        </div></label>
+      <label class="f"><span class="lab">Fork / stream<span class="req">*</span></span>
+        <div class="seg sm" data-hseg="fork">
+          <button data-v="NF">NF</button><button data-v="MF">MF</button>
+          <button data-v="SF">SF</button><button data-v="Other">Other</button>
+        </div>
+        <p class="hint" style="margin-top:7px">The printed form has boxes for MF and SF only — NF and any
+          other stream are written on the blank line, and export does that for you.</p></label>
+      <label class="f" id="forkOther" hidden><span class="lab">Stream name</span>
+        <input type="text" data-h="forkother" placeholder="Stream name"></label>
+      <div class="g2">
+        <label class="f"><span class="lab">Crew<span class="req">*</span></span><input type="text" data-h="crew" placeholder="Initials"></label>
+        <label class="f"><span class="lab">Date<span class="req">*</span></span><input type="date" data-h="date"></label>
+      </div>
+      <label class="f"><span class="lab">Reach<span class="req">*</span></span><input type="text" data-h="reach" placeholder="Reach name"></label>
+      <label class="f" id="waterTypeWrap"><span class="lab">Water type<span class="req">*</span></span>
+        <div class="seg sm" data-hseg="waterType">
+          <button data-v="Mainstem">Mainstem</button><button data-v="Trib">Tributary</button>
+        </div>
+        <p class="hint" style="margin-top:7px">Tributaries (Peat Bog and similar) are surveyed as often as
+          possible and their escapement is the carcasses recovered, with no expansion.</p></label>
+      <label class="f"><span class="lab">Survey type<span class="req">*</span></span>
+        <div class="seg sm" data-hseg="surveyType">
+          <button data-v="Primary">Primary survey</button><button data-v="Braid">Braid</button>
+        </div></label>
+    </div>
+
+    <div id="intervalBox"></div>
+    <div id="escBox"></div>
+
+    <div class="card">
+      <div class="secthead"><span class="sn">2</span><span class="st">Survey conditions</span></div><span class="lab" style="display:block;font:700 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--tx2);margin-bottom:7px">Visibility [1&ndash;6]<span class="req">*</span></span>
+      <div class="seg sm" data-hseg="visibility">
+        <button data-v="1">1 · Excellent</button><button data-v="2">2 · Very good</button>
+        <button data-v="3">3 · Good</button><button data-v="4">4 · Fair</button>
+        <button data-v="5">5 · Poor</button><button data-v="6">6 · Not surveyable</button>
+      </div>
+      <p class="hint">Visibility is judged on <b>both turbidity and glare</b> — a clear river in hard sun can still be a 4.</p>
+    </div>
+
+    <div class="card">
+      <div class="secthead"><span class="sn">3</span><span class="st">Upper &amp; lower readings</span></div>
+      <div class="ulgrid">
+        <span class="ulh"></span><span class="ulh">Time</span><span class="ulh">Temp <em class="u">&deg;</em></span><span class="ulh">RM</span>
+        <span class="ull">Upper</span>
+        <span class="ulc"><input type="time" data-h="upTime"><button class="ulnow" data-act="now" data-k="upTime">NOW</button></span>
+        <span class="ulc"><input type="number" inputmode="decimal" step="0.1" data-h="upTemp" placeholder="0.0"></span>
+        <span class="ulc"><input type="number" inputmode="decimal" step="0.1" data-h="upRM" placeholder="RM"></span>
+        <span class="ull">Lower</span>
+        <span class="ulc"><input type="time" data-h="loTime"><button class="ulnow" data-act="now" data-k="loTime">NOW</button></span>
+        <span class="ulc"><input type="number" inputmode="decimal" step="0.1" data-h="loTemp" placeholder="0.0"></span>
+        <span class="ulc"><input type="number" inputmode="decimal" step="0.1" data-h="loRM" placeholder="RM"></span>
+      </div>
+      <p class="hint">Temperature in °<span id="unitLbl">C</span> <button class="chip mute" data-act="unit" style="margin-left:6px">switch</button></p>
+    </div>
+
+    <div class="card">
+      <div class="secthead"><span class="sn">4</span><span class="st">Subsampling &amp; page</span></div>
+      <label class="f"><span class="lab">Subsampling?</span>
+        <div class="seg sm coral" data-hseg="subsampling">
+          <button data-v="N">N</button><button data-v="Y">Y</button>
+        </div></label>
+      <label class="f" id="subRateWrap" hidden><span class="lab">Rate &mdash; 1 in &hellip;</span>
+        <div class="seg sm" data-hseg="subRate">
+          <button data-v="10">1/10</button><button data-v="20">1/20</button>
+        </div>
+        <p class="hint" style="margin-top:7px">Text the group chat when you <b>start</b> subsampling, and immediately if you drop to 1/20.</p>
+      </label>
+      <div class="g2">
+        <label class="f"><span class="lab">GPS unit #</span><input type="text" data-h="gpsUnit" placeholder="e.g. 2"></label>
+        <label class="f"><span class="lab">Notes on reverse?</span>
+          <div class="seg sm" data-hseg="reverseNotes"><button data-v="Y">Y</button><button data-v="N">N</button></div></label>
+      </div>
+      <p class="hint" style="margin:-4px 2px 14px">The ID of the <b>handheld GPS unit you signed out</b> — not the phone.
+        Waypoint numbers restart on each unit, so the redd form needs the unit ID to trace waypoint 034 back to the
+        right device when the office downloads them.</p>
+      <div class="g2">
+        <label class="f"><span class="lab">Page no.</span><input type="number" inputmode="numeric" data-h="pageNo" placeholder="#"></label>
+        <label class="f"><span class="lab">Of pages</span><input type="number" inputmode="numeric" data-h="pageOf" placeholder="#"></label>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TALLY ===================== -->
+  <section class="panel" id="p-tally">
+    <div class="sect"><h2>Tally</h2><span class="sbtns"><button class="chip mute" data-act="view" data-k="tally">Table</button><button class="chip mute" data-act="graph" data-k="tally">Graph</button></span></div>
+    <div id="totalsBox"></div>
+    <div id="qaBox"></div>
+    <div id="ch-tally"></div>
+    <div class="list" id="rowList"></div>
+    <p class="hint">One line per river mile, to the nearest tenth. Everything in a row describes that river mile —
+      <b>i.e. the number of new redds at RM 16.2</b>. Unsampled carcasses (spines, guts, heavily scavenged)
+      go in <b>Not sampled</b> and nowhere else.</p>
+  </section>
+
+  <!-- ===================== CARCASS ===================== -->
+  <section class="panel" id="p-carcass">
+    <div class="sect"><h2>Carcasses</h2><span class="sbtns"><button class="chip mute" data-act="view" data-k="carcass">Table</button><button class="chip mute" data-act="graph" data-k="carcass">Graph</button></span></div>
+    <div class="stats">
+      <div class="stat coral"><div class="n num" id="carcN">0</div><div class="l">Records</div></div>
+      <div class="stat"><div class="n num" id="carcCWT">0</div><div class="l">CWT yes</div></div>
+      <div class="stat mute"><div class="n num" id="carcPSM">0</div><div class="l">0% spawn</div></div>
+    </div>
+    <div id="dr-carcass"></div>
+    <div id="ch-carcass"></div>
+    <div class="list" id="carcList"></div>
+    <p class="hint">Mark status is recorded on <b>every</b> carcass. If any data at all can be collected, it belongs
+      here — pure unsamps are counted on the tally page only.</p>
+  </section>
+
+  <!-- ===================== REDDS ===================== -->
+  <section class="panel" id="p-redds">
+    <div class="sect"><h2>Redds</h2><span class="sbtns"><button class="chip mute" data-act="view" data-k="redds">Table</button><span class="side">2026</span></span></div>
+    <div class="stats">
+      <div class="stat"><div class="n num" id="reddN">0</div><div class="l">Redds today</div></div>
+      <div class="stat mute"><div class="n num" id="reddLive">0</div><div class="l">Live on redds</div></div>
+    </div>
+    <p class="hint" style="margin:-4px 2px 12px"><b id="reddGpsUnit">GPS unit not set</b> — set it on the Survey page, under Subsampling &amp; page.</p>
+    <div id="dr-redds"></div>
+    <div class="list" id="reddList"></div>
+    <p class="hint">Redd ID starts at <b>01</b> each day and works up. Take a <b>new GPS waypoint for every redd</b>,
+      even when they're close together.</p>
+  </section>
+
+  <!-- ===================== OTHER SPECIES ===================== -->
+  <section class="panel" id="p-obs">
+    <div class="sect"><h2>Other species</h2><span class="sbtns"><button class="chip mute" data-act="view" data-k="obs">Table</button></span></div>
+    <div class="stats">
+      <div class="stat"><div class="n num" id="obsN">0</div><div class="l">Observations</div></div>
+      <div class="stat mute"><div class="n num" id="obsSp">0</div><div class="l">Species</div></div>
+    </div>
+    <div id="dr-obs"></div>
+    <div class="list" id="obsList"></div>
+    <p class="hint">Anything that is not the target species: live fish, carcasses or redds of other salmonids.
+      Kept separate from the survey form so the primary counts stay clean, and exported as its own sheet.</p>
+  </section>
+
+  <!-- ===================== REFERENCE ===================== -->
+  <section class="panel" id="p-ref">
+    <div class="sect"><h2>Reference</h2><span class="sbtns"><span class="side">2026 Protocols</span></span></div>
+    <div id="refBody"></div>
+  </section>
+
+  <footer class="appfoot">
+    <div class="by">Created by Michael Stocklin</div>
+    <div class="use">All-weather field book · for educational and professional use in salmonid spawning ground surveys.</div>
+    <button data-act="terms">Terms of use</button>
+  </footer>
+</main>
+
+<button class="fab" id="fab" data-act="fab"><svg class="i"><use href="#i-plus"/></svg><span id="fabTxt">Add</span></button>
+
+<nav>
+  <button data-tab="survey" class="on"><svg class="i"><use href="#i-reach"/></svg><span class="tl">Survey</span></button>
+  <button data-tab="tally"><svg class="i"><use href="#i-grid"/></svg><span class="tl">Tally</span></button>
+  <button data-tab="carcass"><svg class="i"><use href="#i-fish"/></svg><span class="tl">Carcass</span></button>
+  <button data-tab="redds"><svg class="i"><use href="#i-redd"/></svg><span class="tl">Redds</span></button>
+  <button data-tab="obs"><svg class="i"><use href="#i-fish"/></svg><span class="tl">Other</span></button>
+  <button data-tab="ref"><svg class="i"><use href="#i-book"/></svg><span class="tl">Ref</span></button>
+</nav>
+
+<div id="toast"></div>
+<div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+
+
+<script>
+/* ══════════════ XLSX writer (no libraries — works offline) ══════════════ */
+const XL=(()=>{
+  /* ---- zip (store, no compression) ---- */
+  const CRCT=(()=>{const t=new Uint32Array(256);
+    for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}
+    return t;})();
+  function crc32(u){let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRCT[(c^u[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+  const ENC=new TextEncoder();
+  function zip(files){
+    const parts=[],cdir=[];let off=0;
+    const d=new Date(),dt=((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate(),
+          tm=(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()/2|0);
+    files.forEach(f=>{
+      const nm=ENC.encode(f.name),data=f.data,crc=crc32(data),len=data.length;
+      const lh=new Uint8Array(30+nm.length),lv=new DataView(lh.buffer);
+      lv.setUint32(0,0x04034b50,true);lv.setUint16(4,20,true);lv.setUint16(6,0,true);
+      lv.setUint16(8,0,true);lv.setUint16(10,tm,true);lv.setUint16(12,dt,true);
+      lv.setUint32(14,crc,true);lv.setUint32(18,len,true);lv.setUint32(22,len,true);
+      lv.setUint16(26,nm.length,true);lv.setUint16(28,0,true);lh.set(nm,30);
+      parts.push(lh,data);
+      const ch=new Uint8Array(46+nm.length),cv=new DataView(ch.buffer);
+      cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);
+      cv.setUint16(8,0,true);cv.setUint16(10,0,true);cv.setUint16(12,tm,true);cv.setUint16(14,dt,true);
+      cv.setUint32(16,crc,true);cv.setUint32(20,len,true);cv.setUint32(24,len,true);
+      cv.setUint16(28,nm.length,true);cv.setUint16(30,0,true);cv.setUint16(32,0,true);
+      cv.setUint16(34,0,true);cv.setUint16(36,0,true);cv.setUint32(38,0,true);
+      cv.setUint32(42,off,true);ch.set(nm,46);
+      cdir.push(ch);
+      off+=lh.length+len;
+    });
+    let cdLen=0;cdir.forEach(c=>cdLen+=c.length);
+    const end=new Uint8Array(22),ev=new DataView(end.buffer);
+    ev.setUint32(0,0x06054b50,true);ev.setUint16(8,files.length,true);ev.setUint16(10,files.length,true);
+    ev.setUint32(12,cdLen,true);ev.setUint32(16,off,true);
+    const all=parts.concat(cdir,[end]);
+    let total=0;all.forEach(p=>total+=p.length);
+    const out=new Uint8Array(total);let o=0;
+    all.forEach(p=>{out.set(p,o);o+=p.length;});
+    return out;
+  }
+  const X=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;")
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,"");
+  const txt=s=>ENC.encode(s);
+  function colL(n){let s="";n++;while(n>0){const m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=(n-m-1)/26;}return s;}
+
+  /* ---- styles ---- */
+  const STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+   '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+   '<numFmts count="1"><numFmt numFmtId="164" formatCode="0.0"/></numFmts>'+
+   '<fonts count="5">'+
+     '<font><sz val="11"/><name val="Arial"/></font>'+
+     '<font><b/><sz val="11"/><name val="Arial"/></font>'+
+     '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Arial"/></font>'+
+     '<font><b/><sz val="15"/><color rgb="FF0F3A38"/><name val="Arial"/></font>'+
+     '<font><i/><sz val="9"/><color rgb="FF7A8E90"/><name val="Arial"/></font>'+
+   '</fonts>'+
+   '<fills count="4"><fill><patternFill patternType="none"/></fill>'+
+     '<fill><patternFill patternType="gray125"/></fill>'+
+     '<fill><patternFill patternType="solid"><fgColor rgb="FF0F3A38"/><bgColor indexed="64"/></patternFill></fill>'+
+     '<fill><patternFill patternType="solid"><fgColor rgb="FFE6F1F0"/><bgColor indexed="64"/></patternFill></fill>'+
+   '</fills>'+
+   '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>'+
+     '<border><left/><right/><top/><bottom style="thin"><color rgb="FFC2D0D2"/></bottom><diagonal/></border>'+
+   '</borders>'+
+   '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'+
+   '<cellXfs count="7">'+
+     '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'+                                   /*0 normal*/
+     '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>'+                     /*1 bold*/
+     '<xf numFmtId="0" fontId="2" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf>'+ /*2 header*/
+     '<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/>'+                     /*3 title*/
+     '<xf numFmtId="0" fontId="4" fillId="0" borderId="0" xfId="0" applyFont="1"/>'+                     /*4 note*/
+     '<xf numFmtId="0" fontId="1" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>'+ /*5 subhead*/
+     '<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'+           /*6 one decimal*/
+   '</cellXfs>'+
+   '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+
+  /* ---- sheet xml ---- */
+  function sheetXML(rows,widths,filterRef,freeze){
+    let sd="";
+    rows.forEach((row,ri)=>{
+      if(!row||!row.length)return;
+      let cells="";
+      row.forEach((c,ci)=>{
+        if(c==null||c==="")return;
+        const o=(typeof c==="object")?c:{v:c};
+        if(o.v==null||o.v==="")return;
+        const ref=colL(ci)+(ri+1),st=o.s?' s="'+o.s+'"':"";
+        if(typeof o.v==="string"&&o.v.charAt(0)==="=")
+          cells+='<c r="'+ref+'"'+st+'><f>'+X(o.v.slice(1))+'</f></c>';
+        else if(typeof o.v==="number"&&isFinite(o.v))
+          cells+='<c r="'+ref+'"'+st+'><v>'+o.v+'</v></c>';
+        else
+          cells+='<c r="'+ref+'"'+st+' t="inlineStr"><is><t xml:space="preserve">'+X(o.v)+'</t></is></c>';
+      });
+      if(cells)sd+='<row r="'+(ri+1)+'">'+cells+'</row>';
+    });
+    const cols=widths&&widths.length?'<cols>'+widths.map((w,i)=>
+      '<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join("")+'</cols>':"";
+    const view='<sheetViews><sheetView workbookViewId="0">'+
+      (freeze?'<pane ySplit="'+freeze+'" topLeftCell="A'+(freeze+1)+'" activePane="bottomLeft" state="frozen"/>':"")+
+      '</sheetView></sheetViews>';
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '+
+      'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+      view+'<sheetFormatPr defaultRowHeight="14.5"/>'+cols+
+      '<sheetData>'+sd+'</sheetData>'+
+      (filterRef?'<autoFilter ref="'+filterRef+'"/>':"")+
+      '<pageMargins left="0.7" right="0.7" top="0.75" bottom="0.75" header="0.3" footer="0.3"/></worksheet>';
+  }
+
+  /* ---- assemble ---- */
+  function build(sheets){
+    const files=[];
+    let ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+      '<Default Extension="xml" ContentType="application/xml"/>'+
+      '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+
+      '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>';
+    let wbSheets="",wbRels="";
+    sheets.forEach((s,i)=>{
+      const n=i+1;
+      files.push({name:"xl/worksheets/sheet"+n+".xml",data:txt(sheetXML(s.rows,s.widths,s.filter,s.freeze))});
+      ct+='<Override PartName="/xl/worksheets/sheet'+n+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
+      wbSheets+='<sheet name="'+X(s.name)+'" sheetId="'+n+'" r:id="rId'+n+'"/>';
+      wbRels+='<Relationship Id="rId'+n+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+n+'.xml"/>';
+    });
+    ct+='</Types>';
+    files.unshift({name:"[Content_Types].xml",data:txt(ct)});
+    files.push({name:"_rels/.rels",data:txt('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>')});
+    files.push({name:"xl/workbook.xml",data:txt('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '+
+      'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+      '<sheets>'+wbSheets+'</sheets><calcPr calcId="0" fullCalcOnLoad="1"/></workbook>')});
+    files.push({name:"xl/_rels/workbook.xml.rels",data:txt('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+wbRels+
+      '<Relationship Id="rId'+(sheets.length+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>')});
+    files.push({name:"xl/styles.xml",data:txt(STYLES)});
+    return zip(files);
+  }
+  return {build,colL};
+})();
+
+
+"use strict";
+/* ══════════════ helpers ══════════════ */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.prototype.slice.call(r.querySelectorAll(s));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const nowHM=()=>{const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
+const esc=v=>v==null?"":String(v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hap=ms=>{try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}};
+const ic=(id,cls)=>'<svg class="i '+(cls||"")+'"><use href="#i-'+id+'"/></svg>';
+const nn=v=>{const n=parseFloat(v);return isNaN(n)?"":n;};
+function nextNum(s){const m=String(s||"").match(/^(.*?)(\d+)(\D*)$/);if(!m)return"";
+  return m[1]+String(+m[2]+1).padStart(m[2].length,"0")+m[3];}
+
+const SPECIES={CHIN:"Chinook",COHO:"Coho",CHUM:"Chum",PINK:"Pink",SOCK:"Sockeye",
+  STHD:"Steelhead",BULL:"Bull trout",CUTT:"Cutthroat",WHF:"Mountain whitefish",OTHER:"Other"};
+const SP_CODES=Object.keys(SPECIES);
+const spName=c=>SPECIES[c]||c||"—";
+const VIS={1:"Excellent",2:"Very good",3:"Good",4:"Fair",5:"Poor",6:"Not surveyable"};
+
+/* ══════════════ state ══════════════ */
+const KEY="nooksack_survey_v1";
+let DB={surveys:{},current:null,unit:"C",theme:"light",autoGPS:true,keepAwake:false,charts:{},
+  lineup:{pos:0,rate:10},gpsAsked:false,gpsAllowed:false,view:{},drafts:{}};
+let DRAFT=null, wakeLock=null, activeTab="survey";
+const dirty={tally:1,carcass:1,redds:1,obs:1};
+
+const ROWF=["newRedds","live","deadSamp","deadNot","subSamp","subNoBio"];
+function blankSurvey(name){
+  return {id:uid(),name:name||"",created:Date.now(),
+    header:{species:"CHIN",fork:"",forkother:"",crew:"",date:today(),reach:"",surveyType:"",
+      waterType:"Mainstem",visibility:"",upTime:"",upTemp:"",upRM:"",loTime:"",loTemp:"",loRM:"",
+      subsampling:"",subRate:"10",gpsUnit:"",reverseNotes:"",pageNo:"",pageOf:""},
+    rows:[],carcasses:[],redds:[],obs:[],last:{}};
+}
+function blankRow(rm){const r={id:uid(),rm:rm==null?"":rm,notes:""};ROWF.forEach(f=>r[f]=0);return r;}
+const S=()=>DB.surveys[DB.current];
+
+/* ══════════════ persistence ══════════════ */
+let tSave=null;
+let saveCount=0;
+function save(){
+  const cur=S();if(cur)cur.updatedAt=Date.now();
+  $("#pulse").classList.add("on");
+  clearTimeout(tSave);
+  tSave=setTimeout(()=>{
+    try{
+      const json=JSON.stringify(DB);
+      localStorage.setItem(KEY,json);
+      /* warn well before the browser quota bites, while exporting is still possible */
+      if(++saveCount%25===0&&json.length>3.5e6)
+        toast("Storage is filling up — export and start a fresh backup");
+    }catch(e){toast("Could not save — export now, storage is full")}
+    $("#pulse").classList.remove("on");
+  },250);
+}
+function flush(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
+function load(){
+  try{const raw=localStorage.getItem(KEY);if(raw)Object.assign(DB,JSON.parse(raw));}catch(e){}
+  if(!DB.surveys)DB.surveys={};
+  if(!DB.charts||typeof DB.charts!=="object")DB.charts={};
+  if(!DB.lineup)DB.lineup={pos:0,rate:10};
+  if(!DB.view||typeof DB.view!=="object")DB.view={};
+  if(!DB.drafts||typeof DB.drafts!=="object")DB.drafts={};
+  Object.values(DB.surveys).forEach(s=>{
+    s.last=s.last||{};s.rows=s.rows||[];s.carcasses=s.carcasses||[];s.redds=s.redds||[];s.obs=s.obs||[];
+    const h=s.header=s.header||{};
+    if(h.surveyors&&!h.crew)h.crew=h.surveyors;
+    if(!h.species)h.species="CHIN";
+    if(!h.subRate)h.subRate="10";
+    /* 2025 -> 2026: old redds and pre-samp columns were retired; fold them into notes once */
+    s.rows.forEach(r=>{
+      if(r.oldRedds||r.preSamp){
+        const bits=[];
+        if(r.oldRedds)bits.push("old redds "+r.oldRedds);
+        if(r.preSamp)bits.push("pre. samp "+r.preSamp);
+        r.notes=(r.notes?r.notes+" · ":"")+"[2025 form: "+bits.join(", ")+"]";
+      }
+      delete r.oldRedds;delete r.preSamp;
+      ROWF.forEach(f=>{if(typeof r[f]!=="number")r[f]=+r[f]||0;});
+      if(r.notes==null)r.notes="";
+    });
+    /* carcass records to the 2026 column set */
+    s.carcasses.forEach(c=>{
+      if(c.fl==null)c.fl=c.lengthCm!=null?c.lengthCm:"";
+      if(c.spawn==null)c.spawn=c.spawnCond==="Spawned"?"100":c.spawnCond==="Partial"?"50":
+        c.spawnCond==="Unspawned"?"0":"";
+      if(c.adClip==null)c.adClip=c.adipose==="Clipped"?"Y":c.adipose==="Intact"?"N":"";
+      if(c.cwt==="NA")c.cwt="Unk";
+      if(c.dna==null)c.dna="";
+      if(!c.species)c.species=h.species||"CHIN";
+      ["otolith","dna","sex","rm","scaleCard","lineNums","hbl","scavenged","eyes","notes",
+       "lat","lon","acc"].forEach(k=>{if(c[k]==null)c[k]="";});
+      ["lengthCm","lengthMm","lengthType","condition","spawnCond","adipose","opercle","tagNum",
+       "scalePos","snout","tail","eggRet"].forEach(k=>delete c[k]);
+    });
+    s.redds.forEach(r=>{
+      if(r.reddId==null)r.reddId="";
+      ["rm","waypoint","chanLoc","chanType","braidLoc","liveOnRedd","notes","lat","lon","acc"]
+        .forEach(k=>{if(r[k]==null)r[k]="";});
+      ["species","status","count","lengthCm","widthCm","fishOn"].forEach(k=>delete r[k]);
+    });
+    delete s.samples;delete s.live;
+  });
+  if(!DB.current||!DB.surveys[DB.current]){
+    const ids=Object.keys(DB.surveys);
+    if(ids.length)DB.current=ids.sort((a,b)=>DB.surveys[b].created-DB.surveys[a].created)[0];
+    else{const s=blankSurvey();DB.surveys[s.id]=s;DB.current=s.id;}
+  }
+}
+
+/* ══════════════ theme / wake ══════════════ */
+function applyTheme(){
+  const t=DB.theme==="auto"
+    ?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):DB.theme;
+  document.documentElement.dataset.theme=t;
+  $('meta[name="theme-color"]').setAttribute("content","#FFC72C");
+}
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(DB.theme==="auto")applyTheme()});
+async function setWake(on){
+  try{
+    if(on&&"wakeLock"in navigator){wakeLock=await navigator.wakeLock.request("screen");}
+    else if(wakeLock){wakeLock.release();wakeLock=null;}
+  }catch(e){}
+}
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="visible"&&DB.keepAwake)setWake(true);
+  if(document.visibilityState==="hidden")flush();
+});
+
+/* ══════════════ toast / sheet ══════════════ */
+let tToast=null;
+function toast(msg,undo){
+  const el=$("#toast");
+  el.innerHTML='<span>'+esc(msg)+'</span>'+(undo?'<button data-act="undo">Undo</button>':'');
+  el._undo=undo||null;el.classList.add("show");
+  clearTimeout(tToast);tToast=setTimeout(()=>el.classList.remove("show"),undo?5200:2100);
+}
+function sheet(title,body,foot){
+  $("#sheet").innerHTML='<div class="grab"></div><div class="sh-head"><h3>'+title+'</h3>'+
+    '<button class="hbtn" data-act="close" aria-label="Close">'+ic("x")+'</button></div>'+
+    '<div class="sh-body">'+body+'</div>'+(foot?'<div class="sh-foot">'+foot+'</div>':'');
+  $("#scrim").classList.add("show");
+  $("#sheet").querySelector(".sh-body").scrollTop=0;
+}
+function closeSheet(){$("#scrim").classList.remove("show");DRAFT=null;}
+
+/* ══════════════ header ══════════════ */
+function forkName(h){
+  if(h.fork==="Other")return h.forkother||"Stream";
+  if(h.fork==="NF")return h.forkother||"North Fork Nooksack";
+  if(h.fork==="MF")return h.forkother||"Middle Fork Nooksack";
+  if(h.fork==="SF")return h.forkother||"South Fork Nooksack";
+  return h.forkother||"";
+}
+function label(s){
+  const h=s.header,short=h.fork==="Other"?(h.forkother||"Stream"):(h.fork||"—");
+  const rm=h.upRM!==""?" · RM "+h.upRM+(h.loRM!==""&&h.loRM!==h.upRM?"–"+h.loRM:""):"";
+  return{t:(h.species||"—")+" · "+short+(h.reach?" · "+h.reach:""),
+         s:(h.date||"no date")+rm+(s.name?" · "+s.name:"")};
+}
+function renderChrome(){const l=label(S());$("#hTitle").textContent=l.t;$("#hSub").textContent=l.s;renderInterval();renderEsc();}
+function paintSeg(k,v){$$('[data-hseg="'+k+'"] button').forEach(b=>b.classList.toggle("on",b.dataset.v===v));}
+function fillHeader(){
+  const h=S().header;
+  $$("[data-h]").forEach(el=>{el.value=h[el.dataset.h]!=null?h[el.dataset.h]:"";});
+  $("#forkOther").hidden=h.fork!=="Other";
+  $("#subRateWrap").hidden=h.subsampling!=="Y";
+  ["species","fork","waterType","surveyType","visibility","subsampling","subRate","reverseNotes"]
+    .forEach(k=>paintSeg(k,h[k]));
+  $("#unitLbl").textContent=DB.unit;
+  renderChrome();
+}
+document.addEventListener("input",e=>{
+  const rm=e.target.closest("[data-rm]");
+  if(rm){const r=S().rows.find(x=>x.id===rm.dataset.rm);if(r){r.rm=rm.value;save();}return;}
+  const nt=e.target.closest("[data-note]");
+  if(nt){const r=S().rows.find(x=>x.id===nt.dataset.note);if(r){r.notes=nt.value;save();}return;}
+  const el=e.target.closest("[data-h]");if(!el)return;
+  S().header[el.dataset.h]=el.value;
+  if(el.dataset.h==="fork")$("#forkOther").hidden=el.value!=="Other";
+  save();renderChrome();
+},{passive:true});
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-hseg] button");if(!b)return;
+  const key=b.parentElement.dataset.hseg;
+  const val=S().header[key]===b.dataset.v?"":b.dataset.v;
+  S().header[key]=val;paintSeg(key,val);
+  if(key==="fork")$("#forkOther").hidden=val!=="Other";
+  if(key==="subsampling"){$("#subRateWrap").hidden=val!=="Y";
+    if(val==="Y"){DB.lineup.rate=+(S().header.subRate||10);}}
+  if(key==="subRate")DB.lineup.rate=+val||10;
+  if(key==="species"||key==="fork"||key==="waterType")renderChrome();
+  save();hap(6);
+});
+
+/* ══════════════ tally rows ══════════════ */
+function rowTotals(){
+  const t={};ROWF.forEach(f=>t[f]=0);
+  S().rows.forEach(r=>ROWF.forEach(f=>t[f]+=r[f]|0));
+  t.dead=t.deadSamp+t.deadNot+t.subSamp+t.subNoBio;
+  t.recorded=t.deadSamp+t.subSamp+t.subNoBio;   /* the three columns that must match the carcass form */
+  return t;
+}
+function renderTotals(){
+  const t=rowTotals(),el=$("#totalsBox");if(!el)return;
+  el.innerHTML='<div class="totbox"><div class="th">Totals · '+S().rows.length+' river mile line'+
+    (S().rows.length===1?"":"s")+'</div><div class="totgrid">'+
+    [[t.newRedds,"New redds"],[t.live,"Live"],[t.deadSamp,"Samp"],[t.deadNot,"Not samp"],
+     [t.subSamp+t.subNoBio,"Subgroup"]]
+    .map(x=>'<div><div class="tv num">'+x[0]+'</div><div class="tk">'+x[1]+'</div></div>').join("")+
+    '</div></div>';
+}
+function renderQA(){
+  const el=$("#qaBox");if(!el)return;
+  const t=rowTotals(),s=S();
+  const rows=[
+    {ok:t.newRedds===s.redds.length,
+     t:"<b>New redds</b> tally "+t.newRedds+" vs redd form "+s.redds.length+" record"+(s.redds.length===1?"":"s")},
+    {ok:t.recorded===targetCarcs(),
+     t:"<b>Dead</b> sampled columns "+t.recorded+" vs carcass form "+targetCarcs()+" "+
+       esc(S().header.species||"target")+" record"+(targetCarcs()===1?"":"s")}
+  ];
+  el.innerHTML=rows.map(r=>'<div class="qa '+(r.ok?"ok":"bad")+'"><span class="qi">'+(r.ok?"✓":"!")+
+    '</span><span class="qt">'+r.t+'</span></div>').join("")+
+    (rows.every(r=>r.ok)?"":'<p class="hint" style="margin:2px 2px 12px">These must match before the forms are handed in. The three sampled columns exclude <b>Not sampled</b>, which is unsamps only.</p>');
+}
+const CAP={newRedds:"New redds",live:"Live",deadSamp:"Sampled",deadNot:"Not sampled",
+  subSamp:"Sampled",subNoBio:"No bio. samples"};
+function tcell(id,f,v){
+  const k=id+"|"+f;
+  return '<div class="tcell"><div class="cap">'+CAP[f]+'</div><div class="tctl">'+
+    '<button data-act="step" data-k="'+k+'" data-d="-1" aria-label="minus">−</button>'+
+    '<span class="v num'+(v?"":" zero")+'" data-v="'+k+'">'+v+'</span>'+
+    '<button data-act="step" data-k="'+k+'" data-d="1" aria-label="plus">+</button></div></div>';
+}
+function rowSummary(r){
+  const dead=(r.deadSamp|0)+(r.deadNot|0)+(r.subSamp|0)+(r.subNoBio|0);
+  return (r.newRedds|0)+" redds · "+(r.live|0)+" live · "+dead+" dead";
+}
+function renderRows(){
+  const rows=S().rows,el=$("#rowList");
+  if(DB.view.tally==="table"&&rows.length){
+    el.innerHTML=tallyTable();renderTotals();renderQA();setBadges();return;
+  }
+  if(!rows.length){
+    el.innerHTML=emptyBox("grid","No lines yet",
+      "Add a line for each river mile you survey, to the nearest tenth.");
+    renderTotals();renderQA();setBadges();return;
+  }
+  el.innerHTML=rows.map(r=>
+    '<div class="rowcard"><div class="rowhead">'+
+      '<span class="rmk">RM</span>'+
+      '<input type="number" inputmode="decimal" step="0.1" value="'+esc(r.rm)+'" data-rm="'+r.id+'" placeholder="0.0">'+
+      '<span class="rsum" data-sum="'+r.id+'">'+esc(rowSummary(r))+'</span>'+
+      '<button class="x" data-act="delrow" data-id="'+r.id+'" aria-label="Delete line">'+ic("x")+'</button>'+
+    '</div>'+
+    '<div class="cg2">'+tcell(r.id,"newRedds",r.newRedds|0)+tcell(r.id,"live",r.live|0)+'</div>'+
+    '<div class="subhead">Dead — no subsampling</div>'+
+    '<div class="cg2">'+tcell(r.id,"deadSamp",r.deadSamp|0)+tcell(r.id,"deadNot",r.deadNot|0)+'</div>'+
+    '<div class="subhead">Dead — subsample group</div>'+
+    '<div class="cg2">'+tcell(r.id,"subSamp",r.subSamp|0)+tcell(r.id,"subNoBio",r.subNoBio|0)+'</div>'+
+    '<div class="rownotes"><input type="text" data-note="'+r.id+'" value="'+esc(r.notes)+'" '+
+      'placeholder="Other species, QA/QC notes, unique observations"></div>'+
+    '</div>').join("");
+  renderTotals();renderQA();setBadges();
+}
+function step(k,d){
+  const [id,f]=k.split("|");
+  const r=S().rows.find(x=>x.id===id);if(!r)return;
+  const v=Math.max(0,(r[f]|0)+d);
+  if(v===(r[f]|0))return;
+  r[f]=v;
+  const node=$('[data-v="'+CSS.escape(k)+'"]');
+  if(node){node.textContent=v;node.classList.toggle("zero",!v);
+    node.classList.add("bump");setTimeout(()=>node.classList.remove("bump"),160);}
+  const sum=$('[data-sum="'+CSS.escape(id)+'"]');
+  if(sum)sum.textContent=rowSummary(r);
+  renderTotals();renderQA();setBadges();hap(9);save();
+}
+function addRow(){
+  const rows=S().rows,last=rows[rows.length-1];
+  let rm="";
+  if(last&&last.rm!==""&&!isNaN(parseFloat(last.rm)))rm=(parseFloat(last.rm)+0.1).toFixed(1);
+  else if(S().header.upRM!=="")rm=S().header.upRM;
+  rows.push(blankRow(rm));
+  save();dirty.tally=1;paint();hap(14);toast("Line "+rows.length+" added");
+  setTimeout(()=>{const el=$("#rowList");if(el&&el.lastElementChild)
+    el.lastElementChild.scrollIntoView({block:"center",behavior:"smooth"});},60);
+}
+function delRow(id){
+  const rows=S().rows,i=rows.findIndex(x=>x.id===id);if(i<0)return;
+  const rec=rows.splice(i,1)[0];
+  save();dirty.tally=1;paint();hap(20);
+  toast("Line deleted",()=>{rows.splice(i,0,rec);save();dirty.tally=1;paint();toast("Restored");});
+}
+const emptyBox=(icon,title,txt)=>'<div class="empty">'+ic(icon)+'<b>'+title+'</b><span>'+txt+'</span></div>';
+
+
+/* ══════════════ GPS ══════════════ */
+const GPS={
+  busy:false,
+  /* first use gets an explainer + explicit opt-in; after that it just runs */
+  request(cb){
+    if(!navigator.geolocation){toast("No GPS on this device — enter coordinates manually");return;}
+    if(DB.gpsAsked){this.fix(cb);return;}
+    window.__gpsCb=cb;
+    sheet("Use this device\u2019s GPS?",
+      '<p class="hint" style="margin:0 0 12px">The app can read the phone\u2019s location and stamp each redd, carcass and observation with latitude, longitude and an accuracy estimate.</p>'+
+      '<ul style="margin:0 0 12px;padding-left:18px">'+
+      '<li style="font:400 13px/1.6 var(--sans);color:var(--tx2)">Coordinates stay on the device with the rest of your data \u2014 nothing is transmitted.</li>'+
+      '<li style="font:400 13px/1.6 var(--sans);color:var(--tx2)">It does not replace the handheld GPS waypoint number the redd form asks for \u2014 record both.</li>'+
+      '<li style="font:400 13px/1.6 var(--sans);color:var(--tx2)">You can always type coordinates in by hand instead.</li></ul>'+
+      '<p class="hint" style="margin:0">Your phone will ask for location permission next.</p>',
+      '<button class="btn gh" data-act="gpsno">Manual entry</button>'+
+      '<button class="btn pri" data-act="gpsyes">Use GPS</button>');
+  },
+  fix(cb){
+    if(this.busy)return;
+    this.busy=true;
+    const btn=$("#gpsBtn");if(btn)btn.textContent="…";
+    toast("Getting a fix…");
+    navigator.geolocation.getCurrentPosition(pos=>{
+      this.busy=false;
+      const o={lat:pos.coords.latitude.toFixed(5),lon:pos.coords.longitude.toFixed(5),
+        acc:Math.round(pos.coords.accuracy)};
+      if(cb)cb(o);
+      hap(12);toast("Fix \u00b1"+o.acc+" m");
+    },err=>{
+      this.busy=false;renderGPS();
+      toast(err.code===1?"Location permission denied — enter it manually":"No fix — try open sky, or enter manually");
+    },{enableHighAccuracy:true,timeout:15000,maximumAge:15000});
+  }
+};
+/* GPS block inside a record sheet, bound to DRAFT */
+function gpsBlock(){
+  return '<div class="gps" id="gpsBlock"></div>';
+}
+function renderGPS(){
+  const el=$("#gpsBlock");if(!el||!DRAFT)return;
+  const has=DRAFT.lat!==""&&DRAFT.lon!=="";
+  const acc=+DRAFT.acc;
+  el.innerHTML='<div class="gpsrow">'+
+    '<span class="gpsval">'+(has?esc(DRAFT.lat)+", "+esc(DRAFT.lon):"—  —")+
+      '<small>'+(has?("Lat / Lon"+(acc?" · ":"")):"No coordinates yet")+
+      (has&&acc?'<span class="gpsacc'+(acc>15?" poor":"")+'" style="margin-left:6px">\u00b1'+acc+' m</span>':"")+
+      '</small></span>'+
+    '<button class="gpsbtn" data-act="gpsget" id="gpsBtn">'+ic("gps")+(has?"REDO":"GPS")+'</button>'+
+    '<button class="gpsbtn alt" data-act="gpsman">TYPE</button>'+
+    '</div>'+
+    (DRAFT.__man?'<div class="g2" style="margin-top:9px">'+
+      '<input type="number" inputmode="decimal" step="0.00001" id="f_lat" value="'+esc(DRAFT.lat)+'" placeholder="latitude">'+
+      '<input type="number" inputmode="decimal" step="0.00001" id="f_lon" value="'+esc(DRAFT.lon)+'" placeholder="longitude">'+
+      '</div>':"");
+}
+function gpsCapture(){
+  GPS.request(o=>{if(!DRAFT)return;DRAFT.lat=o.lat;DRAFT.lon=o.lon;DRAFT.acc=String(o.acc);
+    renderGPS();saveDraft();});
+}
+
+/* ══════════════ validation ══════════════ */
+const RANGE={fl:[25,160,"cm"],rm:[0,80,"RM"],eyes:[0,2,""],liveOnRedd:[0,60,""]};
+function checkRange(k,v){
+  const r=RANGE[k];if(!r||v===""||v==null)return null;
+  const n=parseFloat(v);if(isNaN(n))return "not a number";
+  if(n<r[0]||n>r[1])return "outside "+r[0]+"–"+r[1]+(r[2]?" "+r[2]:"");
+  return null;
+}
+function renderValidation(id,warns){
+  const el=$("#"+id);if(!el)return;
+  if(!warns.length){el.innerHTML='<div class="vok">\u2713 All required fields complete</div>';return;}
+  el.innerHTML='<div class="vwarn"><div class="vh">'+warns.length+' to check before you move on</div><ul>'+
+    warns.map(w=>'<li>'+esc(w)+'</li>').join("")+'</ul></div>';
+}
+
+
+/* ══════════════ draft autosave — nothing typed is ever lost ══════════════ */
+/* Every keystroke, tap and GPS fix on an open record is written straight to
+   storage. Closing the sheet (deliberately or by a stray tap on the backdrop)
+   keeps the draft; it is only cleared when the record is saved or explicitly
+   discarded. Drafts survive the app being closed or the phone dying. */
+function draftFilled(d){
+  if(!d||!d.__init)return false;
+  const now=JSON.stringify(stripMeta(d));
+  return now!==d.__init;
+}
+function stripMeta(d){
+  const o={};Object.keys(d).forEach(k=>{if(k.indexOf("__")!==0)o[k]=d[k];});
+  delete o.id;return o;
+}
+function markInit(){if(DRAFT)DRAFT.__init=JSON.stringify(stripMeta(DRAFT));}
+function saveDraft(){
+  if(!DRAFT||!DRAFT.__type)return;
+  if(!draftFilled(DRAFT)){delete DB.drafts[DRAFT.__type];save();return;}
+  DB.drafts[DRAFT.__type]=DRAFT;
+  save();
+  const p=$("#dsave");
+  if(p){p.textContent="AUTOSAVED "+nowHM();p.classList.add("on");}
+}
+function clearDraft(type){delete DB.drafts[type];save();dirty.carcass=dirty.redds=dirty.obs=1;}
+function draftFor(type){const d=DB.drafts[type];return d&&draftFilled(d)?d:null;}
+function draftLabel(type){
+  const d=draftFor(type);if(!d)return"";
+  if(type==="carc")return[d.species,d.fl&&d.fl+" cm",d.sex,d.rm&&"RM "+d.rm].filter(Boolean).join(" · ")||"started";
+  if(type==="redd")return[d.reddId&&"Redd "+d.reddId,d.rm&&"RM "+d.rm,d.waypoint&&"WP "+d.waypoint].filter(Boolean).join(" · ")||"started";
+  return[spName(d.species),d.kind,d.count&&"×"+d.count].filter(Boolean).join(" · ")||"started";
+}
+const DRAFT_PANEL={carc:"carcass",redd:"redds",obs:"obs"};
+function renderDraftBanner(type){
+  const el=$("#dr-"+DRAFT_PANEL[type]);if(!el)return;
+  const d=draftFor(type);
+  if(!d){el.innerHTML="";return;}
+  el.innerHTML='<div class="draftbar"><span class="di">'+ic("save")+'</span>'+
+    '<span class="dt"><b>Unsaved draft kept</b><span>'+esc(draftLabel(type))+'</span></span>'+
+    '<button class="dbtn" data-act="resume" data-k="'+type+'">Resume</button>'+
+    '<button class="dbtn alt" data-act="discard" data-k="'+type+'">'+ic("trash")+'</button></div>';
+}
+/* belt and braces: flush to storage on a timer as well as on every change */
+setInterval(()=>{if(DRAFT)saveDraft();flush();},12000);
+
+
+/* ══════════════ escapement method, origin split, survey interval ══════════════ */
+/* The method follows the fork: SF is redd-based, NF/MF are carcass-based. */
+function surveyMethod(h){
+  h=h||S().header;
+  const nm=forkName(h)||"This reach";
+  /* SF is redd based; NF and MF are carcass based; MF-type tributaries take no expansion */
+  if(h.fork==="SF")
+    return{mode:"SF",label:nm+" \u2014 redd based",basis:"redds",
+      formula:"redds observed \u00d7 2.5",cycle:null};
+  if(h.waterType==="Trib")
+    return{mode:"TRIB",label:nm+" tributary \u2014 carcass based",basis:"carcasses",
+      formula:"carcasses recovered = escapement",cycle:"as often as possible"};
+  return{mode:"NFMF",label:nm+" \u2014 carcass based",basis:"carcasses",
+    formula:"carcasses recovered \u00d7 expansion",cycle:"7\u201310 days"};
+}
+const carcassBased=()=>surveyMethod().mode!=="SF";
+
+/* Origin from mark status: ad clip and/or CWT = hatchery; neither = natural. */
+function originSplit(){
+  const sp=S().header.species;
+  const list=S().carcasses.filter(c=>!c.species||c.species===sp);
+  let hor=0,nor=0,unk=0;
+  list.forEach(c=>{
+    if(c.adClip==="Y"||c.cwt==="Y")hor++;
+    else if(c.adClip==="N"&&c.cwt==="N")nor++;
+    else unk++;
+  });
+  const det=hor+nor;
+  return{hor,nor,unk,det,total:list.length,
+    pHor:det?hor/det:null,pNor:det?nor/det:null};
+}
+
+/* Days since the last survey of this same reach — NF/MF run on a 7–10 day cycle. */
+function daysSincePrev(){
+  const h=S().header;if(!h.date)return null;
+  const key=x=>((x.header.fork||"")+"|"+(x.header.forkother||"")+"|"+
+    String(x.header.reach||"").trim().toLowerCase());
+  const me=key(S()),d0=new Date(h.date+"T00:00:00");
+  let best=null;
+  Object.values(DB.surveys).forEach(x=>{
+    if(x.id===S().id||!x.header.date||key(x)!==me)return;
+    const d=new Date(x.header.date+"T00:00:00");
+    if(d<d0&&(!best||d>best))best=d;
+  });
+  if(!best)return null;
+  return{days:Math.round((d0-best)/86400000),prev:best.toISOString().slice(0,10)};
+}
+function unexported(){
+  const s=S(),n=s.rows.length+s.carcasses.length+s.redds.length+s.obs.length;
+  if(!n)return null;
+  if(!s.exportedAt)return{n,never:true};
+  if((s.updatedAt||0)>s.exportedAt)return{n,never:false};
+  return null;
+}
+function renderInterval(){
+  const el=$("#intervalBox");if(!el)return;
+  const m=surveyMethod(),p=daysSincePrev();
+  const trib=m.mode==="TRIB";
+  let rows='<div class="qa ok"><span class="qi">\u2713</span><span class="qt"><b>'+esc(m.label)+
+    '</b> \u00b7 escapement from '+m.basis+'</span></div>';
+  if(p){
+    const late=carcassBased()&&!trib&&p.days>10;
+    const early=carcassBased()&&!trib&&p.days<7;
+    const note=trib?"tributary \u2014 survey as often as possible to clear carcasses"
+      :carcassBased()?(late?"past the 7\u201310 day window":early?"inside the 7\u201310 day window":"within the 7\u201310 day window")
+      :"since the last survey of this reach";
+    rows+='<div class="qa '+(late?"bad":"ok")+'"><span class="qi">'+(late?"!":"\u2713")+
+      '</span><span class="qt"><b>'+p.days+' day'+(p.days===1?"":"s")+'</b> since '+esc(p.prev)+
+      ' \u2014 '+note+'</span></div>';
+  }else if(carcassBased()&&!trib){
+    rows+='<div class="qa"><span class="qi" style="background:var(--line2)">\u00b7</span>'+
+      '<span class="qt">First survey of this reach on this device \u2014 NF/MF reaches run every 7\u201310 days</span></div>';
+  }
+  const ux=unexported();
+  if(ux)rows+='<div class="qa bad"><span class="qi">!</span><span class="qt"><b>'+
+    (ux.never?"Not exported yet":"Changed since the last export")+
+    '</b> \u2014 '+ux.n+' record'+(ux.n===1?"":"s")+' on this phone only</span></div>';
+  el.innerHTML=rows;
+}
+
+
+/* ══════════════ escapement panel — on the survey page, not buried ══════════════ */
+function escEstimate(){
+  const m=surveyMethod(),T=rowTotals(),n=targetCarcs();
+  if(m.mode==="SF")return{basisN:T.newRedds,basisLab:"new redds tallied",
+    factor:2.5,total:T.newRedds*2.5,showExp:false};
+  if(m.mode==="TRIB")return{basisN:n,basisLab:"carcasses recovered",
+    factor:1,total:n,showExp:false};
+  const ex=parseFloat(CALC.exp);
+  return{basisN:n,basisLab:"carcasses recovered",factor:isNaN(ex)?null:ex,
+    total:isNaN(ex)?null:n*ex,showExp:true};
+}
+function renderEsc(){
+  const el=$("#escBox");if(!el)return;
+  const m=surveyMethod(),e=escEstimate(),o=originSplit();
+  const pct=v=>v==null?"\u2014":(Math.round(v*1000)/10)+"%";
+  el.innerHTML='<div class="card"><div class="secthead" style="margin-top:0"><span class="sn">\u2211</span>'+
+    '<span class="st">Escapement method</span></div>'+
+    '<div class="formula"><small>'+esc(m.label)+'</small>'+esc(m.formula)+'</div>'+
+    '<div class="eod"><span class="ei">'+e.basisN+'</span><span><b>'+esc(e.basisLab)+'</b> so far'+
+      (m.cycle?' \u00b7 surveyed '+esc(m.cycle):"")+'</span></div>'+
+    (e.showExp?'<label class="f" style="margin-top:11px"><span class="lab">Expansion factor '+
+      '<em class="u">[from the office]</em></span>'+
+      '<input type="number" inputmode="decimal" step="0.01" id="c_exp2" value="'+esc(CALC.exp)+'" placeholder="e.g. 2.4"></label>':"")+
+    '<div class="calcout"><div class="cv">'+
+      (e.total==null?"\u2014":(Math.round(e.total*10)/10).toLocaleString())+'</div>'+
+      '<div class="ck">running escapement estimate</div></div>'+
+    (m.mode==="SF"?'<div class="eod'+(o.det?"":" warn")+'"><span class="ei">'+(o.det||"!")+'</span>'+
+      '<span>'+(o.det?('Stock split from carcasses \u2014 <b>HOR '+pct(o.pHor)+'</b> / NOR '+pct(o.pNor)+
+        (o.unk?" ("+o.unk+" unknown excluded)":"")):'Record ad clip and CWT to derive the stock split')+
+      '</span></div>':"")+
+    '<p class="hint">A field running total, not the official estimate — the office applies the final expansion and QA.</p>'+
+    '</div>';
+}
+
+/* ══════════════ carcass form (2026 Chinook Carcass Form) ══════════════ */
+/* Transcription errors show up as a repeated vial / envelope / card number.
+   Catch them at the point of entry, not at the office. */
+function dupOf(list,id,field,val){
+  if(!val)return null;
+  const i=list.findIndex(x=>x.id!==id&&String(x[field]||"").trim().toLowerCase()===String(val).trim().toLowerCase());
+  return i<0?null:(i+1);
+}
+function blankCarc(){
+  const l=S().last||{};
+  return{id:uid(),otolith:l.otolith?nextNum(l.otolith):"",dna:l.dna?nextNum(l.dna):"",
+    fl:"",sex:"",rm:l.rm||"",spawn:"",adClip:"",cwt:"",scaleCard:l.scaleCard||"",
+    lineNums:l.lineNums?nextNum(l.lineNums):"",hbl:"",scavenged:"",eyes:"",notes:""};
+}
+function segHTML(key,opts,val,cls){
+  return '<div class="seg sm '+(cls||"")+'" data-dseg="'+key+'">'+opts.map(o=>
+    '<button data-act="dseg" data-k="'+key+'" data-v="'+esc(o[0])+'" class="'+(o[0]===val?"on":"")+'">'+esc(o[1])+'</button>'
+  ).join("")+'</div>';
+}
+function openCarc(rec,draft){
+  DRAFT=draft||(rec?JSON.parse(JSON.stringify(rec)):blankCarc());
+  DRAFT.__type="carc";DRAFT.__rec=rec?rec.id:null;if(!DRAFT.__init)markInit();if(!DRAFT.__init)markInit();if(!DRAFT.__init)markInit();
+  const c=DRAFT,sub=S().header.subsampling==="Y";
+  const sec=(n,t)=>'<div class="secthead"><span class="sn">'+n+'</span><span class="st">'+t+'</span></div>';
+  const lab=(n,t,u,req)=>'<span class="lab">'+t+
+    (u?' <em class="u">['+u+']</em>':"")+(req?'<span class="req">*</span>':"")+'</span>';
+  const body=
+    (sub?'<div class="callout">Subsampling on at <b>1/'+esc(S().header.subRate||10)+'</b> — mark status on every fish, full biological sampling on the pulled fish only.</div>':"")+
+    sec(1,"Identification")+
+    '<label class="f">'+lab("1.1","Species","code",1)+
+      segHTML("species",SP_CODES.map(k=>[k,k]),c.species)+'</label>'+
+    '<div class="g2">'+
+      '<label class="f">'+lab("1.2","Otolith #")+'<input type="text" id="f_otolith" value="'+esc(c.otolith)+'" placeholder="vial"></label>'+
+      '<label class="f">'+lab("1.3","DNA #")+'<input type="text" id="f_dna" value="'+esc(c.dna)+'" placeholder="envelope"></label>'+
+    '</div>'+
+    sec(2,"Biometrics")+
+    '<div class="g2">'+
+      '<label class="f">'+lab("2.1","Fork length","cm",1)+'<input type="number" inputmode="decimal" step="0.1" id="f_fl" value="'+esc(c.fl)+'" placeholder="0.0"></label>'+
+      '<label class="f">'+lab("2.2","River mile","0.1",1)+'<input type="number" inputmode="decimal" step="0.1" id="f_rm" value="'+esc(c.rm)+'" placeholder="0.0"></label>'+
+    '</div>'+
+    '<p class="hint" style="margin-top:-6px">Measure only if the body is intact head to tail — never estimate.</p>'+
+    '<label class="f">'+lab("2.3","Sex","M/F/UNK",1)+
+      segHTML("sex",[["M","M"],["F","F"],["UNK","UNK"]],c.sex,"coral")+'</label>'+
+    '<label class="f">'+lab("2.4","Spawned","%",1)+
+      segHTML("spawn",[["0","0"],["50","50"],["100","100"]],c.spawn)+'</label>'+
+    sec(3,"Mark status — every carcass")+
+    '<label class="f">'+lab("3.1","Ad clip","Y/N/Unk",1)+
+      segHTML("adClip",[["Y","Y"],["N","N"],["Unk","Unk"]],c.adClip)+'</label>'+
+    '<label class="f">'+lab("3.2","CWT","Y/N/Unk",1)+
+      segHTML("cwt",[["Y","Y"],["N","N"],["Unk","Unk"]],c.cwt,"coral")+'</label>'+
+    '<div class="callout">Beep → <b>Y</b>. Tag later lost → still <b>Y</b>, note it. No beep → <b>N</b>. 1–2 eyes missing and no beep → not wandable → <b>Unk</b>.</div>'+
+    sec(4,"Samples & condition")+
+    '<div class="g2">'+
+      '<label class="f">'+lab("4.1","Scale card #")+'<input type="text" id="f_scaleCard" value="'+esc(c.scaleCard)+'" placeholder="card"></label>'+
+      '<label class="f">'+lab("4.2","Line #\u2019s")+'<input type="text" id="f_lineNums" value="'+esc(c.lineNums)+'" placeholder="line"></label>'+
+    '</div>'+
+    '<label class="f">'+lab("4.3","HBL # (head bag)")+'<input type="text" id="f_hbl" value="'+esc(c.hbl)+'" placeholder="only if CWT detected"></label>'+
+    '<div class="g2">'+
+      '<label class="f">'+lab("4.4","Scavenged","Y/N")+segHTML("scavenged",[["Y","Y"],["N","N"]],c.scavenged)+'</label>'+
+      '<label class="f">'+lab("4.5","Eyes missing","0-2")+segHTML("eyes",[["0","0"],["1","1"],["2","2"]],c.eyes)+'</label>'+
+    '</div>'+
+    sec(5,"Location")+gpsBlock()+
+    sec(6,"Notes")+
+    '<label class="f"><textarea id="f_notes" placeholder="part scavenged, carcass condition, lost tag\u2026">'+esc(c.notes)+'</textarea></label>'+
+    '<div class="callout warn">Cut the tail when you are done with the fish.</div>'+
+    '<div id="carcVal"></div>'+draftNote();
+  const foot=rec
+    ?'<button class="btn dg" data-act="delcarc" data-id="'+rec.id+'" style="flex:0 0 56px">'+ic("trash")+'</button>'+
+     '<button class="btn gh" data-act="close">Cancel</button><button class="btn pri" data-act="savecarc">Save</button>'
+    :'<button class="btn gh" data-act="close">Cancel</button>'+
+     '<button class="btn gh" data-act="savecarcnext">Save + next</button>'+
+     '<button class="btn pri" data-act="savecarc">Save</button>';
+  sheet(rec?"Edit carcass":"New carcass",body,foot);
+  renderGPS();validateCarc();
+  if(!rec&&!draft&&DB.autoGPS&&DB.gpsAsked&&DB.gpsAllowed)gpsCapture();
+}
+function validateCarc(){
+  const c=DRAFT;if(!c)return;
+  const w=[];
+  const req=[["species","Species"],["fl","Fork length"],["sex","Sex"],["rm","River mile"],
+    ["spawn","% spawned"],["adClip","Ad clip"],["cwt","CWT"]];
+  req.forEach(r=>{if(!c[r[0]]&&c[r[0]]!==0)w.push(r[1]+" is empty");});
+  ["fl","rm","eyes"].forEach(k=>{const e=checkRange(k,c[k]);
+    if(e)w.push((k==="fl"?"Fork length":k==="rm"?"River mile":"Eyes missing")+" "+e);});
+  if(c.cwt==="Y"&&!c.hbl)w.push("CWT detected — record the head bag label #");
+  [["otolith","Otolith #"],["dna","DNA #"],["hbl","HBL #"],["lineNums","Line #\u2019s"]]
+    .forEach(f=>{const d=dupOf(S().carcasses,c.id,f[0],c[f[0]]);
+      if(d)w.push(f[1]+" "+c[f[0]]+" is already on carcass "+d);});
+  if(c.species&&c.species!==S().header.species)
+    w.push("Species differs from the survey target ("+esc(S().header.species)+") — it will not count toward the tally cross-check");
+  renderValidation("carcVal",w);
+}
+function saveCarc(next){
+  const c=DRAFT;clearDraft('carc');
+  delete c.__type;delete c.__rec;delete c.__man;delete c.__init;
+  ["otolith","dna","fl","rm","scaleCard","lineNums","hbl","notes","lat","lon"]
+    .forEach(k=>{const el=$("#f_"+k);if(el)c[k]=el.value.trim();});
+  const s=S(),arr=s.carcasses,i=arr.findIndex(x=>x.id===c.id);
+  if(i>=0)arr[i]=c;else arr.push(c);
+  s.last={otolith:c.otolith||s.last.otolith,dna:c.dna||s.last.dna,scaleCard:c.scaleCard,
+    lineNums:c.lineNums||s.last.lineNums,rm:c.rm};
+  save();closeSheet();dirty.carcass=1;paint();hap(14);
+  toast(i>=0?"Carcass updated":"Carcass "+arr.length+" logged");
+  if(next)openCarc();
+}
+function renderCarc(){
+  const all=S().carcasses,el=$("#carcList");
+  const q=QUERY.carcass||"";
+  const arr=q?all.filter(c=>matches(c,q)):all;
+  const sb=searchBox("carcass",all.length);
+  if(!all.length){
+    el.innerHTML=emptyBox("fish","No carcasses yet",
+      "Every carcass you can get any data from belongs here. Pure unsamps are tally counts only.");
+  }else if(!arr.length){
+    el.innerHTML=sb+'<div class="empty"><b>No matches</b><span>Nothing in this survey matches that filter.</span></div>';
+  }else if(DB.view.carcass==="table"){
+    el.innerHTML=sb+carcTable(arr,all);
+  }else{
+    el.innerHTML=sb+arr.map(c=>{
+      const i=all.indexOf(c);
+      const sx=c.sex==="F"?'<span class="tag co">F</span>':c.sex==="M"?'<span class="tag ac">M</span>':
+        c.sex?'<span class="tag">'+esc(c.sex)+'</span>':"";
+      const mark=(c.adClip==="Y"?"AC":c.adClip==="N"?"UM":"AD?")+"/"+
+        (c.cwt==="Y"?"CWT":c.cwt==="N"?"WNT":"UNK");
+      const psm=(c.spawn==="0")?'<span class="tag am">0% SPAWN</span>':"";
+      const spTag=(c.species&&c.species!==S().header.species)?'<span class="tag co">'+esc(c.species)+'</span>':"";
+      const sub=[c.fl&&c.fl+" cm",c.rm&&"RM "+c.rm,c.lat&&"GPS",c.otolith&&"OT "+c.otolith,
+        c.dna&&"DNA "+c.dna].filter(Boolean).join("  ·  ");
+      return '<div class="rec" data-act="editcarc" data-id="'+c.id+'"><div class="ix num">'+(i+1)+'</div>'+
+        '<div class="bd"><div class="t1">'+esc(mark)+sx+spTag+psm+'</div>'+
+        '<div class="t2">'+esc(sub||"tap to edit")+'</div></div>'+
+        '<button class="x" data-act="delcarc" data-id="'+c.id+'" aria-label="Delete">'+ic("x")+'</button></div>';
+    }).join("");
+  }
+  renderDraftBanner("carc");
+  $("#carcN").textContent=all.length;
+  $("#carcCWT").textContent=all.filter(c=>c.cwt==="Y").length;
+  $("#carcPSM").textContent=all.filter(c=>c.spawn==="0").length;
+  renderQA();
+}
+
+function delCarc(id){
+  const arr=S().carcasses,i=arr.findIndex(x=>x.id===id);if(i<0)return;
+  const rec=arr.splice(i,1)[0];
+  save();closeSheet();dirty.carcass=1;paint();hap(20);
+  toast("Carcass deleted",()=>{arr.splice(i,0,rec);save();dirty.carcass=1;paint();toast("Restored");});
+}
+
+/* ══════════════ redd form (2026 Chinook Redd Form) ══════════════ */
+function nextReddId(){
+  const ids=S().redds.map(r=>parseInt(r.reddId,10)).filter(n=>!isNaN(n));
+  const n=ids.length?Math.max.apply(null,ids)+1:1;
+  return String(n).padStart(2,"0");
+}
+function blankRedd(){
+  const l=S().last||{};
+  return{id:uid(),reddId:nextReddId(),rm:l.rm||"",waypoint:l.waypoint?nextNum(l.waypoint):"",
+    chanLoc:"",chanType:"",braidLoc:"",liveOnRedd:"",notes:""};
+}
+function openRedd(rec,draft){
+  DRAFT=draft||(rec?JSON.parse(JSON.stringify(rec)):blankRedd());
+  DRAFT.__type="redd";DRAFT.__rec=rec?rec.id:null;if(!DRAFT.__init)markInit();if(!DRAFT.__init)markInit();if(!DRAFT.__init)markInit();
+  const r=DRAFT;
+  const sec=(n,t)=>'<div class="secthead"><span class="sn">'+n+'</span><span class="st">'+t+'</span></div>';
+  const lab=(n,t,u,req)=>'<span class="lab">'+t+
+    (u?' <em class="u">['+u+']</em>':"")+(req?'<span class="req">*</span>':"")+'</span>';
+  const body=
+    sec(1,"Identification")+
+    '<div class="g2">'+
+      '<label class="f">'+lab("1.1","Redd ID #","01+",1)+'<input type="text" id="f_reddId" value="'+esc(r.reddId)+'" placeholder="01"></label>'+
+      '<label class="f">'+lab("1.2","River mile","0.1",1)+'<input type="number" inputmode="decimal" step="0.1" id="f_rm" value="'+esc(r.rm)+'" placeholder="0.0"></label>'+
+    '</div>'+
+    sec(2,"Position")+
+    '<label class="f">'+lab("2.1","GPS waypoint #","handheld",1)+
+      '<input type="text" id="f_waypoint" value="'+esc(r.waypoint)+'" placeholder="waypoint"></label>'+
+    '<p class="hint" style="margin:-6px 0 11px">A new waypoint for <b>every</b> redd, even when close together. Check the unit has a fix first.</p>'+
+    gpsBlock()+
+    '<label class="f">'+lab("2.2","Location in channel","LB/MC/RB",1)+
+      segHTML("chanLoc",[["LB","LB"],["MC","MC"],["RB","RB"]],r.chanLoc)+'</label>'+
+    '<label class="f">'+lab("2.3","Channel type",null,1)+
+      segHTML("chanType",[["Single","Single"],["Braided","Braided"]],r.chanType,"coral")+'</label>'+
+    '<label class="f" id="braidWrap"'+(r.chanType==="Braided"?"":" hidden")+'>'+lab("2.4","Braid location","L/M/R")+
+      segHTML("braidLoc",[["L","L"],["M","M"],["R","R"]],r.braidLoc)+
+      '<p class="hint" style="margin-top:7px">More than three braids? Describe it in the notes.</p></label>'+
+    sec(3,"Occupancy")+
+    '<label class="f">'+lab("3.1","Live Chinook on redd","count")+
+      '<div class="sprow" style="margin:0"><div class="cg2" style="grid-template-columns:1fr"><div class="tcell">'+
+      '<div class="tctl" style="padding:8px 0">'+
+      '<button data-act="rstep" data-d="-1" style="width:56px;height:52px;font-size:28px">−</button>'+
+      '<span class="v num" id="reddLiveCt" style="font-size:30px">'+(+r.liveOnRedd||0)+'</span>'+
+      '<button data-act="rstep" data-d="1" style="width:56px;height:52px;font-size:28px">+</button>'+
+      '</div></div></div></div></label>'+
+    sec(4,"Notes")+
+    '<label class="f"><textarea id="f_notes" placeholder="superimposition, distance from flag, braid description\u2026">'+esc(r.notes)+'</textarea></label>'+
+    '<div class="callout">Flag with <b>date · # live on redd · initials · distance from flag</b>, tied to a tree or flat rock.</div>'+
+    '<div id="reddVal"></div>'+draftNote();
+  const foot=rec
+    ?'<button class="btn dg" data-act="delredd" data-id="'+rec.id+'" style="flex:0 0 56px">'+ic("trash")+'</button>'+
+     '<button class="btn gh" data-act="close">Cancel</button><button class="btn pri" data-act="saveredd">Save</button>'
+    :'<button class="btn gh" data-act="close">Cancel</button>'+
+     '<button class="btn gh" data-act="savereddnext">Save + next</button>'+
+     '<button class="btn pri" data-act="saveredd">Save</button>';
+  sheet(rec?"Edit redd":"New redd",body,foot);
+  renderGPS();validateRedd();
+  if(!rec&&!draft&&DB.autoGPS&&DB.gpsAsked&&DB.gpsAllowed)gpsCapture();
+}
+function validateRedd(){
+  const r=DRAFT;if(!r)return;
+  const w=[];
+  [["reddId","Redd ID #"],["rm","River mile"],["waypoint","GPS waypoint #"],
+   ["chanLoc","Location in channel"],["chanType","Channel type"]]
+   .forEach(x=>{if(!r[x[0]])w.push(x[1]+" is empty");});
+  if(r.chanType==="Braided"&&!r.braidLoc)w.push("Braided channel — record the braid location");
+  const dId=dupOf(S().redds,r.id,"reddId",r.reddId);
+  if(dId)w.push("Redd ID "+r.reddId+" is already used on this survey");
+  const dWp=dupOf(S().redds,r.id,"waypoint",r.waypoint);
+  if(dWp)w.push("Waypoint "+r.waypoint+" is already on redd "+S().redds[dWp-1].reddId+" — take a new one for every redd");
+  const e=checkRange("rm",r.rm);if(e)w.push("River mile "+e);
+  renderValidation("reddVal",w);
+}
+function saveRedd(next){
+  const r=DRAFT;clearDraft('redd');
+  delete r.__type;delete r.__rec;delete r.__man;delete r.__init;
+  ["reddId","rm","waypoint","notes","lat","lon"].forEach(k=>{const el=$("#f_"+k);if(el)r[k]=el.value.trim();});
+  const s=S(),arr=s.redds,i=arr.findIndex(x=>x.id===r.id);
+  if(i>=0)arr[i]=r;else arr.push(r);
+  s.last=Object.assign(s.last||{},{waypoint:r.waypoint,rm:r.rm});
+  save();closeSheet();dirty.redds=1;paint();hap(14);
+  toast(i>=0?"Redd updated":"Redd "+r.reddId+" logged");
+  if(next)openRedd();
+}
+function renderRedds(){
+  const all=S().redds,el=$("#reddList");
+  const q=QUERY.redds||"";
+  const arr=q?all.filter(r=>matches(r,q)):all;
+  const sb=searchBox("redds",all.length);
+  if(!all.length){
+    el.innerHTML=emptyBox("redd","No redds yet",
+      "Redd ID starts at 01 each day. 3\u2032\u00d76\u2032 or bigger, 6\u2033 depression, cobbles cleaned off.");
+  }else if(!arr.length){
+    el.innerHTML=sb+'<div class="empty"><b>No matches</b><span>Nothing matches that filter.</span></div>';
+  }else if(DB.view.redds==="table"){
+    el.innerHTML=sb+reddTable(arr);
+  }else{
+    el.innerHTML=sb+arr.map(r=>{
+      const loc=[r.chanLoc,r.chanType==="Braided"?("Braided"+(r.braidLoc?" "+r.braidLoc:"")):r.chanType]
+        .filter(Boolean).join(" · ");
+      const sub=[r.rm&&"RM "+r.rm,r.waypoint&&"WP "+r.waypoint,r.lat&&"GPS",loc,
+        (+r.liveOnRedd>0)&&(r.liveOnRedd+" live")].filter(Boolean).join("  ·  ");
+      return '<div class="rec" data-act="editredd" data-id="'+r.id+'">'+
+        '<div class="ix num">'+esc(r.reddId||"–")+'</div>'+
+        '<div class="bd"><div class="t1">Redd '+esc(r.reddId||"")+
+          ((+r.liveOnRedd>0)?' <span class="tag ac">'+esc(r.liveOnRedd)+' live</span>':"")+'</div>'+
+        '<div class="t2">'+esc(sub||"tap to edit")+'</div></div>'+
+        '<button class="x" data-act="delredd" data-id="'+r.id+'" aria-label="Delete">'+ic("x")+'</button></div>';
+    }).join("");
+  }
+  renderDraftBanner("redd");
+  const gu=$("#reddGpsUnit");
+  if(gu)gu.textContent=S().header.gpsUnit?("GPS unit "+S().header.gpsUnit):"GPS unit not set";
+  $("#reddN").textContent=all.length;
+  $("#reddLive").textContent=all.reduce((a,r)=>a+(+r.liveOnRedd||0),0);
+  renderQA();
+}
+
+function delRedd(id){
+  const arr=S().redds,i=arr.findIndex(x=>x.id===id);if(i<0)return;
+  const rec=arr.splice(i,1)[0];
+  save();closeSheet();dirty.redds=1;paint();hap(20);
+  toast("Redd deleted",()=>{arr.splice(i,0,rec);save();dirty.redds=1;paint();toast("Restored");});
+}
+
+
+/* ══════════════ other-species observations ══════════════ */
+function blankObs(){
+  const l=S().last||{};
+  return{id:uid(),species:"",kind:"",count:1,rm:l.rm||"",lat:"",lon:"",acc:"",notes:""};
+}
+function openObs(rec,draft){
+  DRAFT=draft||(rec?JSON.parse(JSON.stringify(rec)):blankObs());
+  DRAFT.__type="obs";DRAFT.__rec=rec?rec.id:null;if(!DRAFT.__init)markInit();if(!DRAFT.__init)markInit();if(!DRAFT.__init)markInit();
+  const o=DRAFT;
+  const sec=(n,t)=>'<div class="secthead"><span class="sn">'+n+'</span><span class="st">'+t+'</span></div>';
+  const lab=(n,t,u,req)=>'<span class="lab">'+t+
+    (u?' <em class="u">['+u+']</em>':"")+(req?'<span class="req">*</span>':"")+'</span>';
+  const others=SP_CODES.filter(k=>k!==S().header.species);
+  const body=
+    sec(1,"Identification")+
+    '<label class="f">'+lab("1.1","Species",null,1)+
+      segHTML("species",others.map(k=>[k,k]),o.species)+
+      '<p class="hint" style="margin-top:7px">'+esc(spName(o.species))+'</p></label>'+
+    '<label class="f">'+lab("1.2","Observation type",null,1)+
+      segHTML("kind",[["Live","Live fish"],["Carcass","Carcass"],["Redd","Redd"]],o.kind,"coral")+'</label>'+
+    sec(2,"Count & position")+
+    '<label class="f">'+lab("2.1","Count",null,1)+
+      '<div class="sprow" style="margin:0"><div class="cg2" style="grid-template-columns:1fr"><div class="tcell">'+
+      '<div class="tctl" style="padding:8px 0">'+
+      '<button data-act="ostep" data-d="-1" style="width:56px;height:52px;font-size:28px">−</button>'+
+      '<span class="v num" id="obsCt" style="font-size:30px">'+(+o.count||0)+'</span>'+
+      '<button data-act="ostep" data-d="1" style="width:56px;height:52px;font-size:28px">+</button>'+
+      '</div></div></div></div></label>'+
+    '<label class="f">'+lab("2.2","River mile","0.1")+
+      '<input type="number" inputmode="decimal" step="0.1" id="f_rm" value="'+esc(o.rm)+'" placeholder="0.0"></label>'+
+    gpsBlock()+
+    sec(3,"Notes")+
+    '<label class="f"><textarea id="f_notes" placeholder="behaviour, condition, redd size\u2026">'+esc(o.notes)+'</textarea></label>'+
+    '<div id="obsVal"></div>'+draftNote();
+  const foot=rec
+    ?'<button class="btn dg" data-act="delobs" data-id="'+rec.id+'" style="flex:0 0 56px">'+ic("trash")+'</button>'+
+     '<button class="btn gh" data-act="close">Cancel</button><button class="btn pri" data-act="saveobs">Save</button>'
+    :'<button class="btn gh" data-act="close">Cancel</button>'+
+     '<button class="btn gh" data-act="saveobsnext">Save + next</button>'+
+     '<button class="btn pri" data-act="saveobs">Save</button>';
+  sheet(rec?"Edit observation":"Other species",body,foot);
+  renderGPS();validateObs();
+  if(!rec&&!draft&&DB.autoGPS&&DB.gpsAsked&&DB.gpsAllowed)gpsCapture();
+}
+function validateObs(){
+  const o=DRAFT;if(!o)return;
+  const w=[];
+  if(!o.species)w.push("Species is empty");
+  if(!o.kind)w.push("Observation type is empty");
+  if(!(+o.count>0))w.push("Count must be at least 1");
+  const e=checkRange("rm",o.rm);if(e)w.push("River mile "+e);
+  renderValidation("obsVal",w);
+}
+function saveObs(next){
+  const o=DRAFT;clearDraft('obs');
+  delete o.__type;delete o.__rec;delete o.__man;delete o.__init;
+  ["rm","notes","lat","lon"].forEach(k=>{const el=$("#f_"+k);if(el)o[k]=el.value.trim();});
+  const arr=S().obs,i=arr.findIndex(x=>x.id===o.id);
+  if(i>=0)arr[i]=o;else arr.push(o);
+  save();closeSheet();dirty.obs=1;paint();hap(14);
+  toast(i>=0?"Observation updated":spName(o.species)+" logged");
+  if(next)openObs();
+}
+function renderObs(){
+  const arr=S().obs,el=$("#obsList");
+  if(DB.view.obs==="table"&&arr.length){el.innerHTML=obsTable();}
+  else if(!arr.length){
+    el.innerHTML=emptyBox("fish","No other species yet",
+      "Log live fish, carcasses or redds of any species other than the survey target.");
+  }else{
+    el.innerHTML=arr.map((o,i)=>
+      '<div class="rec" data-act="editobs" data-id="'+o.id+'"><div class="ix num">'+(i+1)+'</div>'+
+      '<div class="bd"><div class="t1">'+esc(spName(o.species))+
+        ' <span class="tag ac">'+esc(o.kind||"?")+'</span>'+
+        ' <span class="tag">\u00d7'+(+o.count||0)+'</span></div>'+
+      '<div class="t2">'+esc([o.rm&&"RM "+o.rm,o.lat&&"GPS",o.notes].filter(Boolean).join("  \u00b7  ")||"tap to edit")+'</div></div>'+
+      '<button class="x" data-act="delobs" data-id="'+o.id+'" aria-label="Delete">'+ic("x")+'</button></div>').join("");
+  }
+  renderDraftBanner("obs");
+  $("#obsN").textContent=arr.reduce((a,o)=>a+(+o.count||0),0);
+  $("#obsSp").textContent=new Set(arr.map(o=>o.species).filter(Boolean)).size;
+}
+function delObs(id){
+  const arr=S().obs,i=arr.findIndex(x=>x.id===id);if(i<0)return;
+  const rec=arr.splice(i,1)[0];
+  save();closeSheet();dirty.obs=1;paint();hap(20);
+  toast("Observation deleted",()=>{arr.splice(i,0,rec);save();dirty.obs=1;paint();toast("Restored");});
+}
+
+const draftNote=()=>'<div class="dsavebar"><span class="dsave" id="dsave">AUTOSAVING</span>'+
+  '<span>Everything you type is kept even if this form is closed by accident.</span></div>';
+
+/* ══════════════ reference ══════════════ */
+const acc=(icon,title,body,open)=>'<details class="acc"'+(open?" open":"")+'><summary><span class="mi">'+
+  ic(icon)+'</span>'+esc(title)+'</summary><div class="accbody">'+body+'</div></details>';
+
+function refSurveyDesign(){
+  return '<h5>Why we survey</h5>'+
+  '<p>Primary goal: estimate spawning escapement for NF/MF and SF spring Chinook. Escapement measures population productivity and feeds fisheries management decisions.</p>'+
+  '<p>Secondary: tGMR data, pre-spawn mortality events, timing and distribution (habitat restoration effectiveness), and other species in the basin.</p>'+
+  '<h5>North Fork &amp; Middle Fork — carcass based</h5>'+
+  '<div class="formula"><small>NF / MF escapement</small>Total carcasses recovered × expansion</div>'+
+  '<ul><li>Survey every <b>7–10 days</b></li>'+
+  '<li>Set <b>Water type: Mainstem</b> on the survey header</li></ul>'+
+  '<h5>MF tributaries (e.g. Peat Bog)</h5>'+
+  '<div class="formula"><small>MF tribs</small>Total carcasses recovered = escapement</div>'+
+  '<ul><li>Survey as frequently as possible to clean up carcasses</li>'+
+  '<li>Set <b>Water type: Tributary</b> — the app then drops the expansion and the 7–10 day check</li></ul>'+
+  '<h5>SF — redd based</h5>'+
+  '<div class="formula"><small>SF escapement</small>Total redds observed × 2.5</div>'+
+  '<p>Carcasses determine the proportion of each stock/origin. If 75% of sampled carcasses are HOR SF and total escapement is 2,000, then 0.75 × 2,000 = <b>1,500 HOR SF</b>.</p>'+
+  '<h5>Origin from mark status</h5>'+
+  '<table class="deftab"><tr><th>Marks</th><th>Origin</th></tr>'+
+  '<tr><td>Ad clip and/or CWT</td><td>HOR — hatchery</td></tr>'+
+  '<tr><td>No clip and no CWT</td><td>NOR — natural</td></tr>'+
+  '<tr><td>Either recorded Unk</td><td>Unknown — excluded from the proportion</td></tr></table>'+
+  '<p>The calculator derives this split from the carcass records automatically.</p>';
+}
+function refGeneral(){
+  return '<h5>River mile</h5>'+
+  '<ul><li>To the nearest tenth (.1)</li>'+
+  '<li>Describes <b>every</b> observation in that row — i.e. the number of new redds at RM 16.2</li>'+
+  '<li>Use the OnX Backcountry RM Tenths waypoint files on your phone</li></ul>'+
+  '<h5>Visibility</h5>'+
+  '<p>Based on <b>both turbidity and glare</b>.</p>'+
+  '<table class="deftab"><tr><th>Code</th><th>Meaning</th></tr>'+
+  Object.keys(VIS).map(k=>'<tr><td>'+k+'</td><td>'+VIS[k]+'</td></tr>').join("")+'</table>'+
+  '<h5>New redds</h5><ul><li>Count must match the number of records on the redd form</li></ul>'+
+  '<h5>Live counts</h5><ul><li>Pool estimation methods — compare reasoning with your partner and agree a best or average estimate</li>'+
+  '<li>Note other species in the notes column</li></ul>'+
+  '<h5>Dead counts</h5>'+
+  '<ul><li>The <b>three sampled columns</b> (no-subsampling Sampled, subgroup Sampled, subgroup No biologic) must total the carcass form records</li>'+
+  '<li><b>No subsampling / Not sampled</b> = unsampled carcasses only — spines, fish guts, fully degraded fish</li></ul>'+
+  '<h5>Notes</h5><p>All observations encouraged: other species (fish and/or redds), anything you are unsure of for QA/QC clarity, and unique observations.</p>';
+}
+function refCarcass(){
+  return '<h5>Recorded on every carcass</h5>'+
+  '<table class="deftab"><tr><th>Field</th><th>Values</th></tr>'+
+  '<tr><td>FL</td><td>Fork length in cm — only if intact head to tail</td></tr>'+
+  '<tr><td>Sex</td><td>M · F · UNK</td></tr>'+
+  '<tr><td>RM</td><td>Nearest tenth</td></tr>'+
+  '<tr><td>% spawned</td><td>0 · 50 · 100</td></tr>'+
+  '<tr><td>Ad clip</td><td>Y · N · Unk</td></tr>'+
+  '<tr><td>CWT</td><td>Y · N · Unk</td></tr>'+
+  '<tr><td>Eyes missing</td><td>0 · 1 · 2</td></tr></table>'+
+  '<div class="callout">There is <b>no carcass condition field</b> on the 2026 form — put condition in the notes. Keep an eye out for jaw tags.</div>'+
+  '<h5>Mark status logic</h5>'+
+  '<ul><li>Wand beeps → <b>CWT = Y</b></li>'+
+  '<li>Tag becomes lost afterwards → <b>still Y</b>, make a note</li>'+
+  '<li>No beep → <b>CWT = N</b></li>'+
+  '<li>1 or 2 eyes missing and no beep → not wandable → <b>UNK</b></li></ul>'+
+  '<h5>Biological samples</h5>'+
+  '<table class="deftab"><tr><th>Sample</th><th>How</th></tr>'+
+  '<tr><td>Otolith</td><td>From the head</td></tr>'+
+  '<tr><td>DNA</td><td>Fin or operculum · not fuzzy · dark/pigmented side preferred</td></tr>'+
+  '<tr><td>Scales</td><td>Preferred area · clean · same orientation as removed from the fish</td></tr>'+
+  '<tr><td>Snout</td><td>Only if CWT detected · wand again once the snout is in the head bag</td></tr></table>'+
+  '<div class="callout warn">Rinse and clean tools between DNA collections. Cross-contamination makes results useless.</div>'+
+  '<h5>Sample labelling</h5>'+
+  '<p>Head bag label carries <b>FL · sex · mark · date</b> (e.g. 72 / F / AC-CWT / 8/5/26).</p>'+
+  '<ul><li>No longer record RM or initials on the head bag label</li>'+
+  '<li>No longer record otolith and DNA numbers on the freshwater tag</li>'+
+  '<li>No longer record otolith and DNA numbers or RM on the scale card</li></ul>'+
+  '<h5>Unsample-able fish</h5>'+
+  '<ul><li>Cannot be sampled at all: fish guts, spines, heavily scavenged fish</li>'+
+  '<li>Do not measure unless the body is intact head → tail. Do not guess.</li>'+
+  '<li>Unsamps are recorded <b>only</b> as counts on the survey cover page</li>'+
+  '<li>If <b>any</b> data can be collected, record it on the carcass sheet</li></ul>'+
+  '<div class="callout">Cut the tail when the fish is done.</div>'+
+  '<h5>NF/MF mark–recapture</h5>'+
+  '<p>Check carcasses with chopped tails and/or jaws for a tag. Record one or both tag numbers (there may be one on each side), the GPS waypoint and which unit, and the date. Then <b>leave the carcass where it is</b>. Submit forms within a week of finding tagged carcasses.</p>';
+}
+function refPSM(){
+  return '<h5>When to subsample</h5>'+
+  '<ul><li>You are unlikely to sample all carcasses in a reach (roughly 50–100 carcasses)</li>'+
+  '<li>Start at <b>1/10</b></li>'+
+  '<li>Weigh survey length remaining against the priority of flagging new redds</li>'+
+  '<li>Consider carcass condition and the forecast — rain will carry carcasses away</li></ul>'+
+  '<div class="callout warn">If you are the first group to start subsampling, <b>text the group chat</b>. Same immediately if you drop to 1/20.</div>'+
+  '<h5>Rules</h5>'+
+  '<ul><li>Hatchery origin (HOR) fish only</li><li>Do not be selective in the fish sampled</li>'+
+  '<li>No longer need to divide by mark group</li></ul>'+
+  '<h5>Workflow</h5>'+
+  '<div class="flowbox">'+
+  '<div class="flowrow full"><b>Full</b>NOR — natural origin</div>'+
+  '<div class="flowrow full"><b>Full</b>Unknown — not wandable, decomposed, spawn status unknown</div>'+
+  '<div class="flowrow full"><b>Full</b>HOR with spawn status &gt; 0%</div>'+
+  '<div class="flowrow sub"><b>Sub</b>HOR with spawn status = 0% → the subsample lineup</div>'+
+  '</div>'+
+  '<p>Record mark and tag status for <b>every</b> fish, then pull 1 in 10 out of the lineup for full biological sampling. Cut tails on the fish you did not pull, and on the fully sampled fish once you are done.</p>'+
+  '<h5>FAQ</h5>'+
+  '<ul>'+
+  '<li><b>Fish spawned but already written down?</b> Cross it off the subsampling sheet and move it to the sampling pile. Do not worry about the rate — carry on and still sample fish 11.</li>'+
+  '<li><b>Pulled fish is unsamplable?</b> Switch it for the next fish in order.</li>'+
+  '<li><b>Never reached the 10th fish?</b> Do not worry — subsampling starts over by reach or by day.</li>'+
+  '<li><b>Uniquely sized fish that would miss sampling — switch the order?</b> No. That creates bias.</li>'+
+  '<li><b>Change the rate?</b> Only for hundreds of PSM carcasses at once, and text the group chat immediately.</li>'+
+  '</ul>'+
+  '<h5>Sampling decision helper</h5>'+
+  '<div id="psmTool"></div>'+
+  '<h5>Subsample lineup counter</h5>'+
+  '<p>Tap each fish as you work the lineup. Every <span class="num" id="lrTxt">10</span>th fish gets full biological sampling.</p>'+
+  '<div id="lineupTool"></div>';
+}
+function refRedds(){
+  return '<h5>Identifying redds</h5>'+
+  '<ul><li>3\u2032 × 6\u2032 or bigger</li><li>6\u2033 depression</li>'+
+  '<li>Fist-sized cobbles &ldquo;cleaned&rdquo; off</li><li>Chinook redds are far larger than pink/sockeye</li></ul>'+
+  '<h5>Tricky spots</h5>'+
+  '<ul><li>Look for fish actively digging</li>'+
+  '<li>Hydrodynamic changes caused by the tailspill</li>'+
+  '<li><b>Superimposition</b> — examine all old redd flags for the date they were flagged. A redd that looks new or has fish on it under a flag dated weeks earlier is most likely a new redd in the same place: re-flag it and take a new GPS waypoint.</li></ul>'+
+  '<h5>Redd flagging</h5>'+
+  '<p>Write on the flag: <b>date · # live fish on redd · initials · distance from flag / location in channel</b>. Tie to a tree or on to a flat rock.</p>'+
+  '<h5>Form fields</h5>'+
+  '<table class="deftab"><tr><th>Field</th><th>Values</th></tr>'+
+  '<tr><td>Redd ID #</td><td>Starts at 01 for the day, working up. Initials if teams split.</td></tr>'+
+  '<tr><td>GPS waypoint</td><td>New waypoint for every redd, even if very close</td></tr>'+
+  '<tr><td>GPS unit #</td><td>Which handheld you carried. Waypoint numbers restart per unit, so the unit ID is what ties waypoint 034 to the right device on download.</td></tr>'+
+  '<tr><td>Location in chan.</td><td>LB = left bank · MC = mid channel · RB = right bank</td></tr>'+
+  '<tr><td>Channel type</td><td>Single · Braided</td></tr>'+
+  '<tr><td>Braid location</td><td>L · M · R — more than 3 braids, describe in notes</td></tr>'+
+  '<tr><td># live Chin.</td><td>Live Chinook on the redd</td></tr></table>';
+}
+function refGear(){
+  const list=(t,items)=>'<h5>'+t+'</h5><ul>'+items.map(i=>'<li>'+i+'</li>').join("")+'</ul>';
+  return '<p>Consumables are marked <b>*</b> — restock them before you leave.</p>'+
+  list("Sampling supplies",["Head bags and labels *","DNA envelopes *","Otolith vials *","CWT wand",
+    "Scissors","Forceps","Measuring tape","Knives","Rubber gloves"])+
+  list("Redd flagging",["Blue flagging tape","Sharpie","GPS"])+
+  list("Field binder",["Stream survey forms *","Carcass forms *","Redd forms *","Scale cards *","Field maps"])+
+  list("Other",["Thermometer","First aid kit","Two-way radio","Bear spray"])+
+  list("Personal gear",["Water *","Snacks and lunch *","Wading attire — boots, waders and/or socks",
+    "Raincoat and extra layers","Polarized glasses","Walking stick"])+
+  list("Truck gear",["Tire repair — fix-a-flat and air compressor","Shovels","Fire extinguisher",
+    "Check fuel and oil levels"]);
+}
+function refCalc(){
+  return '<h5>Escapement</h5>'+
+  '<div class="formula"><small>South Fork</small>redds × 2.5 = escapement</div>'+
+  '<div class="formula"><small>NF / MF</small>carcasses × expansion = escapement</div>'+
+  '<div class="formula"><small>Stock / origin split</small>escapement × proportion sampled = stock escapement</div>'+
+  '<div id="calcEsc"></div>'+
+  '<h5>Subsample expansion</h5>'+
+  '<p>At a 1/<span class="num">n</span> rate, each fully sampled fish stands for <b>n</b> carcasses in the lineup.</p>'+
+  '<div id="calcSub"></div>'+
+  '<h5>Conversions</h5>'+
+  '<div id="calcConv"></div>'+
+  '<table class="deftab"><tr><th>From</th><th>To</th><th>Multiply by</th></tr>'+
+  '<tr><td>cm</td><td>inches</td><td>0.3937</td></tr>'+
+  '<tr><td>inches</td><td>cm</td><td>2.54</td></tr>'+
+  '<tr><td>mm</td><td>cm</td><td>0.1</td></tr>'+
+  '<tr><td>feet</td><td>metres</td><td>0.3048</td></tr>'+
+  '<tr><td>metres</td><td>feet</td><td>3.2808</td></tr>'+
+  '<tr><td>miles</td><td>km</td><td>1.6093</td></tr>'+
+  '<tr><td>cfs</td><td>m³/s</td><td>0.02832</td></tr></table>'+
+  '<div class="formula"><small>Temperature</small>°F = °C × 9/5 + 32<br>°C = (°F − 32) × 5/9</div>';
+}
+function renderRef(){
+  const el=$("#refBody");if(!el)return;
+  if(el.dataset.built==="1"){renderPSMTool();renderLineup();renderCalcs();return;}
+  el.innerHTML=
+    acc("book","Survey design & goals",refSurveyDesign())+
+    acc("grid","General survey data",refGeneral())+
+    acc("fish","Carcass protocol",refCarcass())+
+    acc("redd","PSM subsampling",refPSM())+
+    acc("redd","Redds — ID, flagging & form",refRedds())+
+    acc("calc","Formulas & calculators",refCalc())+
+    acc("doc","Gear checklist",refGear());
+  el.dataset.built="1";
+  renderPSMTool();renderLineup();renderCalcs();
+}
+
+/* ---- PSM decision helper ---- */
+let PSM={origin:"",spawn:""};
+function renderPSMTool(){
+  const el=$("#psmTool");if(!el)return;
+  const seg=(k,opts)=>'<div class="seg sm" style="margin-bottom:9px">'+opts.map(o=>
+    '<button data-act="psm" data-k="'+k+'" data-v="'+o[0]+'" class="'+(PSM[k]===o[0]?"on":"")+'">'+o[1]+'</button>'
+  ).join("")+'</div>';
+  let out="";
+  if(PSM.origin&&(PSM.origin!=="HOR"||PSM.spawn)){
+    const sub=PSM.origin==="HOR"&&PSM.spawn==="0";
+    out='<div class="calcout" style="background:'+(sub?"var(--sal)":"var(--ok)")+';color:#fff">'+
+      '<div class="cv" style="font-size:20px">'+(sub?"SUBSAMPLE":"FULLY SAMPLE")+'</div>'+
+      '<div class="ck">'+(sub?"HOR pre-spawn mortality — into the lineup":"Record mark status and take all samples")+'</div></div>';
+  }
+  el.innerHTML='<span class="lab" style="display:block;font:700 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--tx2);margin-bottom:6px">Mark status</span>'+
+    seg("origin",[["NOR","NOR"],["HOR","HOR"],["UNK","Unknown"]])+
+    (PSM.origin==="HOR"?'<span class="lab" style="display:block;font:700 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--tx2);margin-bottom:6px">% spawned</span>'+
+      seg("spawn",[["0","0"],["50","50"],["100","100"]]):"")+out;
+}
+/* ---- subsample lineup counter ---- */
+function renderLineup(){
+  const el=$("#lineupTool");if(!el)return;
+  const rate=DB.lineup.rate||10,pos=DB.lineup.pos||0;
+  const lt=$("#lrTxt");if(lt)lt.textContent=rate;
+  let cells="";
+  const show=Math.max(rate,Math.ceil((pos+1)/rate)*rate);
+  for(let i=1;i<=show;i++){
+    const pull=(i%rate===1)||(rate===1);
+    cells+='<span class="'+(i<=pos?"done ":"")+(pull?"pull ":"")+(i===pos?"now":"")+'">'+i+'</span>';
+  }
+  el.innerHTML='<div class="lineup">'+cells+'</div>'+
+    '<div class="calcout"><div class="cv">'+pos+'</div><div class="ck">fish recorded · next full sample at '+
+      (Math.floor(pos/rate)*rate+1>pos?Math.floor(pos/rate)*rate+1:Math.floor(pos/rate)*rate+rate+1)+'</div></div>'+
+    '<div style="display:flex;gap:8px;margin-top:10px">'+
+      '<button class="btn gh" data-act="lineup" data-d="-1">Back</button>'+
+      '<button class="btn pri" data-act="lineup" data-d="1">Next fish</button>'+
+      '<button class="btn gh" data-act="lineup" data-d="0" style="flex:0 0 84px">Reset</button></div>'+
+    '<p class="hint">Resets by reach or by day — it is fine not to reach the 10th fish.</p>';
+}
+/* ---- calculators ---- */
+let CALC={mode:null,auto:true,redds:"",carcs:"",exp:"1",prop:"",sub:"",subRate:"10",
+  conv:"cm2in",val:""};
+const CONV={cm2in:["cm","in",v=>v*0.3937],in2cm:["in","cm",v=>v*2.54],
+  mm2cm:["mm","cm",v=>v*0.1],ft2m:["ft","m",v=>v*0.3048],m2ft:["m","ft",v=>v*3.2808],
+  mi2km:["mi","km",v=>v*1.6093],cfs2cms:["cfs","m³/s",v=>v*0.02832],
+  c2f:["°C","°F",v=>v*9/5+32],f2c:["°F","°C",v=>(v-32)*5/9]};
+function renderCalcs(){
+  const esc1=$("#calcEsc");
+  if(esc1){
+    const t=rowTotals(),meth=surveyMethod();
+    if(CALC.auto||!CALC.mode)CALC.mode=meth.mode;
+    const mode=CALC.mode;
+    const seg='<div class="seg sm" style="margin-bottom:6px">'+
+      [["SF","South Fork"],["NFMF","NF / MF"],["TRIB","MF trib"]].map(o=>
+      '<button data-act="calcmode" data-v="'+o[0]+'" class="'+(mode===o[0]?"on":"")+'">'+o[1]+'</button>').join("")+'</div>'+
+      '<p class="hint" style="margin:0 0 12px">'+(CALC.auto
+        ?'Set from this survey\u2019s fork: <b>'+esc(meth.label)+'</b>.'
+        :'Chosen by hand \u2014 <button class="chip mute" data-act="calcauto">follow the survey</button>')+'</p>';
+    let inputs="",total=0;
+    if(mode==="SF"){
+      inputs='<label class="f"><span class="lab">Total redds observed</span>'+
+        '<div class="unitrow"><input type="number" inputmode="decimal" id="c_redds" value="'+esc(CALC.redds)+'" placeholder="redds">'+
+        '<button class="sidebtn" data-act="usetally" data-k="redds">USE '+t.newRedds+'</button></div></label>'+
+        '<div class="formula" style="margin-top:-2px"><small>Method</small>redds \u00d7 2.5</div>';
+      total=(parseFloat(CALC.redds)||0)*2.5;
+    }else if(mode==="NFMF"){
+      inputs='<label class="f"><span class="lab">Carcasses recovered</span>'+
+        '<div class="unitrow"><input type="number" inputmode="decimal" id="c_carcs" value="'+esc(CALC.carcs)+'" placeholder="carcasses">'+
+        '<button class="sidebtn" data-act="usetally" data-k="carcs">USE '+S().carcasses.length+'</button></div></label>'+
+        '<label class="f"><span class="lab">Expansion factor</span>'+
+        '<input type="number" inputmode="decimal" step="0.01" id="c_exp" value="'+esc(CALC.exp)+'" placeholder="1.0">'+
+        '<p class="hint" style="margin-top:7px">Supplied by the office \u2014 it is not derived in the field.</p></label>'+
+        '<div class="formula"><small>Method</small>carcasses \u00d7 expansion</div>';
+      total=(parseFloat(CALC.carcs)||0)*(parseFloat(CALC.exp)||0);
+    }else{
+      inputs='<label class="f"><span class="lab">Carcasses recovered</span>'+
+        '<div class="unitrow"><input type="number" inputmode="decimal" id="c_carcs" value="'+esc(CALC.carcs)+'" placeholder="carcasses">'+
+        '<button class="sidebtn" data-act="usetally" data-k="carcs">USE '+S().carcasses.length+'</button></div></label>'+
+        '<div class="formula"><small>Method</small>carcasses recovered = escapement</div>';
+      total=parseFloat(CALC.carcs)||0;
+    }
+    /* origin proportions come from the mark status on sampled carcasses */
+    const o=originSplit();
+    const pct=v=>v==null?"\u2014":(Math.round(v*1000)/10)+"%";
+    const originBlock='<h5 style="margin-top:16px">Stock / origin from sampled carcasses</h5>'+
+      '<table class="deftab"><tr><th>Origin</th><th>Carcasses</th><th>Of determinate</th></tr>'+
+      '<tr><td>HOR \u2014 ad clip and/or CWT</td><td>'+o.hor+'</td><td>'+pct(o.pHor)+'</td></tr>'+
+      '<tr><td>NOR \u2014 no clip, no tag</td><td>'+o.nor+'</td><td>'+pct(o.pNor)+'</td></tr>'+
+      '<tr><td>Unknown \u2014 not wandable</td><td>'+o.unk+'</td><td>excluded</td></tr></table>'+
+      (o.det?'<div class="chips" style="margin-bottom:11px">'+
+        '<button class="chip" data-act="useprop" data-v="'+(o.pHor||0)+'">Use HOR '+pct(o.pHor)+'</button>'+
+        '<button class="chip" data-act="useprop" data-v="'+(o.pNor||0)+'">Use NOR '+pct(o.pNor)+'</button></div>'
+        :'<p class="hint" style="margin:0 0 11px">Record ad clip and CWT on carcasses to derive the split.</p>');
+    const prop=parseFloat(CALC.prop);
+    const stock=!isNaN(prop)?total*(prop>1?prop/100:prop):null;
+    esc1.innerHTML=seg+inputs+
+      '<div class="calcout"><div class="cv">'+(Math.round(total*10)/10).toLocaleString()+'</div>'+
+      '<div class="ck">total escapement</div></div>'+
+      originBlock+
+      '<label class="f"><span class="lab">Proportion applied</span>'+
+      '<input type="number" inputmode="decimal" step="0.01" id="c_prop" value="'+esc(CALC.prop)+'" placeholder="e.g. 75 or 0.75"></label>'+
+      (stock!=null?'<div class="calcout" style="background:var(--surf3);color:var(--tx)"><div class="cv">'+
+        (Math.round(stock*10)/10).toLocaleString()+'</div><div class="ck">stock / origin escapement</div></div>':"");
+  }
+  const sub=$("#calcSub");
+  if(sub){
+    const n=parseFloat(CALC.sub)||0,r=parseFloat(CALC.subRate)||10;
+    sub.innerHTML='<div class="g2">'+
+      '<label class="f"><span class="lab">Fish fully sampled</span><input type="number" inputmode="numeric" id="c_sub" value="'+esc(CALC.sub)+'" placeholder="0"></label>'+
+      '<label class="f"><span class="lab">Rate 1 in …</span><input type="number" inputmode="numeric" id="c_subRate" value="'+esc(CALC.subRate)+'" placeholder="10"></label>'+
+      '</div><div class="calcout"><div class="cv">'+Math.round(n*r).toLocaleString()+'</div>'+
+      '<div class="ck">carcasses represented</div></div>';
+  }
+  const cv=$("#calcConv");
+  if(cv){
+    const c=CONV[CALC.conv],v=parseFloat(CALC.val);
+    const out=isNaN(v)?"—":(Math.round(c[2](v)*1000)/1000).toLocaleString();
+    cv.innerHTML='<label class="f"><span class="lab">Convert</span>'+
+      '<select class="in" id="c_conv">'+Object.keys(CONV).map(k=>
+        '<option value="'+k+'"'+(CALC.conv===k?" selected":"")+'>'+CONV[k][0]+' → '+CONV[k][1]+'</option>').join("")+
+      '</select></label>'+
+      '<label class="f"><span class="lab">Value in '+c[0]+'</span>'+
+      '<input type="number" inputmode="decimal" step="0.01" id="c_val" value="'+esc(CALC.val)+'" placeholder="0"></label>'+
+      '<div class="calcout"><div class="cv">'+out+'</div><div class="ck">'+c[1]+'</div></div>';
+  }
+}
+document.addEventListener("input",e=>{
+  const el=e.target;
+  const map={c_redds:"redds",c_carcs:"carcs",c_exp:"exp",c_prop:"prop",c_sub:"sub",
+    c_subRate:"subRate",c_conv:"conv",c_val:"val"};
+  if(map[el.id]){CALC[map[el.id]]=el.value;renderCalcs();}
+},{passive:true});
+
+/* ══════════════ charts ══════════════ */
+const CH={
+  col:["var(--ac)","var(--sal)","var(--tx3)","var(--amb)"],
+  nice(v){if(v<=5)return 5;const p=Math.pow(10,Math.floor(Math.log10(v)));const n=v/p;
+    return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p;},
+  card(id,title,note,inner,legend){
+    const el=$("#ch-"+id);if(!el)return;
+    el.innerHTML='<div class="chartcard"><div class="chead"><span class="eyebrow">'+esc(title)+'</span>'+
+      (note?'<span class="cn">'+esc(note)+'</span>':"")+'</div>'+
+      (inner||'<div class="nodata">Nothing to plot yet — the graph fills in as you log records.</div>')+
+      (inner&&legend?legend:"")+'</div>';
+  },
+  key(names){return '<div class="legend">'+names.map((n,i)=>
+    '<span><i style="background:'+CH.col[i%4]+'"></i>'+esc(n)+'</span>').join("")+'</div>';},
+  hbar(cats,nser,stacked){
+    if(!cats.length)return"";
+    const W=700,LW=104,PR=46,rowH=stacked?32:(14*nser+20),H=cats.length*rowH+6;
+    let max=0;
+    cats.forEach(c=>{max=Math.max(max,stacked?c.v.reduce((a,b)=>a+b,0):Math.max.apply(null,c.v));});
+    max=CH.nice(max||1);
+    const sx=v=>v/max*(W-LW-PR);
+    let s='<svg viewBox="0 0 '+W+' '+H+'" role="img">';
+    s+='<line class="axis" x1="'+LW+'" y1="0" x2="'+LW+'" y2="'+H+'"/>';
+    cats.forEach((c,i)=>{
+      const y0=i*rowH,tot=c.v.reduce((a,b)=>a+b,0);
+      s+='<text class="barlab" x="'+(LW-9)+'" y="'+(y0+rowH/2+3.5)+'" text-anchor="end">'+esc(c.l)+'</text>';
+      if(stacked){
+        let x=LW;
+        c.v.forEach((v,j)=>{if(v<=0)return;const w=sx(v);
+          s+='<rect class="bar bar-in" x="'+x+'" y="'+(y0+7)+'" width="'+w.toFixed(1)+'" height="18" rx="2" fill="'+CH.col[j%4]+'" style="animation-delay:'+(i*40)+'ms;transform-origin:'+LW+'px 0"/>';
+          x+=w;});
+        s+='<text class="vlab" x="'+(x+7)+'" y="'+(y0+rowH/2+4)+'">'+tot+'</text>';
+      }else{
+        c.v.forEach((v,j)=>{const w=sx(v),y=y0+10+j*14;
+          s+='<rect class="bar bar-in" x="'+LW+'" y="'+y+'" width="'+Math.max(v>0?2:0,w).toFixed(1)+'" height="10" rx="1.5" fill="'+CH.col[j%4]+'" style="animation-delay:'+(i*40)+'ms"/>'+
+             '<text class="vlab" x="'+(LW+Math.max(2,w)+6)+'" y="'+(y+8.6)+'">'+v+'</text>';});
+      }
+    });
+    return s+'</svg>';
+  },
+  vbar(cats,stacked){
+    if(!cats.length)return"";
+    const W=700,PL=36,PR=8,PT=14,PB=30,H=210,PH=H-PT-PB;
+    let max=0;cats.forEach(c=>{max=Math.max(max,c.v.reduce((a,b)=>a+b,0));});
+    max=CH.nice(max||1);
+    const colW=(W-PL-PR)/cats.length,barW=Math.min(46,colW*0.66);
+    const y=v=>PT+PH-(v/max)*PH;
+    let s='<svg viewBox="0 0 '+W+' '+H+'" role="img">';
+    [0,.5,1].forEach(f=>{const yy=y(max*f);
+      s+='<line class="gridline" x1="'+PL+'" y1="'+yy+'" x2="'+(W-PR)+'" y2="'+yy+'"/>'+
+         '<text class="axlab" x="'+(PL-7)+'" y="'+(yy+3.5)+'" text-anchor="end">'+Math.round(max*f)+'</text>';});
+    cats.forEach((c,i)=>{
+      const cx=PL+i*colW+(colW-barW)/2,tot=c.v.reduce((a,b)=>a+b,0);
+      let acc=0;
+      c.v.forEach((v,j)=>{if(v<=0)return;
+        const h=(v/max)*PH,yy=y(acc+v);
+        s+='<rect class="bar bar-in" x="'+cx.toFixed(1)+'" y="'+yy.toFixed(1)+'" width="'+barW.toFixed(1)+
+           '" height="'+h.toFixed(1)+'" rx="1.5" fill="'+CH.col[j%4]+'" style="animation-delay:'+(i*32)+
+           'ms;transform-origin:0 '+(PT+PH)+'px"/>';
+        acc+=v;});
+      if(tot)s+='<text class="vlab" x="'+(cx+barW/2)+'" y="'+(y(tot)-5)+'" text-anchor="middle">'+tot+'</text>';
+      s+='<text class="axlab" x="'+(cx+barW/2)+'" y="'+(H-PB+15)+'" text-anchor="middle">'+esc(c.l)+'</text>';
+    });
+    return s+'</svg>';
+  }
+};
+function aggRows(){
+  return S().rows.filter(r=>ROWF.some(f=>r[f]>0)).map(r=>({l:r.rm!==""?("RM "+r.rm):"—",
+    v:[r.newRedds|0,r.live|0,(r.deadSamp|0)+(r.deadNot|0)+(r.subSamp|0)+(r.subNoBio|0)]}));
+}
+function aggFL(){
+  const L=S().carcasses.map(c=>({n:parseFloat(c.fl),s:c.sex})).filter(x=>!isNaN(x.n)&&x.n>0);
+  if(L.length<2)return[];
+  const B=5,lo=Math.floor(Math.min.apply(null,L.map(x=>x.n))/B)*B,
+        hi=Math.floor(Math.max.apply(null,L.map(x=>x.n))/B)*B;
+  const bins=[];
+  for(let b=lo;b<=hi;b+=B)bins.push({l:b+"–"+(b+B),v:[0,0,0]});
+  L.forEach(x=>{const i=Math.min(bins.length-1,Math.floor((x.n-lo)/B));
+    bins[i].v[x.s==="M"?0:x.s==="F"?1:2]++;});
+  return bins;
+}
+function chartTally(){
+  const c=aggRows();
+  CH.card("tally","Counts by river mile",c.length?c.length+" lines":"",
+    CH.hbar(c,3,false),CH.key(["New redds","Live","Dead"]));
+}
+function chartCarcass(){
+  const b=aggFL();
+  if(!b.length){
+    CH.card("carcass","Fork length frequency","",
+      S().carcasses.length?'<div class="nodata">Enter fork lengths on at least two carcasses to build the histogram.</div>':"");
+    return;
+  }
+  CH.card("carcass","Fork length frequency","cm · 5 cm bins",CH.vbar(b,true),CH.key(["M","F","UNK"]));
+}
+const CHART_FN={tally:chartTally,carcass:chartCarcass};
+function paintChart(tab){
+  const el=$("#ch-"+tab);if(!el)return;
+  if(DB.charts&&DB.charts[tab]&&CHART_FN[tab])CHART_FN[tab]();
+  else if(el.innerHTML)el.innerHTML="";
+}
+function paintChips(){
+  $$('[data-act="graph"]').forEach(b=>{
+    const on=!!(DB.charts&&DB.charts[b.dataset.k]);
+    b.classList.toggle("mute",!on);b.textContent=on?"Hide graph":"Graph";
+  });
+}
+
+/* ══════════════ table views (mirror the paper datasheet) ══════════════ */
+function dtable(head,rows,foot,note){
+  return '<div class="dtwrap"><div class="dtscroll"><table class="dt"><thead><tr>'+
+    head.map((h,i)=>'<th'+(i===0?' class="k"':'')+'>'+esc(h)+'</th>').join("")+'</tr></thead><tbody>'+
+    rows.map(r=>'<tr'+(r.act?' data-act="'+r.act+'" data-id="'+r.id+'"':'')+'>'+
+      r.c.map((v,i)=>'<td'+(i===0?' class="k"':'')+'>'+(v===""||v==null?"·":esc(v))+'</td>').join("")+'</tr>').join("")+
+    '</tbody>'+(foot?'<tfoot><tr>'+foot.map((v,i)=>'<td'+(i===0?' class="k"':'')+'>'+esc(v)+'</td>').join("")+'</tr></tfoot>':"")+
+    '</table></div><div class="dthint">'+esc(note||"Swipe to see all columns · tap a row to edit")+'</div></div>';
+}
+function tallyTable(){
+  const t=rowTotals();
+  return dtable(["RM","New redds","Live","Samp","Not samp","Sub samp","Sub no-bio","Notes"],
+    S().rows.map(r=>({c:[r.rm||"—",r.newRedds|0,r.live|0,r.deadSamp|0,r.deadNot|0,r.subSamp|0,r.subNoBio|0,r.notes]})),
+    ["TOTALS",t.newRedds,t.live,t.deadSamp,t.deadNot,t.subSamp,t.subNoBio,""],
+    "Swipe to see all columns");
+}
+function carcTable(list,all){
+  const rows=list||S().carcasses,ref=all||S().carcasses;
+  return dtable(["#","Sp","Otolith","DNA","FL cm","Sex","RM","%sp","AC","CWT","Scale","Line","HBL","Scav","Eyes","Notes"],
+    rows.map(c=>({act:"editcarc",id:c.id,
+      c:[ref.indexOf(c)+1,c.species,c.otolith,c.dna,c.fl,c.sex,c.rm,c.spawn,c.adClip,c.cwt,c.scaleCard,
+         c.lineNums,c.hbl,c.scavenged,c.eyes,c.notes]})),null);
+}
+function reddTable(list){
+  const rows=list||S().redds;
+  return dtable(["ID","RM","WP #","Chan","Type","Braid","Live","Lat / Lon","Notes"],
+    rows.map(r=>({act:"editredd",id:r.id,
+      c:[r.reddId,r.rm,r.waypoint,r.chanLoc,r.chanType,r.braidLoc,r.liveOnRedd,
+         r.lat?(r.lat+", "+r.lon):"",r.notes]})),null);
+}
+function obsTable(){
+  return dtable(["#","Species","Type","Count","RM","Lat / Lon","Notes"],
+    S().obs.map((o,i)=>({act:"editobs",id:o.id,
+      c:[i+1,o.species,o.kind,o.count,o.rm,o.lat?(o.lat+", "+o.lon):"",o.notes]})),null);
+}
+function searchBox(k,n){
+  if(n<8)return"";
+  return '<div class="srch"><input type="search" id="q_'+k+'" value="'+esc(QUERY[k]||"")+
+    '" placeholder="Filter '+n+' records \u2014 number, RM, sex\u2026" autocomplete="off">'+
+    (QUERY[k]?'<button class="dbtn alt" data-act="qclear" data-k="'+k+'">'+ic("x")+'</button>':"")+'</div>';
+}
+const QUERY={};
+function matches(o,q){
+  if(!q)return true;
+  q=q.toLowerCase();
+  return Object.keys(o).some(k=>k.indexOf("__")!==0&&k!=="id"&&
+    String(o[k]==null?"":o[k]).toLowerCase().indexOf(q)>=0);
+}
+function paintViewChips(){
+  $$('[data-act="view"]').forEach(b=>{
+    const on=DB.view[b.dataset.k]==="table";
+    b.classList.toggle("mute",!on);b.textContent=on?"Cards":"Table";
+  });
+}
+
+/* ══════════════ tabs / paint ══════════════ */
+const FAB={carcass:"Add carcass",tally:"Add river mile",redds:"Add redd",obs:"Add observation"};
+function showTab(t){
+  activeTab=t;
+  $$(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+t));
+  $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
+  const f=$("#fab");
+  if(FAB[t]){$("#fabTxt").textContent=FAB[t];f.classList.add("show");}else f.classList.remove("show");
+  paint();window.scrollTo(0,0);
+}
+function paint(){
+  if(activeTab==="tally"&&dirty.tally){renderRows();dirty.tally=0;}
+  if(activeTab==="carcass"&&dirty.carcass){renderCarc();dirty.carcass=0;}
+  if(activeTab==="redds"&&dirty.redds){renderRedds();dirty.redds=0;}
+  if(activeTab==="obs"&&dirty.obs){renderObs();dirty.obs=0;}
+  if(activeTab==="survey"){renderInterval();renderEsc();}
+  if(activeTab==="ref")renderRef();
+  paintChart(activeTab);
+  setBadges();
+}
+function setBadges(){
+  const s=S(),t=rowTotals();
+  badge("tally",t.newRedds+t.live+t.dead);
+  badge("carcass",s.carcasses.length);
+  badge("redds",s.redds.length);
+  badge("obs",s.obs.reduce((a,o)=>a+(+o.count||0),0));
+}
+function badge(tab,n){
+  const b=$('nav button[data-tab="'+tab+'"]');if(!b)return;
+  let e=b.querySelector(".bdg");
+  if(n>0){if(!e){e=document.createElement("span");e.className="bdg";b.appendChild(e);}
+    e.textContent=n>99?"99+":n;}
+  else if(e)e.remove();
+}
+function repaintAll(){dirty.tally=dirty.carcass=dirty.redds=dirty.obs=1;
+  renderRows();renderCarc();renderRedds();renderObs();
+  dirty.tally=dirty.carcass=dirty.redds=dirty.obs=0;paintViewChips();
+  const rb=$("#refBody");if(rb)rb.dataset.built="";
+  paint();}
+
+/* ══════════════ export ══════════════ */
+const cell2=v=>{v=v==null?"":String(v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+const toCSV=rows=>rows.map(r=>r.map(cell2).join(",")).join("\r\n");
+function dl(name,text,mime){
+  const b=new Blob(["\ufeff"+text],{type:(mime||"text/plain")+";charset=utf-8"});
+  const u=URL.createObjectURL(b),a=document.createElement("a");
+  a.href=u;a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},600);
+}
+function hdr(){const h=S().header;return{
+  Form:"2026 Spawner Survey Data Form",Species:h.species,
+  Fork:(h.fork==="MF"||h.fork==="SF")?h.fork:"other",
+  ForkCode:h.fork,Stream:forkName(h),WaterType:h.waterType,
+  Method:surveyMethod(h).formula,
+  Crew:h.crew,Date:h.date,Reach:h.reach,SurveyType:h.surveyType,
+  Visibility:h.visibility?(h.visibility+" - "+(VIS[h.visibility]||"")):"",
+  Upper_Time:h.upTime,Upper_WaterTemp:h.upTemp,Upper_RM:h.upRM,
+  Lower_Time:h.loTime,Lower_WaterTemp:h.loTemp,Lower_RM:h.loRM,TempUnit:DB.unit,
+  Subsampling:h.subsampling,SubsampleRate:h.subsampling==="Y"?("1/"+(h.subRate||10)):"",
+  GPS_Unit:h.gpsUnit,NotesOnReverse:h.reverseNotes,Page:h.pageNo,PageOf:h.pageOf};}
+function fbase(){const h=S().header;
+  return (h.date||"nodate")+"_"+(h.species||"")+"_"+String(forkName(h)||"survey").replace(/[^\w]+/g,"-");}
+function markExported(){S().exportedAt=Date.now();save();renderInterval();}
+function exportCSV(kind){
+  const H=hdr(),hk=Object.keys(H),hv=hk.map(k=>H[k]);let head,rows=[];
+  if(kind==="tally"){
+    head=hk.concat(["Line","RiverMile","NewRedds","Live","Dead_NoSub_Sampled","Dead_NoSub_NotSampled",
+      "Dead_Sub_Sampled","Dead_Sub_NoBiologic","Notes"]);
+    S().rows.forEach((r,i)=>rows.push(hv.concat([i+1,r.rm,r.newRedds|0,r.live|0,
+      r.deadSamp|0,r.deadNot|0,r.subSamp|0,r.subNoBio|0,r.notes])));
+    if(rows.length){const t=rowTotals();
+      rows.push(hv.concat(["TOTALS","",t.newRedds,t.live,t.deadSamp,t.deadNot,t.subSamp,t.subNoBio,""]));}
+  }else if(kind==="carcass"){
+    head=hk.concat(["No","Species","Otolith","DNA","FL_cm","Sex","RM","PctSpawn","AdClip","CWT","ScaleCard",
+      "LineNums","HBL","Scavenged","EyesMissing","Latitude","Longitude","GPS_Accuracy_m","Notes"]);
+    S().carcasses.forEach((c,i)=>rows.push(hv.concat([i+1,c.species,c.otolith,c.dna,c.fl,c.sex,c.rm,c.spawn,
+      c.adClip,c.cwt,c.scaleCard,c.lineNums,c.hbl,c.scavenged,c.eyes,c.lat,c.lon,c.acc,c.notes])));
+  }else if(kind==="redds"){
+    head=hk.concat(["ReddID","RiverMile","GPS_Waypoint","LocationInChannel","ChannelType",
+      "BraidLocation","LiveChinookOnRedd","Latitude","Longitude","GPS_Accuracy_m","Notes"]);
+    S().redds.forEach(r=>rows.push(hv.concat([r.reddId,r.rm,r.waypoint,r.chanLoc,r.chanType,
+      r.braidLoc,r.liveOnRedd,r.lat,r.lon,r.acc,r.notes])));
+  }else if(kind==="obs"){
+    head=hk.concat(["No","SpeciesCode","Species","ObservationType","Count","RM",
+      "Latitude","Longitude","GPS_Accuracy_m","Notes"]);
+    S().obs.forEach((o,i)=>rows.push(hv.concat([i+1,o.species,spName(o.species),o.kind,o.count,o.rm,
+      o.lat,o.lon,o.acc,o.notes])));
+  }
+  if(!rows.length){toast("Nothing to export in "+kind);return;}
+  dl(fbase()+"_"+kind+".csv",toCSV([head].concat(rows)),"text/csv");
+  markExported();toast(rows.length+" rows exported");hap(14);
+}
+function exportAll(){["tally","carcass","redds","obs"].forEach((k,i)=>setTimeout(()=>exportCSV(k),i*450));}
+function backup(){dl("nooksack_backup_"+today()+".json",JSON.stringify(DB),"application/json");toast("Backup saved");}
+function targetCarcs(){
+  const sp=S().header.species;
+  return S().carcasses.filter(c=>!c.species||c.species===sp).length;
+}
+function copySummary(){
+  const s=S(),H=hdr(),t=rowTotals();
+  const txt=[(H.Species||"?")+" — "+(H.Date||"?")+" — "+(H.Stream||"?")+(H.Reach?" ("+H.Reach+")":""),
+    "Crew: "+(H.Crew||"?")+"  |  "+(H.SurveyType||"?")+"  |  Vis "+(H.Visibility||"?"),
+    "Upper "+(H.Upper_Time||"?")+" RM "+(H.Upper_RM||"?")+" "+(H.Upper_WaterTemp||"?")+"°"+DB.unit+
+      "   Lower "+(H.Lower_Time||"?")+" RM "+(H.Lower_RM||"?")+" "+(H.Lower_WaterTemp||"?")+"°"+DB.unit,
+    "New redds: "+t.newRedds+"   Live: "+t.live+"   Dead: "+t.dead,
+    "  sampled "+t.deadSamp+" · not sampled "+t.deadNot+" · subgroup "+(t.subSamp+t.subNoBio),
+    "Carcass records: "+s.carcasses.length+"   Redd records: "+s.redds.length,
+    s.obs.length?("Other species: "+s.obs.map(o=>spName(o.species)+" "+String(o.kind||"").toLowerCase()+" \u00d7"+o.count).join(", ")):"",
+    H.Subsampling==="Y"?("Subsampling at "+H.SubsampleRate):"No subsampling"].join("\n");
+  (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject())
+    .then(()=>toast("Summary copied")).catch(()=>{sheet("Day summary",
+      '<textarea style="min-height:240px">'+esc(txt)+'</textarea>',
+      '<button class="btn gh" data-act="close">Close</button>');});
+}
+
+/* ---- build the survey workbook ---- */
+function buildWorkbook(){
+  const s=S(),H=hdr(),C=s.carcasses,R=s.redds,RW=s.rows,T=rowTotals();
+  const HD=v=>({v:v,s:2}), B=v=>({v:v,s:1}), TT=v=>({v:v,s:3}), N=v=>({v:v,s:4}), SUB=v=>({v:v,s:5});
+  const num=v=>{const n=parseFloat(v);return (v===""||v==null||isNaN(n))?"":n;};
+
+  const sum=[];
+  sum.push([TT("2026 Spawner Survey Data Form")]);
+  sum.push([N("Exported "+new Date().toLocaleString()+" \u00b7 field app by Michael Stocklin")]);
+  sum.push([]);
+  sum.push([SUB("Header"),SUB("")]);
+  [["Species",H.Species],["Fork / stream",H.Stream],["Crew",H.Crew],["Date",H.Date],
+   ["Reach",H.Reach],["Survey type",H.SurveyType],["Visibility",H.Visibility],
+   ["GPS unit",H.GPS_Unit],["Subsampling",H.Subsampling==="Y"?H.SubsampleRate:"N"],
+   ["More notes on reverse",H.NotesOnReverse],
+   ["Page",H.Page?(H.Page+" of "+(H.PageOf||"")):""]].forEach(r=>sum.push([B(r[0]),r[1]]));
+  sum.push([]);
+  sum.push([SUB("Upper / lower"),SUB("Time"),SUB("Water temp (\u00b0"+DB.unit+")"),SUB("RM")]);
+  sum.push([B("Upper"),H.Upper_Time,num(H.Upper_WaterTemp),num(H.Upper_RM)]);
+  sum.push([B("Lower"),H.Lower_Time,num(H.Lower_WaterTemp),num(H.Lower_RM)]);
+  sum.push([]);
+  sum.push([SUB("Totals"),SUB("")]);
+  [["New redds",T.newRedds],["Live",T.live],
+   ["Dead \u2014 no subsampling, sampled",T.deadSamp],
+   ["Dead \u2014 no subsampling, not sampled (unsamps)",T.deadNot],
+   ["Dead \u2014 subsample group, sampled",T.subSamp],
+   ["Dead \u2014 subsample group, no biologic",T.subNoBio],
+   ["Dead total",T.dead],["Carcass form records",C.length],
+   ["  \u2014 of target species",targetCarcs()],["Redd form records",R.length],
+   ["Other-species observations",s.obs.reduce((a,o)=>a+(+o.count||0),0)]]
+   .forEach(r=>sum.push([B(r[0]),r[1]]));
+  sum.push([]);
+  sum.push([SUB("QA cross-checks"),SUB("")]);
+  sum.push([B("New redds = redd records"),T.newRedds===R.length?"MATCH":"CHECK ("+T.newRedds+" vs "+R.length+")"]);
+  sum.push([B("Sampled dead columns = carcass records"),
+    T.recorded===targetCarcs()?"MATCH":"CHECK ("+T.recorded+" vs "+targetCarcs()+")"]);
+
+  const tHead=["Line","River mile","New redds","Live","Dead: no sub \u2014 sampled",
+    "Dead: no sub \u2014 not sampled","Dead: subgroup \u2014 sampled","Dead: subgroup \u2014 no biologic","Notes"];
+  const tally=[tHead.map(HD)];
+  RW.forEach((r,i)=>tally.push([i+1,num(r.rm),r.newRedds|0,r.live|0,r.deadSamp|0,r.deadNot|0,
+    r.subSamp|0,r.subNoBio|0,r.notes]));
+  const tLast=Math.max(2,tally.length);
+  if(RW.length){
+    const t=[SUB("TOTALS"),SUB("")];
+    for(let c=2;c<=7;c++)t.push({v:"=SUM("+XL.colL(c)+"2:"+XL.colL(c)+tLast+")",s:5});
+    t.push(SUB(""));
+    tally.push(t);
+  }
+
+  const cHead=["No","Species","Otolith #","DNA #","FL (cm)","Sex","RM","% spawn","Ad clip","CWT",
+    "Scale card #","Line #'s","HBL #","Scavenged","Eyes missing","Latitude","Longitude","GPS \u00b1m","Notes"];
+  const carc=[cHead.map(HD)];
+  C.forEach((c,i)=>carc.push([i+1,c.species,c.otolith,c.dna,
+    (c.fl===""||c.fl==null)?"":{v:num(c.fl),s:6},
+    c.sex,num(c.rm),num(c.spawn),c.adClip,c.cwt,c.scaleCard,c.lineNums,c.hbl,c.scavenged,
+    num(c.eyes),num(c.lat),num(c.lon),num(c.acc),c.notes]));
+  const cLast=Math.max(2,carc.length);
+
+  const rHead=["Redd ID #","River mile","GPS waypoint #","Location in chan.","Channel type",
+    "Braid location","# live Chin. on redd","Latitude","Longitude","GPS \u00b1m","Notes"];
+  const redd=[rHead.map(HD)];
+  R.forEach(r=>redd.push([r.reddId,num(r.rm),r.waypoint,r.chanLoc,r.chanType,r.braidLoc,
+    num(r.liveOnRedd),num(r.lat),num(r.lon),num(r.acc),r.notes]));
+  const rLast=Math.max(2,redd.length);
+
+  const oHead=["No","Code","Species","Observation","Count","RM","Latitude","Longitude","GPS \u00b1m","Notes"];
+  const obs=[oHead.map(HD)];
+  s.obs.forEach((o,i)=>obs.push([i+1,o.species,spName(o.species),o.kind,+o.count||0,num(o.rm),
+    num(o.lat),num(o.lon),num(o.acc),o.notes]));
+  const oLast=Math.max(2,obs.length);
+
+  const F=(cols,last)=>"A1:"+XL.colL(cols-1)+last;
+  return XL.build([
+    {name:"Survey",rows:sum,widths:[38,20,20,12]},
+    {name:"Tally",rows:tally,freeze:1,filter:F(tHead.length,tLast),
+     widths:[7,12,12,9,17,18,17,18,34]},
+    {name:"Carcass",rows:carc,freeze:1,filter:F(cHead.length,cLast),
+     widths:[6,12,12,10,8,9,10,10,8,13,10,10,12,13,34]},
+    {name:"Redds",rows:redd,freeze:1,filter:F(rHead.length,rLast),
+     widths:[11,12,15,16,13,14,17,12,12,10,34]},
+    {name:"Other species",rows:obs,freeze:1,filter:F(oHead.length,oLast),
+     widths:[6,8,18,13,8,9,12,12,10,34]}
+  ]);
+}
+function exportXLSX(){
+  try{
+    const bytes=buildWorkbook();
+    const b=new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+    const u=URL.createObjectURL(b),a=document.createElement("a");
+    a.href=u;a.download=fbase()+".xlsx";document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(u);a.remove();},600);
+    markExported();toast("Excel workbook downloaded");hap(14);
+  }catch(e){toast("Export failed — try CSV");}
+}
+
+/* ══════════════ menus ══════════════ */
+const mi=(act,icon,title,sub,extra)=>'<button class="menu-item" data-act="'+act+'"'+(extra||"")+'>'+
+  '<span class="mi">'+ic(icon)+'</span><span class="mt"><b>'+title+'</b><span>'+sub+'</span></span>'+
+  '<span class="ma">'+ic("chev")+'</span></button>';
+function openMenu(){
+  const ids=Object.keys(DB.surveys).sort((a,b)=>DB.surveys[b].created-DB.surveys[a].created);
+  const list=ids.map(id=>{const l=label(DB.surveys[id]),cu=id===DB.current;
+    return '<button class="menu-item" data-act="switch" data-id="'+id+'" style="'+(cu?"border-color:var(--tx)":"")+'">'+
+      '<span class="mi"'+(cu?"":' style="background:var(--surf3)"')+'>'+ic("reach")+'</span>'+
+      '<span class="mt"><b>'+esc(l.t)+'</b><span>'+esc(l.s)+'</span></span>'+
+      (cu?'<span class="tag ac">Open</span>':"")+'</button>';}).join("");
+  sheet("Surveys",
+    '<div class="ct"><span class="eyebrow">'+ids.length+' on this device</span></div>'+list+
+    '<div class="rule"></div>'+
+    mi("newsurvey","plus","Start a new survey","Fresh reach, today's date")+
+    mi("finish","doc","Finish the survey","End-of-day checks, totals and hand-off")+
+    mi("export","down","Export &amp; backup","Excel and CSV for the database")+
+    mi("delsurvey","trash","Delete this survey","Removes it permanently"),
+    '<button class="btn gh" data-act="close">Done</button>');
+}
+function openExport(){
+  const s=S(),T=rowTotals(),ok=T.newRedds===s.redds.length&&T.recorded===s.carcasses.length;
+  sheet("Export &amp; backup",
+    (ok?"":'<div class="callout warn">QA cross-checks do not match yet — the tally totals and the carcass/redd records disagree. Fix before handing forms in.</div>')+
+    '<div class="ct"><span class="eyebrow">Excel</span></div>'+
+    mi("xlsx","doc","Download Excel workbook","Survey, Tally, Carcass, Redds and Other species")+
+    '<div class="rule"></div><div class="ct"><span class="eyebrow">CSV \u2014 one file per form</span></div>'+
+    mi("csv","doc","General survey tally","The page-1 table with a totals line","data-k=\"tally\"")+
+    mi("csv","doc","Chinook carcass form","One row per carcass","data-k=\"carcass\"")+
+    mi("csv","doc","Chinook redd form","One row per redd","data-k=\"redds\"")+
+    mi("csv","doc","Other species log","One row per observation","data-k=\"obs\"")+
+    mi("csvall","down","Export all four","Downloads every form at once")+
+    '<div class="rule"></div><div class="ct"><span class="eyebrow">Other</span></div>'+
+    mi("copysum","copy","Copy day summary","For the whiteboard and the group chat")+
+    mi("backup","down","Back up everything","All surveys, one JSON file")+
+    mi("restore","up","Restore from backup","Replaces what's on this device"),
+    '<button class="btn gh" data-act="close">Close</button>');
+}
+function openSettings(){
+  const ins=installState();
+  const tg=(k,on)=>'<button class="menu-item" data-act="tog" data-k="'+k+'"><span class="mt"><b>'+
+    (k==="autoGPS"?"Auto-capture GPS":"Keep screen awake")+'</b><span>'+
+    (k==="autoGPS"?"Grabs a fix when you open a new record":"Stops the phone sleeping mid-survey")+
+    '</span></span><span class="toggle'+(on?" on":"")+'"></span></button>';
+  sheet("Settings",
+    '<div class="ct"><span class="eyebrow">This device</span></div>'+
+    mi("install","down",ins.t,ins.s)+
+    '<div class="rule"></div><div class="ct"><span class="eyebrow">Display</span></div>'+
+    '<label class="f"><span class="lab">Theme</span><div class="seg sm">'+
+      ["auto","light","dark"].map(t=>'<button data-act="theme" data-v="'+t+'" class="'+(DB.theme===t?"on":"")+'">'+
+        (t==="auto"?"Auto":t==="light"?"Paper":"Night")+'</button>').join("")+'</div></label>'+
+    '<label class="f"><span class="lab">Temperature</span><div class="seg sm">'+
+      ["C","F"].map(u=>'<button data-act="unitset" data-v="'+u+'" class="'+(DB.unit===u?"on":"")+'">\u00b0'+u+'</button>').join("")+
+      '</div></label>'+
+    '<div class="rule"></div><div class="ct"><span class="eyebrow">Field behaviour</span></div>'+
+    tg("keepAwake",DB.keepAwake)+tg("autoGPS",DB.autoGPS)+
+    mi("gpsreset","gps","GPS permission",DB.gpsAsked?(DB.gpsAllowed?"Enabled — tap to ask again":"Manual entry — tap to enable"):"Not set up yet"),
+    '<button class="btn gh" data-act="close">Done</button>');
+}
+function openTerms(){
+  sheet("Terms of use",
+    '<div class="terms">'+
+    '<h4>Author</h4><p>Nooksack Spawning Survey was created by <b>Michael Stocklin</b>. Please keep the attribution in place if you share or adapt it.</p>'+
+    '<h4>Permitted use</h4><p>Provided for <b>educational and professional use</b> \u2014 training, volunteer monitoring, and spawning ground surveys by agency, tribal and watershed staff. Free to use and install on as many devices as you need.</p>'+
+    '<h4>Your data</h4><ul><li>All records stay on your device. Nothing is transmitted or collected.</li>'+
+    '<li>You are responsible for exporting and backing up. Clearing browser data or losing the device deletes unexported records.</li>'+
+    '<li>Export at the end of each survey day.</li></ul>'+
+    '<h4>Data quality</h4><p>This app records what you enter and reproduces the 2026 protocols as written; it does not validate field methods. Follow the managing agency\u2019s and co-manager\u2019s protocols, and verify exported data before it is used for escapement estimates or reporting.</p>'+
+    '<h4>No warranty</h4><p>Provided as is, without warranty of any kind. The author is not liable for lost data or for decisions made from data recorded or exported with this app.</p>'+
+    '</div>','<button class="btn gh" data-act="close">Close</button>');
+}
+
+/* ══════════════ end of day ══════════════ */
+function openFinish(){
+  const s=S(),H=hdr(),T=rowTotals();
+  const drafts=["carc","redd","obs"].filter(t=>draftFor(t));
+  const missing=[["Species",H.Species],["Fork / stream",H.Fork],["Crew",H.Crew],["Date",H.Date],
+    ["Reach",H.Reach],["Survey type",H.SurveyType],["Visibility",H.Visibility]]
+    .filter(x=>!x[1]).map(x=>x[0]);
+  const rows=[
+    {ok:!missing.length,t:missing.length?("Header incomplete: <b>"+missing.join(", ")+"</b>"):"Survey header complete"},
+    {ok:T.newRedds===s.redds.length,
+     t:"New redds <b>"+T.newRedds+"</b> vs redd form <b>"+s.redds.length+"</b>"},
+    {ok:T.recorded===targetCarcs(),
+     t:"Sampled dead <b>"+T.recorded+"</b> vs carcass form <b>"+targetCarcs()+"</b>"},
+    {ok:!drafts.length,warn:true,
+     t:drafts.length?("<b>"+drafts.length+" unsaved draft"+(drafts.length===1?"":"s")+"</b> still open"):"No unsaved drafts"}
+  ];
+  const allOk=rows.every(r=>r.ok);
+  sheet("Finish the survey",
+    '<div class="ct"><span class="eyebrow">Checks</span></div>'+
+    rows.map(r=>'<div class="eod '+(r.ok?"":(r.warn?"warn":"bad"))+'"><span class="ei">'+
+      (r.ok?"\u2713":"!")+'</span><span>'+r.t+'</span></div>').join("")+
+    '<div class="rule"></div><div class="ct"><span class="eyebrow">Day totals</span></div>'+
+    '<table class="deftab"><tr><th>Item</th><th>Count</th></tr>'+
+    [["New redds",T.newRedds],["Live",T.live],["Dead",T.dead],
+     ["Carcass records",s.carcasses.length],["Redd records",s.redds.length],
+     ["Other-species observations",s.obs.reduce((a,o)=>a+(+o.count||0),0)]]
+     .map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join("")+'</table>'+
+    (allOk?'':'<div class="callout warn">Fix the flagged items before the forms are handed in. You can still export.</div>')+
+    '<div class="ct"><span class="eyebrow">Hand off</span></div>'+
+    mi("xlsx","doc","Download Excel workbook","All four forms in one file")+
+    mi("copysum","copy","Copy day summary","For the whiteboard and the group chat")+
+    mi("backup","down","Back up everything","All surveys, one JSON file"),
+    '<button class="btn gh" data-act="close">Close</button>');
+}
+
+/* ══════════════ install ══════════════ */
+let deferredInstall=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstall=e;});
+window.addEventListener("appinstalled",()=>{deferredInstall=null;toast("Installed — open it from your home screen");});
+if("serviceWorker" in navigator && /^https?:/.test(location.protocol)){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("sw.js").then(reg=>{
+      reg.addEventListener("updatefound",()=>{
+        const w=reg.installing;if(!w)return;
+        w.addEventListener("statechange",()=>{
+          if(w.state==="installed"&&navigator.serviceWorker.controller)
+            toast("Update ready — reopen the app to apply");});
+      });
+    }).catch(()=>{});
+  });
+}
+function isStandalone(){return window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;}
+function installState(){
+  if(isStandalone())return{t:"Installed",s:"Running as an app. Works with no signal."};
+  if(deferredInstall)return{t:"Install on this phone",s:"Adds it to your home screen for offline use"};
+  if(/iPhone|iPad|iPod/.test(navigator.userAgent))
+    return{t:"Add to Home Screen",s:"Tap Share, then \u201cAdd to Home Screen\u201d"};
+  return{t:"Add to Home Screen",s:"Use your browser menu to add it to your home screen"};
+}
+function doInstall(){
+  if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.then(()=>{deferredInstall=null;});return;}
+  sheet("Install on your phone",
+    '<p class="hint" style="margin:0 0 14px">This app runs entirely on your device — no signal needed once it is on your home screen.</p>'+
+    '<div class="card"><div class="ct"><span class="eyebrow">iPhone \u00b7 Safari</span></div>'+
+    '<p class="hint" style="margin:0">Tap Share, scroll down, then <b>Add to Home Screen</b>.</p></div>'+
+    '<div class="card"><div class="ct"><span class="eyebrow">Android \u00b7 Chrome</span></div>'+
+    '<p class="hint" style="margin:0">Tap <b>\u22ee</b>, then <b>Install app</b>.</p></div>',
+    '<button class="btn gh" data-act="close">Got it</button>');
+}
+
+/* ══════════════ events ══════════════ */
+document.addEventListener("click",e=>{
+  const nav=e.target.closest("nav button[data-tab]");
+  if(nav){showTab(nav.dataset.tab);return;}
+  const t=e.target.closest("[data-act]");if(!t)return;
+  const a=t.dataset.act,id=t.dataset.id,k=t.dataset.k,v=t.dataset.v;
+  switch(a){
+    case "step": step(k,+t.dataset.d);break;
+    case "delrow": e.stopPropagation();delRow(id);break;
+    case "close": {
+      if(DRAFT&&DRAFT.__type&&draftFilled(DRAFT)){
+        saveDraft();const ty=DRAFT.__type;closeSheet();
+        dirty.carcass=dirty.redds=dirty.obs=1;paint();
+        toast("Draft kept — Resume to finish",()=>reopenSaved(ty));
+      }else closeSheet();
+      break;}
+    case "resume": reopenSaved(k);break;
+    case "discard": {
+      window.__dk=k;
+      sheet("Discard this draft?",'<p class="hint" style="margin:0">This permanently removes the unsaved '+
+        (k==="carc"?"carcass":k==="redd"?"redd":"observation")+' draft: <b>'+esc(draftLabel(k))+'</b>.</p>',
+        '<button class="btn gh" data-act="close">Keep it</button>'+
+        '<button class="btn dg" data-act="discard2">Discard</button>');
+      break;}
+    case "discard2": {const ty=window.__dk;const d=DB.drafts[ty];clearDraft(ty);closeSheet();paint();
+      toast("Draft discarded",()=>{DB.drafts[ty]=d;save();paint();toast("Draft restored");});break;}
+    case "menu": openMenu();break;
+    case "settings": openSettings();break;
+    case "export": openExport();break;
+    case "terms": openTerms();break;
+    case "install": doInstall();break;
+    case "gpsreset": {DB.gpsAsked=false;DB.gpsAllowed=false;save();closeSheet();
+      toast("You'll be asked next time you capture a position");break;}
+    case "newsurvey": {const s=blankSurvey();DB.surveys[s.id]=s;DB.current=s.id;save();
+      closeSheet();fillHeader();repaintAll();showTab("survey");toast("New survey started");hap(14);break;}
+    case "switch": DB.current=id;save();closeSheet();fillHeader();repaintAll();toast("Switched");break;
+    case "delsurvey": sheet("Delete survey?",'<p class="hint" style="margin:0">This permanently removes <b>'+
+        esc(label(S()).t)+'</b> and every line, carcass and redd on it. Export first.</p>',
+      '<button class="btn gh" data-act="close">Keep</button><button class="btn dg" data-act="delsurvey2">Delete forever</button>');break;
+    case "delsurvey2": {delete DB.surveys[DB.current];DB.current=null;load();save();closeSheet();
+      fillHeader();repaintAll();showTab("survey");toast("Survey deleted");break;}
+    case "fab": {
+      const ty=activeTab==="carcass"?"carc":activeTab==="redds"?"redd":activeTab==="obs"?"obs":null;
+      if(ty&&draftFor(ty)){reopenSaved(ty);toast("Resumed your unsaved draft");break;}
+      activeTab==="carcass"?openCarc():activeTab==="redds"?openRedd():
+      activeTab==="obs"?openObs():addRow();break;}
+    case "editobs": {const o=S().obs.find(x=>x.id===id);if(o)openObs(o);break;}
+    case "saveobs": saveObs();break;
+    case "delobs": e.stopPropagation();delObs(id);break;
+    case "ostep": {if(!DRAFT)break;DRAFT.count=Math.max(0,(+DRAFT.count||0)+ +t.dataset.d);
+      $("#obsCt").textContent=DRAFT.count;revalidate();saveDraft();hap(8);break;}
+    case "gpsget": gpsCapture();break;
+    case "gpsman": {if(!DRAFT)break;DRAFT.__man=!DRAFT.__man;renderGPS();break;}
+    case "gpsyes": {DB.gpsAsked=true;DB.gpsAllowed=true;save();closeSheetKeepDraft();reopenDraft();
+      GPS.fix(o=>{if(!DRAFT)return;DRAFT.lat=o.lat;DRAFT.lon=o.lon;DRAFT.acc=String(o.acc);renderGPS();});break;}
+    case "gpsno": {DB.gpsAsked=true;DB.gpsAllowed=false;save();closeSheetKeepDraft();
+      if(DRAFT)DRAFT.__man=true;reopenDraft();toast("Type coordinates in by hand");break;}
+    case "view": {DB.view[k]=DB.view[k]==="table"?"cards":"table";save();paintViewChips();
+      dirty[k]=1;paint();hap(8);break;}
+    case "editcarc": {const c=S().carcasses.find(x=>x.id===id);if(c)openCarc(c);break;}
+    case "editredd": {const r=S().redds.find(x=>x.id===id);if(r)openRedd(r);break;}
+    case "savecarc": saveCarc();break;
+    case "saveredd": saveRedd();break;
+    case "delcarc": e.stopPropagation();delCarc(id);break;
+    case "delredd": e.stopPropagation();delRedd(id);break;
+    case "dseg": {
+      if(!DRAFT)break;
+      DRAFT[k]=(DRAFT[k]===v)?"":v;
+      $$('[data-dseg="'+k+'"] button').forEach(b=>b.classList.toggle("on",b.dataset.v===DRAFT[k]&&DRAFT[k]!==""));
+      if(k==="chanType"){const w=$("#braidWrap");if(w)w.hidden=DRAFT[k]!=="Braided";}
+      revalidate();saveDraft();hap(6);break;}
+    case "rstep": {if(!DRAFT)break;
+      DRAFT.liveOnRedd=Math.max(0,(+DRAFT.liveOnRedd||0)+ +t.dataset.d);
+      $("#reddLiveCt").textContent=DRAFT.liveOnRedd;revalidate();saveDraft();hap(8);break;}
+    case "now": {const el=$('[data-h="'+k+'"]');el.value=nowHM();S().header[k]=el.value;save();hap(8);break;}
+    case "nowdate": {const el=$('[data-h="date"]');el.value=today();S().header.date=el.value;save();renderChrome();hap(8);break;}
+    case "unit": {DB.unit=DB.unit==="C"?"F":"C";$("#unitLbl").textContent=DB.unit;save();hap(8);break;}
+    case "unitset": {DB.unit=v;$("#unitLbl").textContent=v;save();openSettings();break;}
+    case "theme": DB.theme=v;applyTheme();save();openSettings();break;
+    case "tog": {DB[k]=!DB[k];save();if(k==="keepAwake")setWake(DB[k]);openSettings();break;}
+    case "graph": {DB.charts=DB.charts||{};DB.charts[k]=!DB.charts[k];save();
+      paintChips();paintChart(k);hap(8);break;}
+    case "psm": {PSM[k]=PSM[k]===v?"":v;if(k==="origin"&&v!=="HOR")PSM.spawn="";renderPSMTool();hap(6);break;}
+    case "lineup": {const d=+t.dataset.d;
+      DB.lineup.pos=d===0?0:Math.max(0,(DB.lineup.pos||0)+d);save();renderLineup();hap(9);break;}
+    case "calcmode": CALC.mode=v;CALC.auto=false;renderCalcs();hap(6);break;
+    case "calcauto": CALC.auto=true;renderCalcs();hap(6);break;
+    case "useprop": CALC.prop=String(Math.round(parseFloat(v)*1000)/10);renderCalcs();hap(8);break;
+    case "usetally": {const t2=rowTotals();
+      if(k==="redds")CALC.redds=String(t2.newRedds);else CALC.carcs=String(S().carcasses.length);
+      renderCalcs();hap(8);break;}
+    case "finish": openFinish();break;
+    case "savecarcnext": saveCarc(true);break;
+    case "savereddnext": saveRedd(true);break;
+    case "saveobsnext": saveObs(true);break;
+    case "qclear": {QUERY[k]="";dirty[k]=1;paint();break;}
+    case "xlsx": exportXLSX();break;
+    case "csv": exportCSV(k);break;
+    case "csvall": exportAll();break;
+    case "backup": backup();break;
+    case "copysum": copySummary();break;
+    case "restore": $("#importFile").click();break;
+    case "undo": {const el=$("#toast");if(el._undo){el._undo();el._undo=null;el.classList.remove("show");}break;}
+  }
+});
+function closeSheetKeepDraft(){const d=DRAFT;$("#scrim").classList.remove("show");DRAFT=d;}
+/* the GPS consent sheet borrows the same panel — put the record form back afterwards */
+function reopenDraft(){
+  if(!DRAFT)return;
+  const d=DRAFT,t=d.__type,rid=d.__rec;
+  const list=t==="carc"?S().carcasses:t==="redd"?S().redds:S().obs;
+  const rec=rid?list.find(x=>x.id===rid):null;
+  if(t==="carc")openCarc(rec,d);else if(t==="redd")openRedd(rec,d);else if(t==="obs")openObs(rec,d);
+}
+function revalidate(){
+  if($("#carcVal"))validateCarc();
+  else if($("#reddVal"))validateRedd();
+  else if($("#obsVal"))validateObs();
+}
+document.addEventListener("input",e=>{
+  if(e.target.id==="c_exp2"){CALC.exp=e.target.value;
+    const b=$("#escBox .calcout .cv");
+    if(b){const x=escEstimate();b.textContent=x.total==null?"\u2014":(Math.round(x.total*10)/10).toLocaleString();}
+    return;}
+  const q=e.target.closest('[id^="q_"]');
+  if(q){const k=q.id.slice(2);QUERY[k]=q.value;
+    const pos=q.selectionStart;dirty[k]=1;paint();
+    const nq=$("#q_"+k);if(nq){nq.focus();try{nq.setSelectionRange(pos,pos);}catch(err){}}
+    return;}
+  const el=e.target;if(!DRAFT||!el.id||el.id.indexOf("f_")!==0)return;
+  const k=el.id.slice(2);
+  if(k in DRAFT||["lat","lon"].indexOf(k)>=0)DRAFT[k]=el.value;
+  revalidate();saveDraft();
+},{passive:true});
+/* a stray tap on the backdrop must never destroy data */
+$("#scrim").addEventListener("click",e=>{
+  if(e.target.id!=="scrim")return;
+  if(DRAFT&&DRAFT.__type&&draftFilled(DRAFT)){
+    saveDraft();const t=DRAFT.__type;closeSheet();
+    dirty.carcass=dirty.redds=dirty.obs=1;paint();
+    toast("Draft kept — Resume to finish",()=>{const d=draftFor(t);if(d)reopenSaved(t);});
+    return;
+  }
+  closeSheet();
+});
+function reopenSaved(type){
+  const d=DB.drafts[type];if(!d)return;
+  DRAFT=d;reopenDraft();
+}
+$("#importFile").addEventListener("change",ev=>{
+  const f=ev.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.surveys)throw 0;
+    window.__imp=d;
+    sheet("Restore backup?",'<p class="hint" style="margin:0">Replaces everything on this device with the '+
+      Object.keys(d.surveys).length+' survey(s) in this file.</p>',
+      '<button class="btn gh" data-act="close">Cancel</button><button class="btn pri" onclick="doRestore()">Restore</button>');
+  }catch(err){toast("Not a valid backup file")}ev.target.value="";};
+  r.readAsText(f);
+});
+function doRestore(){DB=window.__imp;load();save();closeSheet();applyTheme();fillHeader();repaintAll();toast("Backup restored");}
+
+/* ══════════════ boot ══════════════ */
+load();applyTheme();fillHeader();repaintAll();paintChips();paintViewChips();showTab("survey");
+if(DB.keepAwake)setWake(true);
+window.addEventListener("pagehide",flush);
+window.addEventListener("beforeunload",flush);
+
+</script>
+</body>
+</html>
