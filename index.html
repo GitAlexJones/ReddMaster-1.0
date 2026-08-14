@@ -82,6 +82,8 @@ header{position:sticky;top:0;z-index:40;background:var(--cover);color:var(--cove
 .reach .rs{font:600 10px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;
   color:#5A4E28;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .reach .chev{color:var(--coverInk);flex:0 0 auto;opacity:.65}
+.hbtn.wide{width:auto;padding:0 10px;gap:6px;flex-direction:row}
+.hbtn .hlab{font:700 9px/1.05 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:left}
 .hbtn{flex:0 0 auto;width:46px;min-height:48px;border:1.5px solid var(--band);border-radius:var(--r-sm);
   background:rgba(255,255,255,.5);color:var(--coverInk);display:grid;place-items:center;
   transition:all .1s var(--ease)}
@@ -291,14 +293,21 @@ input[type=time],input[type=date]{-webkit-appearance:none;appearance:none;
 .btn.dg:active{background:var(--sal);color:#FBF8EE}
 .btn.sm{min-height:40px;width:auto;padding:0 13px;font-size:13px}
 
-.fab{position:fixed;right:14px;bottom:calc(94px + var(--safe-b));z-index:35;height:54px;padding:0 20px;
-  border-radius:var(--r);background:var(--cover);color:var(--coverInk);border:2px solid var(--band);
-  font:700 15px/1 var(--cond);letter-spacing:.08em;text-transform:uppercase;
-  display:none;align-items:center;gap:8px;box-shadow:3px 3px 0 var(--band);
-  transition:transform .1s var(--ease),box-shadow .1s var(--ease)}
+.fab{position:fixed;left:0;right:0;bottom:calc(70px + var(--safe-b));z-index:36;
+  display:none;justify-content:center;padding:0 13px;pointer-events:none}
 .fab.show{display:flex}
-.fab:active{transform:translate(3px,3px);box-shadow:none}
-
+.fab button{pointer-events:auto;width:100%;max-width:694px;min-height:58px;
+  display:flex;align-items:center;justify-content:center;gap:11px;
+  background:var(--cover);color:var(--coverInk);border:2.5px solid var(--band);
+  border-radius:var(--r);font:800 18px/1 var(--cond);letter-spacing:.075em;text-transform:uppercase;
+  box-shadow:0 4px 0 var(--band),0 10px 22px -8px rgba(0,0,0,.45);
+  transition:transform .1s var(--ease),box-shadow .1s var(--ease)}
+.fab button:active{transform:translateY(4px);box-shadow:0 0 0 var(--band)}
+.fab button svg{width:26px;height:26px;stroke-width:3}
+.fab .kbd{font:700 10px/1 var(--mono);letter-spacing:.1em;background:var(--band);color:var(--cover);
+  padding:4px 6px;border-radius:2px;margin-left:2px}
+/* keep the last records clear of the action bar */
+.panel.hasfab{padding-bottom:74px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .chip{font:700 11.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:0 12px;
   min-height:40px;display:inline-flex;align-items:center;
@@ -615,7 +624,7 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
       <span class="rmeta"><span class="rt" id="hTitle">New survey</span><span class="rs" id="hSub">tap to switch</span></span>
       <svg class="i chev" style="width:15px;height:15px"><use href="#i-chev"/></svg>
     </button>
-    <button class="hbtn" data-act="newsurvey" aria-label="New survey"><svg class="i"><use href="#i-plus"/></svg><span class="pulse" id="pulse"></span></button>
+    <button class="hbtn wide" data-act="newsurvey" aria-label="Add survey"><svg class="i"><use href="#i-plus"/></svg><span class="hlab">Add<br>survey</span><span class="pulse" id="pulse"></span></button>
     <button class="hbtn" data-act="settings" aria-label="Settings"><svg class="i"><use href="#i-gear"/></svg></button>
   </div>
 </header>
@@ -806,7 +815,7 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
   </footer>
 </main>
 
-<button class="fab" id="fab" data-act="fab"><svg class="i"><use href="#i-plus"/></svg><span id="fabTxt">Add</span></button>
+<div class="fab" id="fab"><button data-act="fab"><svg class="i"><use href="#i-plus"/></svg><span id="fabTxt">Add</span></button></div>
 
 <nav>
   <button data-tab="survey" class="on"><svg class="i"><use href="#i-reach"/></svg><span class="tl">Survey</span></button>
@@ -1683,13 +1692,13 @@ function openRedd(rec,draft){
       '<input type="text" id="f_waypoint" value="'+esc(r.waypoint)+'" placeholder="waypoint"></label>'+
     '<p class="hint" style="margin:-6px 0 11px">A new waypoint for <b>every</b> redd, even when close together. Check the unit has a fix first.</p>'+
     gpsBlock()+
-    '<label class="f">'+lab("2.2","Location in channel","LB/MC/RB",1)+
-      segHTML("chanLoc",[["LB","LB"],["MC","MC"],["RB","RB"]],r.chanLoc)+'</label>'+
     '<label class="f">'+lab("2.3","Channel type",null,1)+
       segHTML("chanType",[["Single","Single"],["Braided","Braided"]],r.chanType,"coral")+'</label>'+
     '<label class="f" id="braidWrap"'+(r.chanType==="Braided"?"":" hidden")+'>'+lab("2.4","Braid location","L/M/R")+
       segHTML("braidLoc",[["L","L"],["M","M"],["R","R"]],r.braidLoc)+
       '<p class="hint" style="margin-top:7px">More than three braids? Describe it in the notes.</p></label>'+
+    '<label class="f">'+lab("2.2","Location in channel","LB/MC/RB",1)+
+      segHTML("chanLoc",[["LB","LB"],["MC","MC"],["RB","RB"]],r.chanLoc)+'</label>'+
     sec(3,"Occupancy")+
     '<label class="f">'+lab("3.1","Live Chinook on redd","count")+
       '<div class="sprow" style="margin:0"><div class="cg2" style="grid-template-columns:1fr"><div class="tcell">'+
@@ -2355,7 +2364,10 @@ function showTab(t){
   $$(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+t));
   $$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   const f=$("#fab");
-  if(FAB[t]){$("#fabTxt").textContent=FAB[t];f.classList.add("show");}else f.classList.remove("show");
+  $$(".panel").forEach(p=>p.classList.remove("hasfab"));
+  if(FAB[t]){$("#fabTxt").textContent=FAB[t];f.classList.add("show");
+    const pn=$("#p-"+t);if(pn)pn.classList.add("hasfab");}
+  else f.classList.remove("show");
   paint();window.scrollTo(0,0);
 }
 function paint(){
@@ -2740,8 +2752,20 @@ document.addEventListener("click",e=>{
     case "delsurvey": sheet("Delete survey?",'<p class="hint" style="margin:0">This permanently removes <b>'+
         esc(label(S()).t)+'</b> and every line, carcass and redd on it. Export first.</p>',
       '<button class="btn gh" data-act="close">Keep</button><button class="btn dg" data-act="delsurvey2">Delete forever</button>');break;
-    case "delsurvey2": {delete DB.surveys[DB.current];DB.current=null;load();save();closeSheet();
-      fillHeader();repaintAll();showTab("survey");toast("Survey deleted");break;}
+    case "delsurvey2": {
+      /* delete, then pick the next survey from memory. Calling load() here used to
+         re-read storage before the deletion was written, resurrecting the survey. */
+      const gone=DB.current,rec=DB.surveys[gone];
+      delete DB.surveys[gone];
+      const left=Object.keys(DB.surveys).sort((a,b)=>DB.surveys[b].created-DB.surveys[a].created);
+      if(left.length)DB.current=left[0];
+      else{const fresh=blankSurvey();DB.surveys[fresh.id]=fresh;DB.current=fresh.id;}
+      DB.drafts={};
+      flush();save();closeSheet();
+      fillHeader();repaintAll();showTab("survey");
+      toast("Survey deleted",()=>{DB.surveys[gone]=rec;DB.current=gone;flush();save();
+        fillHeader();repaintAll();toast("Survey restored");});
+      break;}
     case "fab": {
       const ty=activeTab==="carcass"?"carc":activeTab==="redds"?"redd":activeTab==="obs"?"obs":null;
       if(ty&&draftFor(ty)){reopenSaved(ty);toast("Resumed your unsaved draft");break;}
