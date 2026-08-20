@@ -544,6 +544,39 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
 .dsave.on{background:var(--ok);color:#fff}
 
 
+/* ---------------- user chip ---------------- */
+.userbtn{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border:1.5px solid var(--line2);
+  border-radius:var(--r-sm);background:var(--surf2);margin-bottom:11px}
+.userbtn:active{transform:translate(1px,1px)}
+.userbtn.none{border-color:var(--sal);background:var(--sal-ghost)}
+.userbtn .uav{width:30px;height:30px;border-radius:2px;background:var(--tx);color:var(--bg);
+  display:grid;place-items:center;font:700 11px/1 var(--mono);flex:0 0 auto}
+.userbtn.none .uav{background:var(--sal);color:#fff}
+.userbtn .unm{font:700 12px/1.2 var(--cond);letter-spacing:.05em;text-transform:uppercase;
+  color:var(--tx);flex:1;text-align:left}
+
+/* ---------------- photos ---------------- */
+.pstrip{display:flex;gap:8px;flex-wrap:wrap}
+.pthumb{position:relative;width:78px;height:78px;flex:0 0 auto;border:1.5px solid var(--tx);
+  border-radius:var(--r-sm);overflow:hidden;background:var(--surf3)}
+.pthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pdel{position:absolute;top:2px;right:2px;width:24px;height:24px;border-radius:2px;
+  background:var(--band);color:var(--cover);display:grid;place-items:center;border:none}
+.pdel svg{width:13px;height:13px;stroke-width:3}
+.padd{width:78px;height:78px;flex:0 0 auto;border:2px dashed var(--line2);border-radius:var(--r-sm);
+  background:var(--surf2);color:var(--tx2);display:grid;place-items:center;gap:2px;
+  font:700 9px/1.15 var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.padd svg{width:22px;height:22px;margin:0 auto}
+.padd:active{background:var(--cover);border-color:var(--tx);color:var(--coverInk)}
+.tag.ph{display:inline-flex;align-items:center;gap:3px;background:var(--surf3);color:var(--tx2)}
+.tag.ph svg{width:11px;height:11px;stroke-width:2.4}
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:13px}
+.pcell{position:relative;aspect-ratio:1;border:1.5px solid var(--line2);border-radius:var(--r-sm);
+  overflow:hidden;background:var(--surf3);display:block}
+.pcell img{width:100%;height:100%;object-fit:cover;display:block}
+.pcap{position:absolute;left:0;right:0;bottom:0;background:rgba(23,21,14,.78);color:var(--cover);
+  font:700 9px/1.5 var(--mono);letter-spacing:.06em;text-align:center}
+
 /* ---------------- record filter ---------------- */
 .srch{display:flex;gap:7px;margin-bottom:10px}
 .srch input{flex:1;height:46px;border:1.5px solid var(--line2);border-radius:var(--r-sm);
@@ -614,6 +647,8 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3.5" width="18" height="17" rx="1.5"/><path d="M3 9h18M3 15h18M9.5 3.5v17"/></symbol>
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4.5h6a3 3 0 0 1 3 3v13a2.4 2.4 0 0 0-2.4-2.4H4z"/><path d="M20 4.5h-6a3 3 0 0 0-3 3v13a2.4 2.4 0 0 1 2.4-2.4H20z"/></symbol>
   <symbol id="i-calc" viewBox="0 0 24 24"><rect x="4.5" y="2.5" width="15" height="19" rx="2"/><path d="M8 6.5h8M8 11h1.5M11.5 11H13M15 11h1M8 14.5h1.5M11.5 14.5H13M15 14.5h1M8 18h1.5M11.5 18H13M15 18h1"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8.5h3.6l1.6-2.6h7.6l1.6 2.6H21a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V9.5a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.6" r="3.6"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></symbol>
   <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M7.5 3.5v6h8v-6M7.5 21v-6h9v6"/></symbol>
 </svg>
 
@@ -681,6 +716,7 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
         </div></label>
     </div>
 
+    <div id="userChip"></div>
     <div id="intervalBox"></div>
     <div id="escBox"></div>
 
@@ -975,7 +1011,7 @@ const XL=(()=>{
     files.push({name:"xl/styles.xml",data:txt(STYLES)});
     return zip(files);
   }
-  return {build,colL};
+  return {build,colL,zip,txt};
 })();
 
 
@@ -1001,6 +1037,8 @@ const VIS={1:"Excellent",2:"Very good",3:"Good",4:"Fair",5:"Poor",6:"Not surveya
 
 /* ══════════════ state ══════════════ */
 const KEY="nooksack_survey_v1";
+const APP_VERSION="1.0";
+const SCHEMA_VERSION="reddmaster.sgs.v1";   /* bump only on a breaking field change */
 let DB={surveys:{},current:null,unit:"C",theme:"light",autoGPS:true,keepAwake:false,charts:{},
   lineup:{pos:0,rate:10},gpsAsked:false,gpsAllowed:false,view:{},drafts:{}};
 let DRAFT=null, wakeLock=null, activeTab="survey";
@@ -1043,6 +1081,8 @@ function load(){
   if(!DB.lineup)DB.lineup={pos:0,rate:10};
   if(!DB.view||typeof DB.view!=="object")DB.view={};
   if(!DB.drafts||typeof DB.drafts!=="object")DB.drafts={};
+  /* one stable id per phone, so the hub can tell crews apart and dedupe re-imports */
+  if(!DB.deviceId)DB.deviceId="dev_"+uid()+uid().slice(0,4);
   Object.values(DB.surveys).forEach(s=>{
     s.last=s.last||{};s.rows=s.rows||[];s.carcasses=s.carcasses||[];s.redds=s.redds||[];s.obs=s.obs||[];
     const h=s.header=s.header||{};
@@ -1140,7 +1180,7 @@ function label(s){
   return{t:(h.species||"—")+" · "+short+(h.reach?" · "+h.reach:""),
          s:(h.date||"no date")+rm+(s.name?" · "+s.name:"")};
 }
-function renderChrome(){const l=label(S());$("#hTitle").textContent=l.t;$("#hSub").textContent=l.s;renderInterval();renderEsc();}
+function renderChrome(){const l=label(S());$("#hTitle").textContent=l.t;$("#hSub").textContent=l.s;renderInterval();renderEsc();renderUserChip();}
 function paintSeg(k,v){$$('[data-hseg="'+k+'"] button').forEach(b=>b.classList.toggle("on",b.dataset.v===v));}
 function fillHeader(){
   const h=S().header;
@@ -1577,7 +1617,8 @@ function openCarc(rec,draft){
       '<label class="f">'+lab("4.5","Eyes missing","0-2")+segHTML("eyes",[["0","0"],["1","1"],["2","2"]],c.eyes)+'</label>'+
     '</div>'+
     sec(5,"Location")+gpsBlock()+
-    sec(6,"Notes")+
+    sec(6,"Photos")+photoBlock()+
+    sec(7,"Notes")+
     '<label class="f"><textarea id="f_notes" placeholder="part scavenged, carcass condition, lost tag\u2026">'+esc(c.notes)+'</textarea></label>'+
     '<div class="callout warn">Cut the tail when you are done with the fish.</div>'+
     '<div id="carcVal"></div>'+draftNote();
@@ -1588,7 +1629,7 @@ function openCarc(rec,draft){
      '<button class="btn gh" data-act="savecarcnext">Save + next</button>'+
      '<button class="btn pri" data-act="savecarc">Save</button>';
   sheet(rec?"Edit carcass":"New carcass",body,foot);
-  renderGPS();validateCarc();
+  renderGPS();validateCarc();renderPhotoStrip();
   if(!rec&&!draft&&DB.autoGPS&&DB.gpsAsked&&DB.gpsAllowed)gpsCapture();
 }
 function validateCarc(){
@@ -1612,11 +1653,13 @@ function saveCarc(next){
   delete c.__type;delete c.__rec;delete c.__man;delete c.__init;
   ["otolith","dna","fl","rm","scaleCard","lineNums","hbl","notes","lat","lon"]
     .forEach(k=>{const el=$("#f_"+k);if(el)c[k]=el.value.trim();});
+  stampRecord(c);
   const s=S(),arr=s.carcasses,i=arr.findIndex(x=>x.id===c.id);
   if(i>=0)arr[i]=c;else arr.push(c);
   s.last={otolith:c.otolith||s.last.otolith,dna:c.dna||s.last.dna,scaleCard:c.scaleCard,
     lineNums:c.lineNums||s.last.lineNums,rm:c.rm};
   save();closeSheet();dirty.carcass=1;paint();hap(14);
+  syncPhotos();
   toast(i>=0?"Carcass updated":"Carcass "+arr.length+" logged");
   if(next)openCarc();
 }
@@ -1644,7 +1687,7 @@ function renderCarc(){
       const sub=[c.fl&&c.fl+" cm",c.rm&&"RM "+c.rm,c.lat&&"GPS",c.otolith&&"OT "+c.otolith,
         c.dna&&"DNA "+c.dna].filter(Boolean).join("  ·  ");
       return '<div class="rec" data-act="editcarc" data-id="'+c.id+'"><div class="ix num">'+(i+1)+'</div>'+
-        '<div class="bd"><div class="t1">'+esc(mark)+sx+spTag+psm+'</div>'+
+        '<div class="bd"><div class="t1">'+esc(mark)+sx+spTag+psm+photoTag(c.id)+'</div>'+
         '<div class="t2">'+esc(sub||"tap to edit")+'</div></div>'+
         '<button class="x" data-act="delcarc" data-id="'+c.id+'" aria-label="Delete">'+ic("x")+'</button></div>';
     }).join("");
@@ -1657,6 +1700,7 @@ function renderCarc(){
 }
 
 function delCarc(id){
+  PDB.delByRecord(id).then(syncPhotos).catch(()=>{});
   const arr=S().carcasses,i=arr.findIndex(x=>x.id===id);if(i<0)return;
   const rec=arr.splice(i,1)[0];
   save();closeSheet();dirty.carcass=1;paint();hap(20);
@@ -1707,7 +1751,8 @@ function openRedd(rec,draft){
       '<span class="v num" id="reddLiveCt" style="font-size:30px">'+(+r.liveOnRedd||0)+'</span>'+
       '<button data-act="rstep" data-d="1" style="width:56px;height:52px;font-size:28px">+</button>'+
       '</div></div></div></div></label>'+
-    sec(4,"Notes")+
+    sec(4,"Photos")+photoBlock()+
+    sec(5,"Notes")+
     '<label class="f"><textarea id="f_notes" placeholder="superimposition, distance from flag, braid description\u2026">'+esc(r.notes)+'</textarea></label>'+
     '<div class="callout">Flag with <b>date · # live on redd · initials · distance from flag</b>, tied to a tree or flat rock.</div>'+
     '<div id="reddVal"></div>'+draftNote();
@@ -1718,7 +1763,7 @@ function openRedd(rec,draft){
      '<button class="btn gh" data-act="savereddnext">Save + next</button>'+
      '<button class="btn pri" data-act="saveredd">Save</button>';
   sheet(rec?"Edit redd":"New redd",body,foot);
-  renderGPS();validateRedd();
+  renderGPS();validateRedd();renderPhotoStrip();
   if(!rec&&!draft&&DB.autoGPS&&DB.gpsAsked&&DB.gpsAllowed)gpsCapture();
 }
 function validateRedd(){
@@ -1739,10 +1784,12 @@ function saveRedd(next){
   const r=DRAFT;clearDraft('redd');
   delete r.__type;delete r.__rec;delete r.__man;delete r.__init;
   ["reddId","rm","waypoint","notes","lat","lon"].forEach(k=>{const el=$("#f_"+k);if(el)r[k]=el.value.trim();});
+  stampRecord(r);
   const s=S(),arr=s.redds,i=arr.findIndex(x=>x.id===r.id);
   if(i>=0)arr[i]=r;else arr.push(r);
   s.last=Object.assign(s.last||{},{waypoint:r.waypoint,rm:r.rm});
   save();closeSheet();dirty.redds=1;paint();hap(14);
+  syncPhotos();
   toast(i>=0?"Redd updated":"Redd "+r.reddId+" logged");
   if(next)openRedd();
 }
@@ -1767,7 +1814,7 @@ function renderRedds(){
       return '<div class="rec" data-act="editredd" data-id="'+r.id+'">'+
         '<div class="ix num">'+esc(r.reddId||"–")+'</div>'+
         '<div class="bd"><div class="t1">Redd '+esc(r.reddId||"")+
-          ((+r.liveOnRedd>0)?' <span class="tag ac">'+esc(r.liveOnRedd)+' live</span>':"")+'</div>'+
+          ((+r.liveOnRedd>0)?' <span class="tag ac">'+esc(r.liveOnRedd)+' live</span>':"")+photoTag(r.id)+'</div>'+
         '<div class="t2">'+esc(sub||"tap to edit")+'</div></div>'+
         '<button class="x" data-act="delredd" data-id="'+r.id+'" aria-label="Delete">'+ic("x")+'</button></div>';
     }).join("");
@@ -1781,6 +1828,7 @@ function renderRedds(){
 }
 
 function delRedd(id){
+  PDB.delByRecord(id).then(syncPhotos).catch(()=>{});
   const arr=S().redds,i=arr.findIndex(x=>x.id===id);if(i<0)return;
   const rec=arr.splice(i,1)[0];
   save();closeSheet();dirty.redds=1;paint();hap(20);
@@ -1819,7 +1867,8 @@ function openObs(rec,draft){
     '<label class="f">'+lab("2.2","River mile","0.1")+
       '<input type="number" inputmode="decimal" step="0.1" id="f_rm" value="'+esc(o.rm)+'" placeholder="0.0"></label>'+
     gpsBlock()+
-    sec(3,"Notes")+
+    sec(3,"Photos")+photoBlock()+
+    sec(4,"Notes")+
     '<label class="f"><textarea id="f_notes" placeholder="behaviour, condition, redd size\u2026">'+esc(o.notes)+'</textarea></label>'+
     '<div id="obsVal"></div>'+draftNote();
   const foot=rec
@@ -1829,7 +1878,7 @@ function openObs(rec,draft){
      '<button class="btn gh" data-act="saveobsnext">Save + next</button>'+
      '<button class="btn pri" data-act="saveobs">Save</button>';
   sheet(rec?"Edit observation":"Other species",body,foot);
-  renderGPS();validateObs();
+  renderGPS();validateObs();renderPhotoStrip();
   if(!rec&&!draft&&DB.autoGPS&&DB.gpsAsked&&DB.gpsAllowed)gpsCapture();
 }
 function validateObs(){
@@ -1845,9 +1894,11 @@ function saveObs(next){
   const o=DRAFT;clearDraft('obs');
   delete o.__type;delete o.__rec;delete o.__man;delete o.__init;
   ["rm","notes","lat","lon"].forEach(k=>{const el=$("#f_"+k);if(el)o[k]=el.value.trim();});
+  stampRecord(o);
   const arr=S().obs,i=arr.findIndex(x=>x.id===o.id);
   if(i>=0)arr[i]=o;else arr.push(o);
   save();closeSheet();dirty.obs=1;paint();hap(14);
+  syncPhotos();
   toast(i>=0?"Observation updated":spName(o.species)+" logged");
   if(next)openObs();
 }
@@ -1862,7 +1913,7 @@ function renderObs(){
       '<div class="rec" data-act="editobs" data-id="'+o.id+'"><div class="ix num">'+(i+1)+'</div>'+
       '<div class="bd"><div class="t1">'+esc(spName(o.species))+
         ' <span class="tag ac">'+esc(o.kind||"?")+'</span>'+
-        ' <span class="tag">\u00d7'+(+o.count||0)+'</span></div>'+
+        ' <span class="tag">\u00d7'+(+o.count||0)+'</span>'+photoTag(o.id)+'</div>'+
       '<div class="t2">'+esc([o.rm&&"RM "+o.rm,o.lat&&"GPS",o.notes].filter(Boolean).join("  \u00b7  ")||"tap to edit")+'</div></div>'+
       '<button class="x" data-act="delobs" data-id="'+o.id+'" aria-label="Delete">'+ic("x")+'</button></div>').join("");
   }
@@ -1871,6 +1922,7 @@ function renderObs(){
   $("#obsSp").textContent=new Set(arr.map(o=>o.species).filter(Boolean)).size;
 }
 function delObs(id){
+  PDB.delByRecord(id).then(syncPhotos).catch(()=>{});
   const arr=S().obs,i=arr.findIndex(x=>x.id===id);if(i<0)return;
   const rec=arr.splice(i,1)[0];
   save();closeSheet();dirty.obs=1;paint();hap(20);
@@ -2414,7 +2466,7 @@ function hdr(){const h=S().header;return{
   Fork:(h.fork==="MF"||h.fork==="SF")?h.fork:"other",
   ForkCode:h.fork,Stream:forkName(h),WaterType:h.waterType,
   Method:surveyMethod(h).formula,
-  Crew:h.crew,Date:h.date,Reach:h.reach,SurveyType:h.surveyType,
+  Crew:h.crew,RecordedBy:(currentUser()||{}).initials||"",Date:h.date,Reach:h.reach,SurveyType:h.surveyType,
   Visibility:h.visibility?(h.visibility+" - "+(VIS[h.visibility]||"")):"",
   Upper_Time:h.upTime,Upper_WaterTemp:h.upTemp,Upper_RM:h.upRM,
   Lower_Time:h.loTime,Lower_WaterTemp:h.loTemp,Lower_RM:h.loRM,TempUnit:DB.unit,
@@ -2434,25 +2486,171 @@ function exportCSV(kind){
       rows.push(hv.concat(["TOTALS","",t.newRedds,t.live,t.deadSamp,t.deadNot,t.subSamp,t.subNoBio,""]));}
   }else if(kind==="carcass"){
     head=hk.concat(["No","Species","Otolith","DNA","FL_cm","Sex","RM","PctSpawn","AdClip","CWT","ScaleCard",
-      "LineNums","HBL","Scavenged","EyesMissing","Latitude","Longitude","GPS_Accuracy_m","Notes"]);
+      "LineNums","HBL","Scavenged","EyesMissing","Latitude","Longitude","GPS_Accuracy_m",
+      "RecordedBy","RecordedAt","Photos","Notes"]);
     S().carcasses.forEach((c,i)=>rows.push(hv.concat([i+1,c.species,c.otolith,c.dna,c.fl,c.sex,c.rm,c.spawn,
-      c.adClip,c.cwt,c.scaleCard,c.lineNums,c.hbl,c.scavenged,c.eyes,c.lat,c.lon,c.acc,c.notes])));
+      c.adClip,c.cwt,c.scaleCard,c.lineNums,c.hbl,c.scavenged,c.eyes,c.lat,c.lon,c.acc,
+      c.recordedBy||"",c.recordedAt||"",PHOTO_COUNT[c.id]||0,c.notes])));
   }else if(kind==="redds"){
     head=hk.concat(["ReddID","RiverMile","GPS_Waypoint","LocationInChannel","ChannelType",
-      "BraidLocation","LiveChinookOnRedd","Latitude","Longitude","GPS_Accuracy_m","Notes"]);
+      "BraidLocation","LiveChinookOnRedd","Latitude","Longitude","GPS_Accuracy_m",
+      "RecordedBy","RecordedAt","Photos","Notes"]);
     S().redds.forEach(r=>rows.push(hv.concat([r.reddId,r.rm,r.waypoint,r.chanLoc,r.chanType,
-      r.braidLoc,r.liveOnRedd,r.lat,r.lon,r.acc,r.notes])));
+      r.braidLoc,r.liveOnRedd,r.lat,r.lon,r.acc,
+      r.recordedBy||"",r.recordedAt||"",PHOTO_COUNT[r.id]||0,r.notes])));
   }else if(kind==="obs"){
     head=hk.concat(["No","SpeciesCode","Species","ObservationType","Count","RM",
-      "Latitude","Longitude","GPS_Accuracy_m","Notes"]);
+      "Latitude","Longitude","GPS_Accuracy_m","RecordedBy","RecordedAt","Photos","Notes"]);
     S().obs.forEach((o,i)=>rows.push(hv.concat([i+1,o.species,spName(o.species),o.kind,o.count,o.rm,
-      o.lat,o.lon,o.acc,o.notes])));
+      o.lat,o.lon,o.acc,o.recordedBy||"",o.recordedAt||"",PHOTO_COUNT[o.id]||0,o.notes])));
   }
   if(!rows.length){toast("Nothing to export in "+kind);return;}
   dl(fbase()+"_"+kind+".csv",toCSV([head].concat(rows)),"text/csv");
   markExported();toast(rows.length+" rows exported");hap(14);
 }
 function exportAll(){["tally","carcass","redds","obs"].forEach((k,i)=>setTimeout(()=>exportCSV(k),i*450));}
+/* ══════════════ integration exports ══════════════ */
+/* A stable, versioned, relational shape for loading into a database or data hub.
+   Every row carries its own key plus the survey key, so imports are idempotent:
+   re-importing the same file updates rows rather than duplicating them. */
+function relational(){
+  const out={
+    schema_version:SCHEMA_VERSION,
+    app:"Redd Master",
+    app_version:APP_VERSION,
+    device_id:DB.deviceId,
+    exported_by:(currentUser()||{}).initials||null,
+    exported_by_name:(currentUser()||{}).name||null,
+    exported_at:new Date().toISOString(),
+    temperature_unit:DB.unit,
+    surveys:[],survey_tally:[],carcasses:[],redds:[],other_species:[]
+  };
+  Object.values(DB.surveys).forEach(s=>{
+    const h=s.header||{},m=surveyMethodFor(s);
+    out.surveys.push({
+      survey_id:s.id,device_id:DB.deviceId,
+      survey_date:h.date||null,species_code:h.species||null,
+      fork_code:h.fork||null,stream_name:forkNameFor(h),water_type:h.waterType||null,
+      reach:h.reach||null,crew:h.crew||null,survey_type:h.surveyType||null,
+      visibility_code:h.visibility?Number(h.visibility):null,
+      visibility_desc:h.visibility?(VIS[h.visibility]||null):null,
+      upper_time:h.upTime||null,upper_water_temp:numOrNull(h.upTemp),upper_rm:numOrNull(h.upRM),
+      lower_time:h.loTime||null,lower_water_temp:numOrNull(h.loTemp),lower_rm:numOrNull(h.loRM),
+      temperature_unit:DB.unit,
+      subsampling:h.subsampling||null,
+      subsample_rate:h.subsampling==="Y"?Number(h.subRate||10):null,
+      gps_unit:h.gpsUnit||null,notes_on_reverse:h.reverseNotes||null,
+      page_no:numOrNull(h.pageNo),page_of:numOrNull(h.pageOf),
+      escapement_method:m.formula,
+      created_at:new Date(s.created).toISOString(),
+      updated_at:s.updatedAt?new Date(s.updatedAt).toISOString():null
+    });
+    (s.rows||[]).forEach((r,i)=>out.survey_tally.push({
+      tally_id:r.id,survey_id:s.id,line_no:i+1,river_mile:numOrNull(r.rm),
+      new_redds:r.newRedds|0,live:r.live|0,
+      dead_nosub_sampled:r.deadSamp|0,dead_nosub_not_sampled:r.deadNot|0,
+      dead_subgroup_sampled:r.subSamp|0,dead_subgroup_no_biologic:r.subNoBio|0,
+      notes:r.notes||null
+    }));
+    (s.carcasses||[]).forEach((c,i)=>out.carcasses.push({
+      carcass_id:c.id,survey_id:s.id,record_no:i+1,
+      species_code:c.species||null,otolith_no:c.otolith||null,dna_no:c.dna||null,
+      fork_length_cm:numOrNull(c.fl),sex:c.sex||null,river_mile:numOrNull(c.rm),
+      pct_spawned:numOrNull(c.spawn),ad_clip:c.adClip||null,cwt:c.cwt||null,
+      origin:originOf(c),
+      scale_card_no:c.scaleCard||null,line_nos:c.lineNums||null,hbl_no:c.hbl||null,
+      scavenged:c.scavenged||null,eyes_missing:numOrNull(c.eyes),
+      recorded_by:c.recordedBy||null,recorded_by_name:c.recordedByName||null,
+      recorded_at:c.recordedAt||null,photo_count:PHOTO_COUNT[c.id]||0,
+      latitude:numOrNull(c.lat),longitude:numOrNull(c.lon),gps_accuracy_m:numOrNull(c.acc),
+      notes:c.notes||null
+    }));
+    (s.redds||[]).forEach(r=>out.redds.push({
+      redd_id:r.id,survey_id:s.id,redd_no:r.reddId||null,river_mile:numOrNull(r.rm),
+      gps_waypoint_no:r.waypoint||null,gps_unit:h.gpsUnit||null,
+      location_in_channel:r.chanLoc||null,channel_type:r.chanType||null,
+      braid_location:r.braidLoc||null,live_on_redd:numOrNull(r.liveOnRedd),
+      recorded_by:r.recordedBy||null,recorded_by_name:r.recordedByName||null,
+      recorded_at:r.recordedAt||null,photo_count:PHOTO_COUNT[r.id]||0,
+      latitude:numOrNull(r.lat),longitude:numOrNull(r.lon),gps_accuracy_m:numOrNull(r.acc),
+      notes:r.notes||null
+    }));
+    (s.obs||[]).forEach((o,i)=>out.other_species.push({
+      observation_id:o.id,survey_id:s.id,record_no:i+1,
+      species_code:o.species||null,species_name:spName(o.species),
+      observation_type:o.kind||null,count:numOrNull(o.count),river_mile:numOrNull(o.rm),
+      recorded_by:o.recordedBy||null,recorded_by_name:o.recordedByName||null,
+      recorded_at:o.recordedAt||null,photo_count:PHOTO_COUNT[o.id]||0,
+      latitude:numOrNull(o.lat),longitude:numOrNull(o.lon),gps_accuracy_m:numOrNull(o.acc),
+      notes:o.notes||null
+    }));
+  });
+  return out;
+}
+const numOrNull=v=>{if(v===""||v==null)return null;const n=parseFloat(v);return isNaN(n)?null:n;};
+function originOf(c){
+  if(c.adClip==="Y"||c.cwt==="Y")return "HOR";
+  if(c.adClip==="N"&&c.cwt==="N")return "NOR";
+  return "UNK";
+}
+function forkNameFor(h){const k=DB.__h;DB.__h=h;const v=forkName(h);DB.__h=k;return v||null;}
+function surveyMethodFor(s){return surveyMethod(s.header);}
+
+function exportRelationalJSON(){
+  dl("reddmaster_data_"+today()+".json",JSON.stringify(relational(),null,2),"application/json");
+  markExported();toast("Relational JSON exported");hap(14);
+}
+
+/* ---- SQL: portable DDL + inserts, for a SQL Server / Postgres load ---- */
+function sqlLit(v){
+  if(v==null)return "NULL";
+  if(typeof v==="number")return isFinite(v)?String(v):"NULL";
+  return "'"+String(v).replace(/'/g,"''")+"'";
+}
+function buildSQL(){
+  const d=relational();
+  const T={
+    survey:["survey_id","device_id","survey_date","species_code","fork_code","stream_name",
+      "water_type","reach","crew","survey_type","visibility_code","visibility_desc","upper_time",
+      "upper_water_temp","upper_rm","lower_time","lower_water_temp","lower_rm","temperature_unit",
+      "subsampling","subsample_rate","gps_unit","notes_on_reverse","page_no","page_of",
+      "escapement_method","created_at","updated_at"],
+    survey_tally:["tally_id","survey_id","line_no","river_mile","new_redds","live",
+      "dead_nosub_sampled","dead_nosub_not_sampled","dead_subgroup_sampled",
+      "dead_subgroup_no_biologic","notes"],
+    carcass:["carcass_id","survey_id","record_no","species_code","otolith_no","dna_no",
+      "fork_length_cm","sex","river_mile","pct_spawned","ad_clip","cwt","origin","scale_card_no",
+      "line_nos","hbl_no","scavenged","eyes_missing","latitude","longitude","gps_accuracy_m",
+      "recorded_by","recorded_by_name","recorded_at","photo_count","notes"],
+    redd:["redd_id","survey_id","redd_no","river_mile","gps_waypoint_no","gps_unit",
+      "location_in_channel","channel_type","braid_location","live_on_redd","latitude","longitude",
+      "gps_accuracy_m","recorded_by","recorded_by_name","recorded_at","photo_count","notes"],
+    other_species:["observation_id","survey_id","record_no","species_code","species_name",
+      "observation_type","count","river_mile","latitude","longitude","gps_accuracy_m",
+      "recorded_by","recorded_by_name","recorded_at","photo_count","notes"]
+  };
+  const src={survey:d.surveys,survey_tally:d.survey_tally,carcass:d.carcasses,
+    redd:d.redds,other_species:d.other_species};
+  let out="-- Redd Master "+APP_VERSION+"  schema "+d.schema_version+"\n"+
+    "-- device "+d.device_id+"   exported "+d.exported_at+"\n"+
+    "-- INSERTs only. Create the tables first using the DDL in DATA-INTEGRATION.md.\n"+
+    "-- Every row carries its own key, so loads can be made idempotent with MERGE/UPSERT.\n\n";
+  Object.keys(T).forEach(t=>{
+    out+="-- "+t+"\n";
+    src[t].forEach(row=>{
+      const cols=T[t],vals=cols.map(c=>sqlLit(row[c]===undefined?null:row[c]));
+      out+="INSERT INTO rm_"+t+" ("+cols.join(", ")+") VALUES ("+vals.join(", ")+");\n";
+    });
+    out+="\n";
+  });
+  return out;
+}
+function exportSQL(){
+  const t=buildSQL();
+  dl("reddmaster_"+today()+".sql",t,"text/plain");
+  markExported();toast("SQL insert script exported");hap(14);
+}
+
 function backup(){dl("reddmaster_backup_"+today()+".json",JSON.stringify(DB),"application/json");toast("Backup saved");}
 function targetCarcs(){
   const sp=S().header.species;
@@ -2526,25 +2724,29 @@ function buildWorkbook(){
   }
 
   const cHead=["No","Species","Otolith #","DNA #","FL (cm)","Sex","RM","% spawn","Ad clip","CWT",
-    "Scale card #","Line #'s","HBL #","Scavenged","Eyes missing","Latitude","Longitude","GPS \u00b1m","Notes"];
+    "Scale card #","Line #'s","HBL #","Scavenged","Eyes missing","Latitude","Longitude","GPS \u00b1m",
+    "Recorded by","Photos","Notes"];
   const carc=[cHead.map(HD)];
   C.forEach((c,i)=>carc.push([i+1,c.species,c.otolith,c.dna,
     (c.fl===""||c.fl==null)?"":{v:num(c.fl),s:6},
     c.sex,num(c.rm),num(c.spawn),c.adClip,c.cwt,c.scaleCard,c.lineNums,c.hbl,c.scavenged,
-    num(c.eyes),num(c.lat),num(c.lon),num(c.acc),c.notes]));
+    num(c.eyes),num(c.lat),num(c.lon),num(c.acc),c.recordedBy||"",PHOTO_COUNT[c.id]||0,c.notes]));
   const cLast=Math.max(2,carc.length);
 
   const rHead=["Redd ID #","River mile","GPS waypoint #","Location in chan.","Channel type",
-    "Braid location","# live Chin. on redd","Latitude","Longitude","GPS \u00b1m","Notes"];
+    "Braid location","# live Chin. on redd","Latitude","Longitude","GPS \u00b1m",
+    "Recorded by","Photos","Notes"];
   const redd=[rHead.map(HD)];
   R.forEach(r=>redd.push([r.reddId,num(r.rm),r.waypoint,r.chanLoc,r.chanType,r.braidLoc,
-    num(r.liveOnRedd),num(r.lat),num(r.lon),num(r.acc),r.notes]));
+    num(r.liveOnRedd),num(r.lat),num(r.lon),num(r.acc),
+    r.recordedBy||"",PHOTO_COUNT[r.id]||0,r.notes]));
   const rLast=Math.max(2,redd.length);
 
-  const oHead=["No","Code","Species","Observation","Count","RM","Latitude","Longitude","GPS \u00b1m","Notes"];
+  const oHead=["No","Code","Species","Observation","Count","RM","Latitude","Longitude","GPS \u00b1m",
+    "Recorded by","Photos","Notes"];
   const obs=[oHead.map(HD)];
   s.obs.forEach((o,i)=>obs.push([i+1,o.species,spName(o.species),o.kind,+o.count||0,num(o.rm),
-    num(o.lat),num(o.lon),num(o.acc),o.notes]));
+    num(o.lat),num(o.lon),num(o.acc),o.recordedBy||"",PHOTO_COUNT[o.id]||0,o.notes]));
   const oLast=Math.max(2,obs.length);
 
   const F=(cols,last)=>"A1:"+XL.colL(cols-1)+last;
@@ -2555,9 +2757,9 @@ function buildWorkbook(){
     {name:"Carcass",rows:carc,freeze:1,filter:F(cHead.length,cLast),
      widths:[6,12,12,10,8,9,10,10,8,13,10,10,12,13,34]},
     {name:"Redds",rows:redd,freeze:1,filter:F(rHead.length,rLast),
-     widths:[11,12,15,16,13,14,17,12,12,10,34]},
+     widths:[11,12,15,16,13,14,17,12,12,10,13,8,34]},
     {name:"Other species",rows:obs,freeze:1,filter:F(oHead.length,oLast),
-     widths:[6,8,18,13,8,9,12,12,10,34]}
+     widths:[6,8,18,13,8,9,12,12,10,13,8,34]}
   ]);
 }
 function exportXLSX(){
@@ -2569,6 +2771,239 @@ function exportXLSX(){
     setTimeout(()=>{URL.revokeObjectURL(u);a.remove();},600);
     markExported();toast("Excel workbook downloaded");hap(14);
   }catch(e){toast("Export failed — try CSV");}
+}
+
+
+/* ══════════════ user profile (attribution, not authentication) ══════════════ */
+/* There is no server, so this cannot verify anyone. It records WHO ENTERED the
+   data so the hub can attribute it. Real authentication has to live at the hub
+   end — see DATA-INTEGRATION.md. */
+function currentUser(){return (DB.users||[]).find(u=>u.id===DB.userId)||null;}
+function userLabel(){const u=currentUser();return u?(u.initials||u.name):"Not signed in";}
+function openSignIn(force){
+  const users=DB.users||[];
+  const list=users.map(u=>'<button class="menu-item" data-act="pickuser" data-id="'+u.id+'"'+
+    (u.id===DB.userId?' style="border-color:var(--tx)"':'')+'>'+
+    '<span class="mi">'+esc((u.initials||"?").slice(0,3))+'</span>'+
+    '<span class="mt"><b>'+esc(u.name||"Unnamed")+'</b><span>'+
+      esc([u.initials,u.role].filter(Boolean).join(" \u00b7 "))+'</span></span>'+
+    (u.id===DB.userId?'<span class="tag ac">Signed in</span>':'')+'</button>').join("");
+  sheet("Who is recording?",
+    (users.length?'<div class="ct"><span class="eyebrow">Saved on this device</span></div>'+list+
+      '<div class="rule"></div>':'')+
+    '<div class="ct"><span class="eyebrow">Add a person</span></div>'+
+    '<div class="g2"><label class="f"><span class="lab">Name</span>'+
+      '<input type="text" id="u_name" placeholder="Full name"></label>'+
+      '<label class="f"><span class="lab">Initials</span>'+
+      '<input type="text" id="u_init" placeholder="ZL" maxlength="4"></label></div>'+
+    '<label class="f"><span class="lab">Role</span>'+
+      '<input type="text" id="u_role" placeholder="Field technician"></label>'+
+    '<button class="btn pri" data-act="adduser">Add and sign in</button>'+
+    '<div class="callout">This records <b>who entered the data</b> so it can be attributed at the hub. It is not a password and does not restrict access to the device.</div>',
+    '<button class="btn gh" data-act="close">'+(force?"Skip for now":"Close")+'</button>');
+}
+function setUser(id){DB.userId=id;save();renderChrome();renderUserChip();toast("Signed in as "+userLabel());}
+function renderUserChip(){
+  const el=$("#userChip");if(!el)return;
+  const u=currentUser();
+  el.innerHTML='<button class="userbtn'+(u?'':' none')+'" data-act="signin">'+
+    '<span class="uav">'+esc(u?(u.initials||u.name||"?").slice(0,3):"?")+'</span>'+
+    '<span class="unm">'+esc(u?(u.name||u.initials):"Sign in")+'</span></button>';
+}
+/* stamp the person and time onto whatever is being saved */
+function stampRecord(o){
+  const u=currentUser();
+  o.recordedBy=u?(u.initials||u.name):"";
+  o.recordedByName=u?(u.name||""):"";
+  o.recordedAt=new Date().toISOString();
+  return o;
+}
+
+/* ══════════════ photo archive ══════════════ */
+/* Photos are far too large for localStorage (~5 MB cap), so they live in
+   IndexedDB. Each is downscaled and re-encoded before storing. */
+const PDB={
+  db:null,
+  open(){
+    if(this.db)return Promise.resolve(this.db);
+    return new Promise((res,rej)=>{
+      const r=indexedDB.open("reddmaster_photos",1);
+      r.onupgradeneeded=e=>{
+        const d=e.target.result;
+        if(!d.objectStoreNames.contains("photos")){
+          const st=d.createObjectStore("photos",{keyPath:"id"});
+          st.createIndex("byRecord","recordId",{unique:false});
+          st.createIndex("bySurvey","surveyId",{unique:false});
+        }
+      };
+      r.onsuccess=e=>{this.db=e.target.result;res(this.db);};
+      r.onerror=()=>rej(r.error);
+    });
+  },
+  tx(mode){return this.open().then(d=>d.transaction("photos",mode).objectStore("photos"));},
+  put(rec){return this.tx("readwrite").then(st=>new Promise((res,rej)=>{
+    const q=st.put(rec);q.onsuccess=()=>res(rec);q.onerror=()=>rej(q.error);}));},
+  del(id){return this.tx("readwrite").then(st=>new Promise((res,rej)=>{
+    const q=st.delete(id);q.onsuccess=()=>res();q.onerror=()=>rej(q.error);}));},
+  byRecord(recordId){return this.tx("readonly").then(st=>new Promise((res,rej)=>{
+    const q=st.index("byRecord").getAll(recordId);
+    q.onsuccess=()=>res((q.result||[]).sort((a,b)=>a.takenAt<b.takenAt?-1:1));
+    q.onerror=()=>rej(q.error);}));},
+  all(){return this.tx("readonly").then(st=>new Promise((res,rej)=>{
+    const q=st.getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(q.error);}));},
+  delByRecord(recordId){return this.byRecord(recordId)
+    .then(ps=>Promise.all(ps.map(p=>this.del(p.id))));}
+};
+/* downscale so a day of photos does not fill the phone */
+function shrinkImage(file,maxPx,quality){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        let w=img.width,h=img.height;
+        const sc=Math.min(1,maxPx/Math.max(w,h));
+        w=Math.round(w*sc);h=Math.round(h*sc);
+        const cv=document.createElement("canvas");cv.width=w;cv.height=h;
+        cv.getContext("2d").drawImage(img,0,0,w,h);
+        res({dataUrl:cv.toDataURL("image/jpeg",quality),w,h});
+      };
+      img.onerror=()=>rej(new Error("not an image"));
+      img.src=fr.result;
+    };
+    fr.onerror=()=>rej(fr.error);
+    fr.readAsDataURL(file);
+  });
+}
+const PHOTO_KIND={carc:"Carcass",redd:"Redd",obs:"Other species"};
+async function addPhotos(files){
+  if(!DRAFT||!files||!files.length)return;
+  const u=currentUser();
+  let added=0;
+  for(const f of files){
+    try{
+      const im=await shrinkImage(f,1600,0.72);
+      await PDB.put({
+        id:"ph_"+uid(),recordId:DRAFT.id,recordType:DRAFT.__type,surveyId:DB.current,
+        dataUrl:im.dataUrl,w:im.w,h:im.h,bytes:Math.round(im.dataUrl.length*0.75),
+        takenAt:new Date().toISOString(),
+        takenBy:u?(u.initials||u.name):"",
+        rm:DRAFT.rm||"",lat:DRAFT.lat||"",lon:DRAFT.lon||""
+      });
+      added++;
+    }catch(e){}
+  }
+  if(added){hap(12);toast(added+" photo"+(added===1?"":"s")+" added");}
+  await refreshPhotoCounts();
+  renderPhotoStrip();
+}
+function photoBlock(){return '<div id="photoStrip"></div>'+
+  '<input type="file" id="photoInput" accept="image/*" capture="environment" multiple hidden>';}
+async function renderPhotoStrip(){
+  const el=$("#photoStrip");if(!el||!DRAFT)return;
+  let ps=[];try{ps=await PDB.byRecord(DRAFT.id);}catch(e){}
+  el.innerHTML='<div class="pstrip">'+
+    ps.map(p=>'<span class="pthumb"><img src="'+p.dataUrl+'" alt="">'+
+      '<button class="pdel" data-act="delphoto" data-id="'+p.id+'" aria-label="Delete photo">'+ic("x")+'</button></span>').join("")+
+    '<button class="padd" data-act="addphoto">'+ic("camera")+'<span>Add<br>photo</span></button>'+
+    '</div>'+(ps.length?'<p class="hint" style="margin-top:7px">'+ps.length+' photo'+
+      (ps.length===1?"":"s")+' \u00b7 tap one to view full size</p>':"");
+  el.querySelectorAll(".pthumb img").forEach((im,i)=>{
+    im.addEventListener("click",()=>viewPhoto(ps[i]));
+  });
+}
+function viewPhoto(p){
+  sheet("Photo",
+    '<img src="'+p.dataUrl+'" style="width:100%;border:1.5px solid var(--tx);border-radius:var(--r-sm)">'+
+    '<table class="deftab" style="margin-top:12px"><tr><th>Field</th><th>Value</th></tr>'+
+    '<tr><td>Taken</td><td>'+esc(new Date(p.takenAt).toLocaleString())+'</td></tr>'+
+    '<tr><td>By</td><td>'+esc(p.takenBy||"\u2014")+'</td></tr>'+
+    '<tr><td>Attached to</td><td>'+esc(PHOTO_KIND[p.recordType]||p.recordType)+'</td></tr>'+
+    (p.rm?'<tr><td>River mile</td><td>'+esc(p.rm)+'</td></tr>':'')+
+    (p.lat?'<tr><td>Position</td><td>'+esc(p.lat+", "+p.lon)+'</td></tr>':'')+
+    '<tr><td>Size</td><td>'+esc(p.w+"\u00d7"+p.h+" \u00b7 "+Math.round(p.bytes/1024)+" KB")+'</td></tr>'+
+    '</table>','<button class="btn gh" data-act="close">Close</button>');
+}
+/* photo counts shown on the record lists */
+let PHOTO_COUNT={};
+async function refreshPhotoCounts(){
+  try{
+    const all=await PDB.all();
+    PHOTO_COUNT={};
+    all.forEach(p=>{PHOTO_COUNT[p.recordId]=(PHOTO_COUNT[p.recordId]||0)+1;});
+  }catch(e){PHOTO_COUNT={};}
+}
+function syncPhotos(){
+  return refreshPhotoCounts().then(()=>{
+    dirty.carcass=dirty.redds=dirty.obs=1;paint();
+  }).catch(()=>{});
+}
+const photoTag=id=>PHOTO_COUNT[id]?'<span class="tag ph">'+ic("camera")+PHOTO_COUNT[id]+'</span>':"";
+
+/* ---- archive view ---- */
+async function openArchive(){
+  let all=[];try{all=await PDB.all();}catch(e){}
+  const mine=all.filter(p=>p.surveyId===DB.current);
+  const bytesAll=all.reduce((a,p)=>a+(p.bytes||0),0);
+  const bytesMine=mine.reduce((a,p)=>a+(p.bytes||0),0);
+  const mb=b=>b>=1048576?((b/1048576).toFixed(1)+" MB"):(Math.max(1,Math.round(b/1024))+" KB");
+  const groups={carc:[],redd:[],obs:[]};
+  mine.forEach(p=>{(groups[p.recordType]||(groups[p.recordType]=[])).push(p);});
+  const sec=(k,label)=>{
+    const g=groups[k]||[];
+    if(!g.length)return "";
+    return '<div class="ct"><span class="eyebrow">'+label+' \u00b7 '+g.length+'</span></div>'+
+      '<div class="pgrid">'+g.map(p=>'<span class="pcell" data-act="viewphoto" data-id="'+p.id+'">'+
+        '<img src="'+p.dataUrl+'" alt="">'+
+        '<span class="pcap">'+esc(p.rm?("RM "+p.rm):"")+'</span></span>').join("")+'</div>';
+  };
+  sheet("Photo archive",
+    '<div class="eod"><span class="ei">'+mine.length+'</span><span><b>photos in this survey</b> \u00b7 '+
+      mb(bytesMine)+(all.length!==mine.length?
+        (" \u00b7 "+all.length+" on the device, "+mb(bytesAll)+" total"):"")+'</span></div>'+
+    (mine.length?sec("carc","Carcasses")+sec("redd","Redds")+sec("obs","Other species")
+      :'<div class="empty"><b>No photos yet</b><span>Add photos from a carcass, redd or other-species record.</span></div>')+
+    (mine.length?'<div class="rule"></div>'+
+      mi("photozip","down","Export photos","ZIP with an index CSV, named by record"):""),
+    '<button class="btn gh" data-act="close">Close</button>');
+  window.__arch=all;
+}
+/* ---- export photos as a zip with an index ---- */
+function b64ToBytes(b64){
+  const bin=atob(b64);const out=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);
+  return out;
+}
+async function exportPhotoZip(){
+  let all=[];try{all=await PDB.all();}catch(e){}
+  const mine=all.filter(p=>p.surveyId===DB.current);
+  if(!mine.length){toast("No photos in this survey");return;}
+  const h=S().header,base=fbase();
+  const files=[];const idx=[["photo_file","record_type","record_id","survey_id","river_mile",
+    "latitude","longitude","taken_at","taken_by","width","height"]];
+  const label=p=>{
+    if(p.recordType==="carc"){const i=S().carcasses.findIndex(c=>c.id===p.recordId);
+      return "carcass_"+(i>=0?String(i+1).padStart(3,"0"):"x");}
+    if(p.recordType==="redd"){const r=S().redds.find(x=>x.id===p.recordId);
+      return "redd_"+((r&&r.reddId)?r.reddId:"x");}
+    const i=S().obs.findIndex(o=>o.id===p.recordId);
+    return "other_"+(i>=0?String(i+1).padStart(3,"0"):"x");
+  };
+  const seen={};
+  mine.forEach(p=>{
+    const stem=label(p);seen[stem]=(seen[stem]||0)+1;
+    const name=base+"_"+stem+(seen[stem]>1?"_"+seen[stem]:"")+".jpg";
+    files.push({name:"photos/"+name,data:b64ToBytes(p.dataUrl.split(",")[1])});
+    idx.push([name,PHOTO_KIND[p.recordType]||p.recordType,p.recordId,p.surveyId,p.rm||"",
+      p.lat||"",p.lon||"",p.takenAt,p.takenBy||"",p.w,p.h]);
+  });
+  files.push({name:"photo_index.csv",data:XL.txt(toCSV(idx))});
+  const bytes=XL.zip(files);
+  const blob=new Blob([bytes],{type:"application/zip"});
+  const u=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=u;a.download=base+"_photos.zip";document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(u);a.remove();},600);
+  markExported();toast(mine.length+" photos exported");hap(14);
 }
 
 /* ══════════════ menus ══════════════ */
@@ -2586,6 +3021,7 @@ function openMenu(){
     '<div class="ct"><span class="eyebrow">'+ids.length+' on this device</span></div>'+list+
     '<div class="rule"></div>'+
     mi("newsurvey","plus","Start a new survey","Fresh reach, today's date")+
+    mi("archive","camera","Photo archive","Every photo in this survey")+
     mi("finish","doc","Finish the survey","End-of-day checks, totals and hand-off")+
     mi("export","down","Export &amp; backup","Excel and CSV for the database")+
     mi("delsurvey","trash","Delete this survey","Removes it permanently"),
@@ -2606,7 +3042,10 @@ function openExport(){
     '<div class="rule"></div><div class="ct"><span class="eyebrow">Other</span></div>'+
     mi("copysum","copy","Copy day summary","For the whiteboard and the group chat")+
     mi("backup","down","Back up everything","All surveys, one JSON file")+
-    mi("restore","up","Restore from backup","Replaces what's on this device"),
+    mi("restore","up","Restore from backup","Replaces what's on this device")+
+    '<div class="rule"></div><div class="ct"><span class="eyebrow">Data hub / database</span></div>'+
+    mi("jsonrel","doc","Relational JSON","Keyed tables for a database load")+
+    mi("sqlout","doc","SQL insert script","rm_survey, rm_carcass, rm_redd\u2026"),
     '<button class="btn gh" data-act="close">Close</button>');
 }
 function openSettings(){
@@ -2618,6 +3057,7 @@ function openSettings(){
   sheet("Settings",
     '<div class="ct"><span class="eyebrow">This device</span></div>'+
     mi("install","down",ins.t,ins.s)+
+    mi("signin","user","Signed in as "+userLabel(),"Who the records are attributed to")+
     '<div class="rule"></div><div class="ct"><span class="eyebrow">Display</span></div>'+
     '<label class="f"><span class="lab">Theme</span><div class="seg sm">'+
       ["auto","light","dark"].map(t=>'<button data-act="theme" data-v="'+t+'" class="'+(DB.theme===t?"on":"")+'">'+
@@ -2682,7 +3122,7 @@ function openFinish(){
 let deferredInstall=null;
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstall=e;});
 window.addEventListener("appinstalled",()=>{deferredInstall=null;toast("Installed — open it from your home screen");});
-if("serviceWorker" in navigator && /^https?:/.test(location.protocol)){
+if("serviceWorker" in navigator && /^https?:/.test(location.protocol) && !isLocalFile()){
   window.addEventListener("load",()=>{
     navigator.serviceWorker.register("sw.js").then(reg=>{
       reg.addEventListener("updatefound",()=>{
@@ -2695,7 +3135,10 @@ if("serviceWorker" in navigator && /^https?:/.test(location.protocol)){
   });
 }
 function isStandalone(){return window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;}
+const isLocalFile=()=>location.protocol==="file:";
 function installState(){
+  if(isLocalFile())return{t:"Running from a local file",
+    s:"Fully offline. Tap for how to keep it on your home screen."};
   if(isStandalone())return{t:"Installed",s:"Running as an app. Works with no signal."};
   if(deferredInstall)return{t:"Install on this phone",s:"Adds it to your home screen for offline use"};
   if(/iPhone|iPad|iPod/.test(navigator.userAgent))
@@ -2703,6 +3146,18 @@ function installState(){
   return{t:"Add to Home Screen",s:"Use your browser menu to add it to your home screen"};
 }
 function doInstall(){
+  if(isLocalFile()){
+    sheet("Running from a local file",
+      '<div class="callout">This copy is a <b>single self-contained file</b>. It never touches the internet — everything, including the Excel writer, is inside it.</div>'+
+      '<h5 style="font:700 10.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--tx2);margin:16px 0 7px">Keep it handy</h5>'+
+      '<div class="card"><div class="ct"><span class="eyebrow">iPhone</span></div>'+
+      '<p class="hint" style="margin:0">Save <b>ReddMaster.html</b> into Files (On My iPhone). Open it from there each time. To get a home-screen icon instead, use the hosted install — see INSTALL.md.</p></div>'+
+      '<div class="card"><div class="ct"><span class="eyebrow">Android</span></div>'+
+      '<p class="hint" style="margin:0">Open the file in Chrome, then <b>⋮ → Add to Home screen</b> for a one-tap shortcut.</p></div>'+
+      '<div class="callout warn">In this mode the browser is a little more willing to clear stored data. <b>Export at the end of every survey day</b> and keep a JSON backup.</div>',
+      '<button class="btn gh" data-act="close">Got it</button>');
+    return;
+  }
   if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.then(()=>{deferredInstall=null;});return;}
   sheet("Install on your phone",
     '<p class="hint" style="margin:0 0 14px">This app runs entirely on your device — no signal needed once it is on your home screen.</p>'+
@@ -2826,6 +3281,22 @@ document.addEventListener("click",e=>{
     case "csv": exportCSV(k);break;
     case "csvall": exportAll();break;
     case "backup": backup();break;
+    case "signin": openSignIn();break;
+    case "pickuser": setUser(id);closeSheet();break;
+    case "adduser": {
+      const n=($("#u_name")||{}).value||"",ini=($("#u_init")||{}).value||"",ro=($("#u_role")||{}).value||"";
+      if(!n.trim()&&!ini.trim()){toast("Enter a name or initials");break;}
+      DB.users=DB.users||[];
+      const nu={id:"usr_"+uid(),name:n.trim(),initials:ini.trim().toUpperCase(),role:ro.trim()};
+      DB.users.push(nu);setUser(nu.id);closeSheet();break;}
+    case "archive": openArchive();break;
+    case "addphoto": {const i=$("#photoInput");if(i)i.click();break;}
+    case "delphoto": {PDB.del(id).then(()=>syncPhotos()).then(()=>{renderPhotoStrip();
+      toast("Photo deleted");}).catch(()=>toast("Could not delete"));break;}
+    case "viewphoto": {const p=(window.__arch||[]).find(x=>x.id===id);if(p)viewPhoto(p);break;}
+    case "photozip": exportPhotoZip();break;
+    case "jsonrel": exportRelationalJSON();break;
+    case "sqlout": exportSQL();break;
     case "copysum": copySummary();break;
     case "restore": $("#importFile").click();break;
     case "undo": {const el=$("#toast");if(el._undo){el._undo();el._undo=null;el.classList.remove("show");}break;}
@@ -2875,6 +3346,12 @@ function reopenSaved(type){
   const d=DB.drafts[type];if(!d)return;
   DRAFT=d;reopenDraft();
 }
+document.addEventListener("change",ev=>{
+  if(ev.target&&ev.target.id==="photoInput"){
+    addPhotos(Array.prototype.slice.call(ev.target.files||[]));
+    ev.target.value="";
+  }
+});
 $("#importFile").addEventListener("change",ev=>{
   const f=ev.target.files[0];if(!f)return;const r=new FileReader();
   r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.surveys)throw 0;
@@ -2901,6 +3378,10 @@ load();applyTheme();fillHeader();repaintAll();paintChips();paintViewChips();show
   }catch(e){}
 })();
 if(DB.keepAwake)setWake(true);
+refreshPhotoCounts().then(()=>{dirty.carcass=dirty.redds=dirty.obs=1;paint();});
+if(!currentUser())setTimeout(()=>{
+  if(!currentUser()&&!$("#scrim").classList.contains("show"))openSignIn(true);
+},700);
 window.addEventListener("pagehide",flush);
 window.addEventListener("beforeunload",flush);
 
