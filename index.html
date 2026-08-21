@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <meta name="application-name" content="Redd Master">
@@ -544,6 +544,24 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
 .dsave.on{background:var(--ok);color:#fff}
 
 
+/* ---------------- recorded-by ---------------- */
+.recrow{display:flex;gap:8px;align-items:center}
+.recrow .in{flex:1;min-width:0}
+.recav{flex:0 0 auto;width:48px;height:var(--tap);border:1.5px solid var(--tx);border-radius:var(--r-sm);
+  background:var(--cover);color:var(--coverInk);display:grid;place-items:center;
+  font:700 13px/1 var(--mono);letter-spacing:.04em}
+.recav.none{background:var(--sal-ghost);color:var(--sal);border-color:var(--sal)}
+.recbtn{flex:0 0 auto;min-width:52px;height:var(--tap);padding:0 12px;border:1.5px solid var(--tx);
+  border-radius:var(--r-sm);background:var(--cover);color:var(--coverInk);
+  font:700 12px/1 var(--mono);letter-spacing:.08em;display:grid;place-items:center;box-shadow:var(--sh)}
+.recbtn:active{transform:translate(2px,2px);box-shadow:none}
+.recbtn.alt{background:var(--surf3);color:var(--tx);min-width:52px}
+.recbtn svg{width:20px;height:20px;stroke-width:2.6}
+.recadd{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:8px}
+.recadd input{height:var(--tap);min-width:0}
+@media (max-width:400px){.recadd{grid-template-columns:minmax(0,1fr) auto}
+  .recadd input:nth-child(2){grid-column:1 / -1;order:-1}}
+
 /* ---------------- user chip ---------------- */
 .userbtn{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border:1.5px solid var(--line2);
   border-radius:var(--r-sm);background:var(--surf2);margin-bottom:11px}
@@ -700,7 +718,9 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
       <label class="f" id="forkOther" hidden><span class="lab">Stream name</span>
         <input type="text" data-h="forkother" placeholder="Stream name"></label>
       <div class="g2">
-        <label class="f"><span class="lab">Crew<span class="req">*</span></span><input type="text" data-h="crew" placeholder="Initials"></label>
+        <label class="f"><span class="lab">Recorded by<span class="req">*</span></span>
+        <div id="recBy"></div></label>
+      <label class="f"><span class="lab">Crew on survey<span class="req">*</span></span><input type="text" data-h="crew" placeholder="All initials, e.g. ZL / MH"></label>
         <label class="f"><span class="lab">Date<span class="req">*</span></span><input type="date" data-h="date"></label>
       </div>
       <label class="f"><span class="lab">Reach<span class="req">*</span></span><input type="text" data-h="reach" placeholder="Reach name"></label>
@@ -716,7 +736,6 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
         </div></label>
     </div>
 
-    <div id="userChip"></div>
     <div id="intervalBox"></div>
     <div id="escBox"></div>
 
@@ -868,6 +887,37 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
 
 
 <script>
+/* ══ crash net: a white screen tells nobody anything. Show the fault instead. ══ */
+window.__ERRS=[];
+function isLocalFile(){return location.protocol==="file:";}
+(function(){
+  function show(msg){
+    try{
+      var d=document.getElementById("bootErr");
+      if(!d){
+        d=document.createElement("div");d.id="bootErr";
+        d.setAttribute("style","position:fixed;left:0;right:0;top:0;z-index:99999;background:#A63229;"+
+          "color:#fff;font:600 13px/1.5 -apple-system,system-ui,sans-serif;padding:12px 14px;"+
+          "box-shadow:0 4px 14px rgba(0,0,0,.4);max-height:52vh;overflow:auto");
+        (document.body||document.documentElement).appendChild(d);
+      }
+      d.innerHTML='<b style="display:block;margin-bottom:6px">Redd Master hit a problem</b>'+
+        '<div style="font-weight:400;font-family:ui-monospace,monospace;font-size:11.5px;'+
+        'word-break:break-word">'+String(msg).replace(/</g,"&lt;")+'</div>'+
+        '<div style="font-weight:400;margin-top:8px;opacity:.85">Settings \u2192 Diagnostics \u2192 Copy report, '+
+        'and send it on. Your saved data is not affected.</div>';
+    }catch(e){}
+  }
+  window.addEventListener("error",function(e){
+    window.__ERRS.push({t:new Date().toISOString(),m:(e.message||"error")+" @ "+(e.filename||"")+":"+(e.lineno||0)});
+    show((e.message||"Error")+"  (line "+(e.lineno||"?")+")");
+  });
+  window.addEventListener("unhandledrejection",function(e){
+    var m=(e.reason&&(e.reason.message||e.reason))||"promise rejection";
+    window.__ERRS.push({t:new Date().toISOString(),m:"unhandled: "+m});
+  });
+})();
+
 /* ══════════════ XLSX writer (no libraries — works offline) ══════════════ */
 const XL=(()=>{
   /* ---- zip (store, no compression) ---- */
@@ -1513,6 +1563,8 @@ function renderInterval(){
     rows+='<div class="qa"><span class="qi" style="background:var(--line2)">\u00b7</span>'+
       '<span class="qt">First survey of this reach on this device \u2014 NF/MF reaches run every 7\u201310 days</span></div>';
   }
+  if(!currentUser())rows+='<div class="qa bad"><span class="qi">!</span>'+
+    '<span class="qt"><b>No recorder set</b> \u2014 add who is recording in section 1</span></div>';
   const ux=unexported();
   if(ux)rows+='<div class="qa bad"><span class="qi">!</span><span class="qt"><b>'+
     (ux.never?"Not exported yet":"Changed since the last export")+
@@ -2780,6 +2832,18 @@ function exportXLSX(){
    end — see DATA-INTEGRATION.md. */
 function currentUser(){return (DB.users||[]).find(u=>u.id===DB.userId)||null;}
 function userLabel(){const u=currentUser();return u?(u.initials||u.name):"Not signed in";}
+function openAddPerson(){
+  sheet("Add a person",
+    '<div class="g2"><label class="f"><span class="lab">Initials</span>'+
+      '<input type="text" id="u_init" placeholder="ZL" maxlength="4"></label>'+
+      '<label class="f"><span class="lab">Name</span>'+
+      '<input type="text" id="u_name" placeholder="Full name"></label></div>'+
+    '<label class="f"><span class="lab">Role</span>'+
+      '<input type="text" id="u_role" placeholder="Field technician"></label>'+
+    '<div class="callout">Recorded on each entry so the data can be attributed. It is not a password.</div>',
+    '<button class="btn gh" data-act="close">Cancel</button>'+
+    '<button class="btn pri" data-act="adduser">Add</button>');
+}
 function openSignIn(force){
   const users=DB.users||[];
   const list=users.map(u=>'<button class="menu-item" data-act="pickuser" data-id="'+u.id+'"'+
@@ -2804,11 +2868,25 @@ function openSignIn(force){
 }
 function setUser(id){DB.userId=id;save();renderChrome();renderUserChip();toast("Signed in as "+userLabel());}
 function renderUserChip(){
-  const el=$("#userChip");if(!el)return;
-  const u=currentUser();
-  el.innerHTML='<button class="userbtn'+(u?'':' none')+'" data-act="signin">'+
-    '<span class="uav">'+esc(u?(u.initials||u.name||"?").slice(0,3):"?")+'</span>'+
-    '<span class="unm">'+esc(u?(u.name||u.initials):"Sign in")+'</span></button>';
+  const el=$("#recBy");if(!el)return;
+  const users=DB.users||[],u=currentUser();
+  if(!users.length){
+    el.innerHTML='<div class="recadd">'+
+      '<input type="text" id="u_init" placeholder="Initials" maxlength="4" autocomplete="off">'+
+      '<input type="text" id="u_name" placeholder="Full name" autocomplete="name">'+
+      '<button class="recbtn" data-act="adduser">Save</button></div>'+
+      '<p class="hint" style="margin-top:6px">Stored on this phone. Every record you enter is stamped with it.</p>';
+    return;
+  }
+  el.innerHTML='<div class="recrow">'+
+    '<span class="recav'+(u?'':' none')+'">'+esc(u?(u.initials||u.name||"?").slice(0,3):"\u2013")+'</span>'+
+    '<select class="in" id="recSel">'+
+      '<option value=""'+(u?'':' selected')+'>\u2014 choose \u2014</option>'+
+      users.map(x=>'<option value="'+x.id+'"'+(u&&x.id===u.id?' selected':'')+'>'+
+        esc((x.initials?x.initials+" \u00b7 ":"")+(x.name||""))+'</option>').join("")+
+    '</select>'+
+    '<button class="recbtn alt" data-act="newuser" aria-label="Add person">'+ic("plus")+'</button></div>'+
+    (u&&u.role?'<p class="hint" style="margin-top:6px">'+esc(u.role)+'</p>':"");
 }
 /* stamp the person and time onto whatever is being saved */
 function stampRecord(o){
@@ -2823,7 +2901,13 @@ function stampRecord(o){
 /* Photos are far too large for localStorage (~5 MB cap), so they live in
    IndexedDB. Each is downscaled and re-encoded before storing. */
 const PDB={
-  db:null,
+  db:null,ok:null,
+  probe(){
+    if(this.ok!==null)return Promise.resolve(this.ok);
+    if(typeof indexedDB==="undefined"||!indexedDB){this.ok=false;return Promise.resolve(false);}
+    return this.open().then(()=>{this.ok=true;return true;})
+      .catch(()=>{this.ok=false;return false;});
+  },
   open(){
     if(this.db)return Promise.resolve(this.db);
     return new Promise((res,rej)=>{
@@ -2878,6 +2962,17 @@ function shrinkImage(file,maxPx,quality){
 const PHOTO_KIND={carc:"Carcass",redd:"Redd",obs:"Other species"};
 async function addPhotos(files){
   if(!DRAFT||!files||!files.length)return;
+  if(!(await PDB.probe())){
+    toast("Photos unavailable in this mode");
+    sheet("Photos need app storage",
+      '<div class="callout warn">This browser is blocking the photo store (IndexedDB). Everything else works normally.</div>'+
+      '<p class="hint" style="margin:0 0 10px">The usual causes:</p>'+
+      '<ul style="margin:0 0 12px;padding-left:18px">'+
+      '<li style="font:400 13px/1.6 var(--sans);color:var(--tx2)"><b>Private browsing</b> \u2014 open the app in a normal tab.</li>'+
+      '<li style="font:400 13px/1.6 var(--sans);color:var(--tx2)"><b>Opened as a local file on iPhone</b> \u2014 Safari blocks storage for <code>file://</code>. Install the hosted version instead (INSTALL.md) and photos will work.</li>'+
+      '</ul>','<button class="btn gh" data-act="close">Close</button>');
+    return;
+  }
   const u=currentUser();
   let added=0;
   for(const f of files){
@@ -3058,6 +3153,7 @@ function openSettings(){
     '<div class="ct"><span class="eyebrow">This device</span></div>'+
     mi("install","down",ins.t,ins.s)+
     mi("signin","user","Signed in as "+userLabel(),"Who the records are attributed to")+
+    mi("diag","gear","Diagnostics","Version, storage and any errors \u2014 for reporting problems")+
     '<div class="rule"></div><div class="ct"><span class="eyebrow">Display</span></div>'+
     '<label class="f"><span class="lab">Theme</span><div class="seg sm">'+
       ["auto","light","dark"].map(t=>'<button data-act="theme" data-v="'+t+'" class="'+(DB.theme===t?"on":"")+'">'+
@@ -3069,6 +3165,85 @@ function openSettings(){
     tg("keepAwake",DB.keepAwake)+tg("autoGPS",DB.autoGPS)+
     mi("gpsreset","gps","GPS permission",DB.gpsAsked?(DB.gpsAllowed?"Enabled — tap to ask again":"Manual entry — tap to enable"):"Not set up yet"),
     '<button class="btn gh" data-act="close">Done</button>');
+}
+async function openDiagnostics(){
+  const ua=navigator.userAgent;
+  const ios=/iPhone|iPad|iPod/.test(ua),saf=/Safari/.test(ua)&&!/CriOS|Chrome|FxiOS/.test(ua);
+  let sw="not supported",caches_="\u2014";
+  if(isLocalFile()){sw="n/a (local file)";caches_="n/a";}
+  try{
+    if(!isLocalFile() && "serviceWorker" in navigator){
+      const r=await navigator.serviceWorker.getRegistration();
+      sw=r?(r.active?"active":"registered, not active"):"not registered";
+    }
+    if(!isLocalFile() && window.caches){const k=await caches.keys();caches_=k.join(", ")||"none";}
+  }catch(e){sw="error: "+e.message;}
+  let ls="ok";try{localStorage.setItem("__t","1");localStorage.removeItem("__t");}catch(e){ls="BLOCKED";}
+  const idb=await PDB.probe();
+  let quota="—";
+  try{if(navigator.storage&&navigator.storage.estimate){
+    const q=await navigator.storage.estimate();
+    quota=(q.usage/1048576).toFixed(1)+" MB used of "+(q.quota/1048576).toFixed(0)+" MB";}}catch(e){}
+  let photos=0;try{photos=(await PDB.all()).length;}catch(e){}
+  const rows=[
+    ["App version",APP_VERSION+"  ("+SCHEMA_VERSION+")"],
+    ["Mode",isLocalFile()?"local file":(isStandalone()?"installed app":"browser tab")],
+    ["Address",location.protocol+"//"+location.host],
+    ["Device",ios?("iOS"+(saf?" Safari":" (not Safari)")):(/Android/.test(ua)?"Android":"desktop")],
+    ["Screen",window.innerWidth+"\u00d7"+window.innerHeight+" @"+(window.devicePixelRatio||1)+"x"],
+    ["Service worker",sw],["Caches",caches_],
+    ["Saved data",ls],["Photo store",idb?"ok":"BLOCKED"],
+    ["Storage",quota],
+    ["Surveys",String(Object.keys(DB.surveys).length)],
+    ["Records","tally "+S().rows.length+", carcass "+S().carcasses.length+
+      ", redd "+S().redds.length+", other "+S().obs.length+", photos "+photos],
+    ["Signed in",userLabel()],
+    ["Errors",window.__ERRS.length?String(window.__ERRS.length):"none"]
+  ];
+  /* is this actually installable, and if not, why */
+  let pwa=[];
+  if(isLocalFile())pwa.push("Local file \u2014 install needs a hosted https address");
+  else{
+    if(location.protocol!=="https:"&&location.hostname!=="localhost")
+      pwa.push("Not https \u2014 required for install");
+    try{
+      const mr=await fetch("manifest.json",{cache:"no-store"});
+      if(!mr.ok)pwa.push("manifest.json "+mr.status+" \u2014 not uploaded?");
+      else{const mj=await mr.json();if(!mj.icons||!mj.icons.length)pwa.push("manifest has no icons");}
+    }catch(e){pwa.push("manifest unreachable: "+e.message);}
+    try{
+      const sr=await fetch("sw.js",{cache:"no-store"});
+      if(!sr.ok)pwa.push("sw.js "+sr.status+" \u2014 not uploaded?");
+    }catch(e){pwa.push("sw.js unreachable: "+e.message);}
+    try{
+      const ir=await fetch("icon-192.png",{cache:"no-store"});
+      if(!ir.ok)pwa.push("icon-192.png "+ir.status);
+    }catch(e){pwa.push("icons unreachable");}
+    if(window.__SWERR)pwa.push("service worker error: "+window.__SWERR);
+  }
+  if(ios&&!saf)pwa.push("iOS: installing requires Safari, not this browser");
+  rows.push(["Install check",pwa.length?pwa.join(" | "):"all checks pass"]);
+  window.__diag=rows.map(r=>r[0]+": "+r[1]).join("\n")+
+    (window.__ERRS.length?"\n\n"+window.__ERRS.map(e=>e.t+"  "+e.m).join("\n"):"");
+  sheet("Diagnostics",
+    '<table class="deftab"><tr><th>Item</th><th>Value</th></tr>'+
+    rows.map(r=>'<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td></tr>').join("")+'</table>'+
+    (window.__ERRS.length?'<div class="callout warn"><b>Recent errors</b><br>'+
+      window.__ERRS.slice(-4).map(e=>esc(e.m)).join("<br>")+'</div>':"")+
+    mi("copydiag","copy","Copy report","Paste it into a message")+
+    mi("forceupdate","down","Force update","Clears the cached copy and reloads"),
+    '<button class="btn gh" data-act="close">Close</button>');
+}
+async function forceUpdate(){
+  try{
+    if("serviceWorker" in navigator){
+      const rs=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(rs.map(r=>r.unregister()));
+    }
+    if(window.caches){const k=await caches.keys();await Promise.all(k.map(n=>caches.delete(n)));}
+    toast("Cache cleared — reloading");
+    setTimeout(()=>location.reload(true),700);
+  }catch(e){toast("Could not clear: "+e.message);}
 }
 function openTerms(){
   sheet("Terms of use",
@@ -3131,11 +3306,13 @@ if("serviceWorker" in navigator && /^https?:/.test(location.protocol) && !isLoca
           if(w.state==="installed"&&navigator.serviceWorker.controller)
             toast("Update ready — reopen the app to apply");});
       });
-    }).catch(()=>{});
+    }).catch(err=>{
+      window.__SWERR=err&&err.message;
+      window.__ERRS.push({t:new Date().toISOString(),m:"service worker: "+(err&&err.message)});
+    });
   });
 }
 function isStandalone(){return window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;}
-const isLocalFile=()=>location.protocol==="file:";
 function installState(){
   if(isLocalFile())return{t:"Running from a local file",
     s:"Fully offline. Tap for how to keep it on your home screen."};
@@ -3282,14 +3459,25 @@ document.addEventListener("click",e=>{
     case "csvall": exportAll();break;
     case "backup": backup();break;
     case "signin": openSignIn();break;
+    case "newuser": openAddPerson();break;
     case "pickuser": setUser(id);closeSheet();break;
     case "adduser": {
       const n=($("#u_name")||{}).value||"",ini=($("#u_init")||{}).value||"",ro=($("#u_role")||{}).value||"";
       if(!n.trim()&&!ini.trim()){toast("Enter a name or initials");break;}
       DB.users=DB.users||[];
       const nu={id:"usr_"+uid(),name:n.trim(),initials:ini.trim().toUpperCase(),role:ro.trim()};
-      DB.users.push(nu);setUser(nu.id);closeSheet();break;}
+      DB.users.push(nu);setUser(nu.id);
+      if($("#scrim").classList.contains("show"))closeSheet();
+      break;}
     case "archive": openArchive();break;
+    case "diag": openDiagnostics();break;
+    case "forceupdate": forceUpdate();break;
+    case "copydiag": {const t=window.__diag||"";
+      (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject())
+        .then(()=>toast("Report copied")).catch(()=>{
+          sheet("Diagnostics report",'<textarea style="min-height:280px">'+esc(t)+'</textarea>',
+            '<button class="btn gh" data-act="close">Close</button>');});
+      break;}
     case "addphoto": {const i=$("#photoInput");if(i)i.click();break;}
     case "delphoto": {PDB.del(id).then(()=>syncPhotos()).then(()=>{renderPhotoStrip();
       toast("Photo deleted");}).catch(()=>toast("Could not delete"));break;}
@@ -3347,6 +3535,11 @@ function reopenSaved(type){
   DRAFT=d;reopenDraft();
 }
 document.addEventListener("change",ev=>{
+  if(ev.target&&ev.target.id==="recSel"){
+    if(ev.target.value)setUser(ev.target.value);
+    else{DB.userId=null;save();renderUserChip();}
+    return;
+  }
   if(ev.target&&ev.target.id==="photoInput"){
     addPhotos(Array.prototype.slice.call(ev.target.files||[]));
     ev.target.value="";
@@ -3365,7 +3558,24 @@ $("#importFile").addEventListener("change",ev=>{
 function doRestore(){DB=window.__imp;load();save();closeSheet();applyTheme();fillHeader();repaintAll();toast("Backup restored");}
 
 /* ══════════════ boot ══════════════ */
-load();applyTheme();fillHeader();repaintAll();paintChips();paintViewChips();showTab("survey");
+try{
+  load();applyTheme();fillHeader();repaintAll();paintChips();paintViewChips();showTab("survey");
+}catch(e){
+  window.__ERRS.push({t:new Date().toISOString(),m:"boot: "+(e&&e.message)});
+  try{
+    /* last resort: reset the view state but never touch the person's records */
+    DB.view={};DB.charts={};DB.drafts={};
+    applyTheme();fillHeader();repaintAll();showTab("survey");
+    toast("Recovered from a display error — your data is intact");
+  }catch(e2){
+    var d=document.createElement("div");
+    d.setAttribute("style","position:fixed;inset:0;background:#EFEADA;color:#17150E;padding:24px;"+
+      "font:15px/1.6 -apple-system,system-ui,sans-serif;z-index:99999");
+    d.innerHTML="<h2>Redd Master could not start</h2><p>Your saved surveys are still on the device.</p>"+
+      "<p style=\"font-family:ui-monospace,monospace;font-size:12px\">"+String(e2&&e2.message).replace(/</g,"&lt;")+"</p>";
+    document.body.appendChild(d);
+  }
+}
 /* home-screen shortcuts: ?new=1 starts a survey, ?finish=1 opens the end-of-day sheet */
 (function(){
   try{
@@ -3379,9 +3589,7 @@ load();applyTheme();fillHeader();repaintAll();paintChips();paintViewChips();show
 })();
 if(DB.keepAwake)setWake(true);
 refreshPhotoCounts().then(()=>{dirty.carcass=dirty.redds=dirty.obs=1;paint();});
-if(!currentUser())setTimeout(()=>{
-  if(!currentUser()&&!$("#scrim").classList.contains("show"))openSignIn(true);
-},700);
+/* no sign-in popup — the recorder is a field on the survey form instead */
 window.addEventListener("pagehide",flush);
 window.addEventListener("beforeunload",flush);
 
