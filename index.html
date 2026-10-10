@@ -77,13 +77,13 @@ header{position:sticky;top:0;z-index:40;background:var(--cover);color:var(--cove
   transition:transform .1s var(--ease)}
 .reach:active{transform:translate(1px,1px)}
 .reach .rmeta{min-width:0;flex:1;text-align:left}
-.reach .rt{font:700 14.5px/1.1 var(--cond);letter-spacing:.02em;text-transform:uppercase;
+.reach .rt{display:block;font:700 14.5px/1.1 var(--cond);letter-spacing:.02em;text-transform:uppercase;
   color:var(--coverInk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.reach .rs{font:600 10px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+.reach .rs{display:block;font:600 10px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;
   color:#5A4E28;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .reach .chev{color:var(--coverInk);flex:0 0 auto;opacity:.65}
 .hbtn.wide{width:auto;padding:0 10px;gap:6px;flex-direction:row}
-.hbtn .hlab{font:700 9px/1.05 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:left}
+.hbtn .hlab{display:block;font:700 9px/1.05 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:left}
 .hbtn{flex:0 0 auto;width:46px;min-height:48px;border:1.5px solid var(--band);border-radius:var(--r-sm);
   background:rgba(255,255,255,.5);color:var(--coverInk);display:grid;place-items:center;
   transition:all .1s var(--ease)}
@@ -114,6 +114,7 @@ main{max-width:720px;margin:0 auto;padding:15px 13px 8px}
 .ct .eyebrow{color:var(--tx)}
 
 .f{display:block;margin-bottom:13px}
+[hidden]{display:none!important}
 .f:last-child{margin-bottom:0}
 .f > .lab{display:block;font:700 10px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
   color:var(--tx2);margin-bottom:6px}
@@ -166,7 +167,12 @@ select.in{appearance:none;-webkit-appearance:none;padding-right:34px;
 .ulnow:active{background:var(--cover);transform:translate(1px,1px)}
 .ulfields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .ulfields>label:first-child{grid-column:1 / -1}
-.ulfields>label{display:block;min-width:0}
+.ulfields>label,.ulfields>.tbox{display:block;min-width:0}
+.tpair{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:4px}
+.tpair label{position:relative;display:block;min-width:0}
+.tpair em{position:absolute;right:7px;top:50%;transform:translateY(-50%);font:700 11px/1 var(--mono);font-style:normal;color:var(--tx3);pointer-events:none}
+.ulfields .tpair input{padding-right:26px}
+.tpair .tf input{background:var(--surf3);font-size:14px}
 .ulfields input{width:100%;min-width:0;max-width:100%;height:48px;padding:0 8px;font-size:15px}
 /* iOS gives date/time inputs a wide intrinsic size — keep them inside their track */
 input[type=time],input[type=date]{-webkit-appearance:none;appearance:none;
@@ -640,6 +646,46 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
 
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 :focus-visible{outline:2.5px solid var(--tx);outline-offset:2px}
+
+/* ---------------- report ---------------- */
+.rp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:12px}
+.rp-stat{background:var(--surf);border:1.5px solid var(--tx);padding:9px 8px 8px;position:relative}
+.rp-stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--cover)}
+.rp-stat .n{font:800 26px/1 var(--mono);letter-spacing:-.02em}
+.rp-stat .l{font:700 9.5px/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-top:5px}
+.rp-stat.auto::after{content:"AUTO";position:absolute;right:5px;top:5px;font:700 8px/1 var(--mono);letter-spacing:.1em;color:var(--tx3)}
+.rp-card{background:var(--surf);border:1.5px solid var(--tx);margin-bottom:12px}
+.rp-card h3{margin:0;padding:10px 12px;font:800 13px/1.2 var(--sans);letter-spacing:.04em;text-transform:uppercase;border-bottom:2px solid var(--band);
+  display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rp-card h3 small{font:600 10.5px/1 var(--mono);color:var(--tx3);text-transform:none;letter-spacing:0}
+.rp-tbl{width:100%;border-collapse:collapse;font:13px/1.3 var(--sans)}
+.rp-tbl th{font:700 9.5px/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--tx3);text-align:center;padding:7px 3px;border-bottom:1px solid var(--line2);background:var(--surf3)}
+.rp-tbl th:first-child,.rp-tbl td:first-child{text-align:left;padding-left:10px}
+.rp-tbl td{text-align:center;padding:5px 3px;border-bottom:1px solid var(--line);font-family:var(--mono);font-variant-numeric:tabular-nums}
+.rp-tbl td.z{color:var(--tx3)}
+.rp-tbl tr.tot td{font-weight:800;border-top:2px solid var(--band);border-bottom:none;background:var(--surf2)}
+.rp-tbl .auto{background:var(--ac-ghost)}
+.rp-step{display:inline-flex;align-items:center;gap:2px}
+.rp-step button{width:30px;height:34px;border:1.5px solid var(--band);font:800 15px/1 var(--sans);background:var(--surf2);color:var(--tx)}
+.rp-step button.p{background:var(--cover);color:var(--coverInk)}
+.rp-step b{min-width:22px;text-align:center;font:800 14px var(--mono)}
+.rp-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0}
+.rp-kv div{padding:9px 12px;border-bottom:1px solid var(--line);font:13px/1.35 var(--sans)}
+.rp-kv div:nth-child(odd){border-right:1px solid var(--line)}
+.rp-kv b{display:block;font:800 18px/1.1 var(--mono)}
+.rp-kv span{font:700 9.5px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--tx3)}
+.rp-foot{padding:8px 12px;font:12px/1.45 var(--sans);color:var(--tx2)}
+.rp-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px}
+.rp-acts button{min-height:50px;border:2px solid var(--band);background:var(--surf2);font:800 14px var(--sans);color:var(--tx)}
+.rp-acts button.pri{background:var(--cover);color:var(--coverInk)}
+@media (max-width:370px){.rp-tbl td,.rp-tbl th{padding:5px 1px}.rp-step button{width:26px;height:34px}.rp-step b{min-width:16px}
+  .rp-tbl th:first-child,.rp-tbl td:first-child{padding-left:6px}.rp-stat .n{font-size:22px}}
+.tblwrap{border:1.5px solid var(--line2);background:var(--surf);margin:10px 0 12px}
+.tblwrap>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:13px 12px;font:700 13px/1.2 var(--sans);min-height:48px}
+.tblwrap>summary::-webkit-details-marker{display:none}
+.tblwrap>summary em{font:600 10.5px/1 var(--mono);font-style:normal;color:var(--tx3);margin-left:auto}
+.tblwrap[open]{padding:0 10px 10px}
+.tblwrap[open]>summary{margin:0 -10px 8px;border-bottom:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -698,6 +744,8 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
       <div class="strip"><span>All-weather field book</span><span>Est. 2026</span></div>
     </div>
 
+    <div id="fieldReady"></div>
+
     <div class="sect"><h2>Spawner Survey</h2><span class="sbtns"><span class="side">2026 Form</span></span></div>
 
     <div class="card">
@@ -730,6 +778,14 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
         </div>
         <p class="hint" style="margin-top:7px">Tributaries (Peat Bog and similar) are surveyed as often as
           possible and their escapement is the carcasses recovered, with no expansion.</p></label>
+      <div id="tribWrap" hidden>
+        <label class="f"><span class="lab">Tributary<span class="req">*</span></span>
+          <div class="seg sm" data-hseg="trib">
+            <button data-v="Peat Bog Creek">Peat Bog Creek</button><button data-v="Clearwater Creek">Clearwater Creek</button><button data-v="Other">Other</button>
+          </div></label>
+        <label class="f" id="tribOther" hidden><span class="lab">Tributary name</span>
+          <input type="text" data-h="tribother" placeholder="Creek name"></label>
+      </div>
       <label class="f"><span class="lab">Survey type<span class="req">*</span></span>
         <div class="seg sm" data-hseg="surveyType">
           <button data-v="Primary">Primary survey</button><button data-v="Braid">Braid</button>
@@ -756,8 +812,9 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
           <button class="ulnow" data-act="now" data-k="upTime">Set now</button></div>
         <div class="ulfields">
           <label><span class="ulcap">Time</span><input type="time" data-h="upTime"></label>
-          <label><span class="ulcap">Water temp <em class="u">°<span class="unitLbl">C</span></em></span>
-            <input type="number" inputmode="decimal" step="0.1" data-h="upTemp" placeholder="0.0"></label>
+          <div class="tbox"><span class="ulcap">Water temp</span>
+            <div class="tpair"><label class="tc"><input type="number" inputmode="decimal" step="0.1" data-h="upTemp" placeholder="0.0"><em>°C</em></label>
+            <label class="tf"><input type="number" inputmode="decimal" step="0.1" data-tf="upTemp" placeholder="°F"><em>°F</em></label></div></div>
           <label><span class="ulcap">River mile</span>
             <input type="number" inputmode="decimal" step="0.1" data-h="upRM" placeholder="0.0"></label>
         </div>
@@ -767,13 +824,14 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
           <button class="ulnow" data-act="now" data-k="loTime">Set now</button></div>
         <div class="ulfields">
           <label><span class="ulcap">Time</span><input type="time" data-h="loTime"></label>
-          <label><span class="ulcap">Water temp <em class="u">°<span class="unitLbl">C</span></em></span>
-            <input type="number" inputmode="decimal" step="0.1" data-h="loTemp" placeholder="0.0"></label>
+          <div class="tbox"><span class="ulcap">Water temp</span>
+            <div class="tpair"><label class="tc"><input type="number" inputmode="decimal" step="0.1" data-h="loTemp" placeholder="0.0"><em>°C</em></label>
+            <label class="tf"><input type="number" inputmode="decimal" step="0.1" data-tf="loTemp" placeholder="°F"><em>°F</em></label></div></div>
           <label><span class="ulcap">River mile</span>
             <input type="number" inputmode="decimal" step="0.1" data-h="loRM" placeholder="0.0"></label>
         </div>
       </div>
-      <p class="hint">Temperatures in °<span class="unitLbl">C</span> <button class="chip mute" data-act="unit" style="margin-left:6px">Switch to °F</button></p>
+      <p class="hint">Water temperature is recorded in <b>°C</b>. If your thermometer reads Fahrenheit, type it in the °F box and it converts.</p>
     </div>
 
     <div class="card">
@@ -805,11 +863,15 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
 
   <!-- ===================== TALLY ===================== -->
   <section class="panel" id="p-tally">
-    <div class="sect"><h2>Tally</h2><span class="sbtns"><button class="chip mute" data-act="view" data-k="tally">Table</button><button class="chip mute" data-act="graph" data-k="tally">Graph</button></span></div>
-    <div id="totalsBox"></div>
+    <div class="sect"><h2>Report</h2><span class="sbtns"><span class="side">Fills in from your records</span></span></div>
+    <div id="rpBox"></div>
     <div id="qaBox"></div>
-    <div id="ch-tally"></div>
-    <div class="list" id="rowList"></div>
+    <details class="tblwrap" id="tblWrap"><summary><span>Edit page-1 lines by hand</span><em>corrections, subsample columns</em></summary>
+      <div id="totalsBox"></div>
+      <div style="display:flex;gap:6px;justify-content:flex-end;margin:6px 0 8px"><button class="chip mute" data-act="view" data-k="tally">Table</button><button class="chip mute" data-act="graph" data-k="tally">Graph</button></div>
+      <div id="ch-tally"></div>
+      <div class="list" id="rowList"></div>
+    </details>
     <p class="hint">One line per river mile, to the nearest tenth. Everything in a row describes that river mile —
       <b>i.e. the number of new redds at RM 16.2</b>. Unsampled carcasses (spines, guts, heavily scavenged)
       go in <b>Not sampled</b> and nowhere else.</p>
@@ -874,9 +936,9 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
 
 <nav>
   <button data-tab="survey" class="on"><svg class="i"><use href="#i-reach"/></svg><span class="tl">Survey</span></button>
-  <button data-tab="tally"><svg class="i"><use href="#i-grid"/></svg><span class="tl">Tally</span></button>
   <button data-tab="carcass"><svg class="i"><use href="#i-fish"/></svg><span class="tl">Carcass</span></button>
   <button data-tab="redds"><svg class="i"><use href="#i-redd"/></svg><span class="tl">Redds</span></button>
+  <button data-tab="tally"><svg class="i"><use href="#i-grid"/></svg><span class="tl">Report</span></button>
   <button data-tab="obs"><svg class="i"><use href="#i-fish"/></svg><span class="tl">Other</span></button>
   <button data-tab="ref"><svg class="i"><use href="#i-book"/></svg><span class="tl">Ref</span></button>
 </nav>
@@ -897,7 +959,7 @@ function isLocalFile(){return location.protocol==="file:";}
       if(!d){
         d=document.createElement("div");d.id="bootErr";
         d.setAttribute("style","position:fixed;left:0;right:0;top:0;z-index:99999;background:#A63229;"+
-          "color:#fff;font:600 13px/1.5 -apple-system,system-ui,sans-serif;padding:12px 14px;"+
+          "color:#fff;font:600 13px/1.5 -apple-system,system-ui,sans-serif;padding:12px 44px 12px 14px;"+
           "box-shadow:0 4px 14px rgba(0,0,0,.4);max-height:52vh;overflow:auto");
         (document.body||document.documentElement).appendChild(d);
       }
@@ -905,12 +967,21 @@ function isLocalFile(){return location.protocol==="file:";}
         '<div style="font-weight:400;font-family:ui-monospace,monospace;font-size:11.5px;'+
         'word-break:break-word">'+String(msg).replace(/</g,"&lt;")+'</div>'+
         '<div style="font-weight:400;margin-top:8px;opacity:.85">Settings \u2192 Diagnostics \u2192 Copy report, '+
-        'and send it on. Your saved data is not affected.</div>';
+        'and send it on. Your saved data is not affected.</div>'+
+        '<button type="button" aria-label="Dismiss" onclick="this.parentNode.remove()" style="position:absolute;top:6px;right:8px;'+
+        'background:none;border:0;color:#fff;font-size:22px;line-height:1;padding:6px 10px;cursor:pointer">\u00d7</button>';
+      clearTimeout(window.__errT); window.__errT=setTimeout(function(){var x=document.getElementById("bootErr");if(x)x.remove();},12000);
     }catch(e){}
   }
   window.addEventListener("error",function(e){
     window.__ERRS.push({t:new Date().toISOString(),m:(e.message||"error")+" @ "+(e.filename||"")+":"+(e.lineno||0)});
-    show((e.message||"Error")+"  (line "+(e.lineno||"?")+")");
+    /* Ignore opaque "Script error." and anything not from this page: these come from
+       in-app browsers (Teams, Outlook, Facebook), extensions or the host, not Redd Master. */
+    var msg=String(e.message||"");
+    if(/^script error\.?$/i.test(msg)||!e.filename||!e.lineno) return;
+    try{ var u=new URL(e.filename,location.href); var me=new URL(location.href);
+      if(u.origin!==me.origin||u.pathname!==me.pathname) return; }catch(_){ return; }
+    show((msg||"Error")+"  (line "+e.lineno+")");
   });
   window.addEventListener("unhandledrejection",function(e){
     var m=(e.reason&&(e.reason.message||e.reason))||"promise rejection";
@@ -1090,7 +1161,7 @@ const KEY="nooksack_survey_v1";
 const APP_VERSION="1.0";
 const SCHEMA_VERSION="reddmaster.sgs.v1";   /* bump only on a breaking field change */
 let DB={surveys:{},current:null,unit:"C",theme:"light",autoGPS:true,keepAwake:false,charts:{},
-  lineup:{pos:0,rate:10},gpsAsked:false,gpsAllowed:false,view:{},drafts:{}};
+  lineup:{pos:0,rate:10},gpsAsked:false,gpsAllowed:false,view:{},drafts:{},autoTally:true};
 let DRAFT=null, wakeLock=null, activeTab="survey";
 const dirty={tally:1,carcass:1,redds:1,obs:1};
 
@@ -1098,9 +1169,16 @@ const ROWF=["newRedds","live","deadSamp","deadNot","subSamp","subNoBio"];
 function blankSurvey(name){
   return {id:uid(),name:name||"",created:Date.now(),
     header:{species:"CHIN",fork:"",forkother:"",crew:"",date:today(),reach:"",surveyType:"",
-      waterType:"Mainstem",visibility:"",upTime:"",upTemp:"",upRM:"",loTime:"",loTemp:"",loRM:"",
+      waterType:"Mainstem",trib:"",tribother:"",visibility:"",upTime:"",upTemp:"",upRM:"",loTime:"",loTemp:"",loRM:"",
       subsampling:"",subRate:"10",gpsUnit:"",reverseNotes:"",pageNo:"",pageOf:""},
     rows:[],carcasses:[],redds:[],obs:[],last:{}};
+}
+/* a new survey starts from the last one: same crew, reach, stream, species and gear */
+function surveyFromLast(){
+  const s=blankSurvey(),prev=Object.values(DB.surveys).sort((a,b)=>(b.created||0)-(a.created||0))[0];
+  if(prev&&prev.header){const h=prev.header;
+    ["species","fork","forkother","crew","reach","waterType","trib","tribother","surveyType","gpsUnit","subRate"].forEach(k=>{if(h[k])s.header[k]=h[k];});}
+  return s;
 }
 function blankRow(rm){const r={id:uid(),rm:rm==null?"":rm,notes:""};ROWF.forEach(f=>r[f]=0);return r;}
 const S=()=>DB.surveys[DB.current];
@@ -1108,25 +1186,69 @@ const S=()=>DB.surveys[DB.current];
 /* ══════════════ persistence ══════════════ */
 let tSave=null;
 let saveCount=0;
+/* Surveys are written to IndexedDB (room for many seasons) and mirrored to localStorage
+   while they fit, so a reload can paint instantly. Whichever copy is newer wins at start-up. */
+const SDB={db:null,ok:typeof indexedDB!=="undefined",
+  open(){
+    if(this._p)return this._p;
+    this._p=new Promise(res=>{
+      if(!this.ok)return res(null);
+      let r;try{r=indexedDB.open("reddmaster_data",1);}catch(e){this.ok=false;return res(null);}
+      r.onupgradeneeded=()=>{try{r.result.createObjectStore("kv");}catch(e){}};
+      r.onsuccess=()=>{this.db=r.result;res(this.db);};
+      r.onerror=r.onblocked=()=>{this.ok=false;res(null);};
+      setTimeout(()=>res(this.db),2500);
+    });
+    return this._p;
+  },
+  get(){return this.open().then(db=>db?new Promise(res=>{
+    try{const q=db.transaction("kv").objectStore("kv").get("db");q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null);}
+    catch(e){res(null);}}):null);},
+  put(json){if(!this.db)return Promise.resolve(false);return new Promise(res=>{
+    try{const t=this.db.transaction("kv","readwrite");t.objectStore("kv").put(json,"db");
+      t.oncomplete=()=>res(true);t.onerror=t.onabort=()=>res(false);}catch(e){res(false);}});}
+};
+const STORE={ready:false,pending:false,lsFull:false};
+function writeAll(){
+  if(!STORE.ready){STORE.pending=true;return;}
+  DB.savedAt=Date.now();
+  const json=JSON.stringify(DB);
+  SDB.put(json).then(ok=>{if(!ok&&STORE.lsFull)toast("Could not save — export now, storage is full");});
+  try{localStorage.setItem(KEY,json);STORE.lsFull=false;}
+  catch(e){
+    /* the quick-start copy no longer fits: drop it so it can never be mistaken for current data */
+    STORE.lsFull=true;try{localStorage.removeItem(KEY);localStorage.setItem(KEY+"_idb","1");}catch(e2){}
+    if(!SDB.db)toast("Could not save — export now, storage is full");
+  }
+  if(++saveCount%25===0&&!SDB.db&&json.length>3.5e6)
+    toast("Storage is filling up — export and start a fresh backup");
+}
 function save(){
   const cur=S();if(cur)cur.updatedAt=Date.now();
   $("#pulse").classList.add("on");
   clearTimeout(tSave);
-  tSave=setTimeout(()=>{
-    try{
-      const json=JSON.stringify(DB);
-      localStorage.setItem(KEY,json);
-      /* warn well before the browser quota bites, while exporting is still possible */
-      if(++saveCount%25===0&&json.length>3.5e6)
-        toast("Storage is filling up — export and start a fresh backup");
-    }catch(e){toast("Could not save — export now, storage is full")}
-    $("#pulse").classList.remove("on");
-  },250);
+  tSave=setTimeout(()=>{writeAll();$("#pulse").classList.remove("on");},250);
 }
-function flush(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
-function load(){
-  try{const raw=localStorage.getItem(KEY);if(raw)Object.assign(DB,JSON.parse(raw));}catch(e){}
+function flush(){clearTimeout(tSave);writeAll();}
+/* start-up: open IndexedDB, take its copy if it is newer than the quick-start copy, then allow writes */
+function storeInit(){
+  return SDB.get().then(raw=>{
+    let took=false;
+    if(raw){try{const o=JSON.parse(raw);
+      if(!DB.savedAt||(o.savedAt||0)>(DB.savedAt||0)||!localStorage.getItem(KEY)){load(raw);took=true;}}catch(e){}}
+    STORE.ready=true;
+    if(took||STORE.pending||!raw){STORE.pending=false;writeAll();}
+    return took;
+  });
+}
+function load(src){
+  if(src!==false){try{const raw=typeof src==="string"?src:localStorage.getItem(KEY);
+    if(raw){const o=JSON.parse(raw);Object.keys(DB).forEach(k=>{if(k==="surveys")DB.surveys={};});Object.assign(DB,o);}}catch(e){}}
   if(!DB.surveys)DB.surveys={};
+  if(DB.unit==="F"){let n=0;Object.values(DB.surveys).forEach(sv=>{const h=sv.header||{};
+      ["upTemp","loTemp"].forEach(k=>{const v=parseFloat(h[k]);if(isFinite(v)){h[k]=String(Math.round((v-32)*5/9*10)/10);n++;}});});
+    DB.unit="C";if(n)window.__tempMigrated=n;}
+  DB.unit="C";
   if(!DB.charts||typeof DB.charts!=="object")DB.charts={};
   if(!DB.lineup)DB.lineup={pos:0,rate:10};
   if(!DB.view||typeof DB.view!=="object")DB.view={};
@@ -1213,11 +1335,14 @@ function sheet(title,body,foot){
     '<div class="sh-body">'+body+'</div>'+(foot?'<div class="sh-foot">'+foot+'</div>':'');
   $("#scrim").classList.add("show");
   $("#sheet").querySelector(".sh-body").scrollTop=0;
+  $$("#sheet input").forEach(x=>x.setAttribute("enterkeyhint","next"));
 }
 function closeSheet(){$("#scrim").classList.remove("show");DRAFT=null;}
 
 /* ══════════════ header ══════════════ */
+function tribName(h){return h.waterType==="Trib"&&h.trib?(h.trib==="Other"?(h.tribother||"Tributary"):h.trib):"";}
 function forkName(h){
+  const tn=tribName(h);if(tn)return tn;
   if(h.fork==="Other")return h.forkother||"Stream";
   if(h.fork==="NF")return h.forkother||"North Fork Nooksack";
   if(h.fork==="MF")return h.forkother||"Middle Fork Nooksack";
@@ -1225,19 +1350,28 @@ function forkName(h){
   return h.forkother||"";
 }
 function label(s){
-  const h=s.header,short=h.fork==="Other"?(h.forkother||"Stream"):(h.fork||"—");
+  const h=s.header,tn=tribName(h),
+    short=(tn?(h.fork&&h.fork!=="Other"?h.fork+" \u00b7 ":"")+tn.replace(/ Creek$/," Cr."):h.fork==="Other"?(h.forkother||"Stream"):(h.fork||"—"));
   const rm=h.upRM!==""?" · RM "+h.upRM+(h.loRM!==""&&h.loRM!==h.upRM?"–"+h.loRM:""):"";
   return{t:(h.species||"—")+" · "+short+(h.reach?" · "+h.reach:""),
          s:(h.date||"no date")+rm+(s.name?" · "+s.name:"")};
 }
-function renderChrome(){const l=label(S());$("#hTitle").textContent=l.t;$("#hSub").textContent=l.s;renderInterval();renderEsc();renderUserChip();}
+function renderChrome(){const l=label(S());$("#hTitle").textContent=l.t;$("#hSub").textContent=l.s;renderInterval();renderEsc();renderUserChip();renderFieldReady();}
+/* tributary choice only applies to tributary surveys; Peat Bog and Clearwater are MF tributaries */
+function showTrib(){const h=S().header,w=$("#tribWrap");if(!w)return;
+  w.hidden=h.waterType!=="Trib";$("#tribOther").hidden=!(h.waterType==="Trib"&&h.trib==="Other");}
+/* °F boxes mirror the stored °C value */
+const c2f=c=>Math.round((c*9/5+32)*10)/10, f2c=f=>Math.round((f-32)*5/9*10)/10;
+function syncF(skip){$$("[data-tf]").forEach(el=>{if(el===skip)return;const c=parseFloat(S().header[el.dataset.tf]);
+  el.value=isFinite(c)?c2f(c):"";});}
 function paintSeg(k,v){$$('[data-hseg="'+k+'"] button').forEach(b=>b.classList.toggle("on",b.dataset.v===v));}
 function fillHeader(){
   const h=S().header;
   $$("[data-h]").forEach(el=>{el.value=h[el.dataset.h]!=null?h[el.dataset.h]:"";});
   $("#forkOther").hidden=h.fork!=="Other";
   $("#subRateWrap").hidden=h.subsampling!=="Y";
-  ["species","fork","waterType","surveyType","visibility","subsampling","subRate","reverseNotes"]
+  showTrib();syncF();
+  ["species","fork","waterType","trib","surveyType","visibility","subsampling","subRate","reverseNotes"]
     .forEach(k=>paintSeg(k,h[k]));
   $$(".unitLbl").forEach(e=>e.textContent=DB.unit);
   renderChrome();
@@ -1247,8 +1381,12 @@ document.addEventListener("input",e=>{
   if(rm){const r=S().rows.find(x=>x.id===rm.dataset.rm);if(r){r.rm=rm.value;save();}return;}
   const nt=e.target.closest("[data-note]");
   if(nt){const r=S().rows.find(x=>x.id===nt.dataset.note);if(r){r.notes=nt.value;save();}return;}
+  const tf=e.target.closest("[data-tf]");
+  if(tf){const f=parseFloat(tf.value),k=tf.dataset.tf,v=isFinite(f)?String(f2c(f)):"";
+    S().header[k]=v;const c=$('[data-h="'+k+'"]');if(c)c.value=v;save();renderChrome();return;}
   const el=e.target.closest("[data-h]");if(!el)return;
   S().header[el.dataset.h]=el.value;
+  if(el.dataset.h==="upTemp"||el.dataset.h==="loTemp")syncF();
   if(el.dataset.h==="fork")$("#forkOther").hidden=el.value!=="Other";
   save();renderChrome();
 },{passive:true});
@@ -1261,7 +1399,10 @@ document.addEventListener("click",e=>{
   if(key==="subsampling"){$("#subRateWrap").hidden=val!=="Y";
     if(val==="Y"){DB.lineup.rate=+(S().header.subRate||10);}}
   if(key==="subRate")DB.lineup.rate=+val||10;
-  if(key==="species"||key==="fork"||key==="waterType")renderChrome();
+  if(key==="waterType"||key==="trib"){
+    if(key==="trib"&&val&&val!=="Other"&&!S().header.fork){S().header.fork="MF";paintSeg("fork","MF");}
+    showTrib();}
+  if(key==="species"||key==="fork"||key==="waterType"||key==="trib")renderChrome();
   save();hap(6);
 });
 
@@ -1437,6 +1578,13 @@ function checkRange(k,v){
   if(n<r[0]||n>r[1])return "outside "+r[0]+"–"+r[1]+(r[2]?" "+r[2]:"");
   return null;
 }
+/* the keyboard's Next key moves through the form's inputs */
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Enter"||e.target.tagName!=="INPUT"||!e.target.closest("#sheet"))return;
+  const ins=$$("#sheet .sh-body input:not([type=file]):not([type=hidden])").filter(x=>!x.closest("[hidden]")&&x.offsetParent);
+  const i=ins.indexOf(e.target);e.preventDefault();
+  if(i>=0&&i<ins.length-1)ins[i+1].focus();else e.target.blur();
+});
 function renderValidation(id,warns){
   const el=$("#"+id);if(!el)return;
   if(!warns.length){el.innerHTML='<div class="vok">\u2713 All required fields complete</div>';return;}
@@ -1617,7 +1765,7 @@ function dupOf(list,id,field,val){
 }
 function blankCarc(){
   const l=S().last||{};
-  return{id:uid(),otolith:l.otolith?nextNum(l.otolith):"",dna:l.dna?nextNum(l.dna):"",
+  return{id:uid(),species:S().header.species||"",otolith:l.otolith?nextNum(l.otolith):"",dna:l.dna?nextNum(l.dna):"",
     fl:"",sex:"",rm:l.rm||"",spawn:"",adClip:"",cwt:"",scaleCard:l.scaleCard||"",
     lineNums:l.lineNums?nextNum(l.lineNums):"",hbl:"",scavenged:"",eyes:"",notes:""};
 }
@@ -1700,6 +1848,41 @@ function validateCarc(){
     w.push("Species differs from the survey target ("+esc(S().header.species)+") — it will not count toward the tally cross-check");
   renderValidation("carcVal",w);
 }
+/* ── records feed the tally ──
+   A new carcass or redd adds 1 to the tally line at its river mile (the line is created if needed).
+   The record remembers which cell it counted in, so editing its RM or deleting it keeps the tally right.
+   Records made before this, or by hand on the tally, are never touched. */
+function tallyField(rec,kind){
+  if(kind==="redd")return "newRedds";
+  const h=S().header;if(rec.species&&rec.species!==h.species)return null;   /* other species: not on the form */
+  if(h.subsampling!=="Y")return "deadSamp";
+  return (rec.otolith||rec.dna||rec.scaleCard||rec.fl)?"subSamp":"subNoBio";
+}
+function tallyRowAt(rm,create){
+  const v=parseFloat(rm);if(!isFinite(v))return null;
+  const rows=S().rows;let r=rows.find(x=>Math.abs(parseFloat(x.rm)-v)<0.001);
+  if(!r&&create){r=blankRow(String(rm));rows.push(r);}
+  return r;
+}
+function tallyBump(link,d){
+  const r=link&&S().rows.find(x=>x.id===link.row);if(!r)return null;
+  r[link.f]=Math.max(0,(r[link.f]|0)+d);dirty.tally=1;return r;
+}
+/* returns a short note for the toast, or "" */
+function autoTally(rec,kind,isNew){
+  if(DB.autoTally===false)return "";
+  const prev=rec.tallied;
+  if(!isNew&&!prev)return "";
+  const f=tallyField(rec,kind);
+  if(prev){const pr=S().rows.find(x=>x.id===prev.row);
+    if(pr&&prev.f===f&&Math.abs(parseFloat(pr.rm)-parseFloat(rec.rm))<0.001)return "";
+    tallyBump(prev,-1);delete rec.tallied;}
+  if(!f)return prev?" \u00b7 removed from tally":"";
+  const r=tallyRowAt(rec.rm,true);
+  if(!r)return " \u00b7 no RM, not on tally";
+  rec.tallied={row:r.id,f};tallyBump(rec.tallied,1);
+  return " \u00b7 tally RM "+r.rm+" +1 "+(CAP[f]||f).toLowerCase();
+}
 function saveCarc(next){
   const c=DRAFT;clearDraft('carc');
   delete c.__type;delete c.__rec;delete c.__man;delete c.__init;
@@ -1707,12 +1890,14 @@ function saveCarc(next){
     .forEach(k=>{const el=$("#f_"+k);if(el)c[k]=el.value.trim();});
   stampRecord(c);
   const s=S(),arr=s.carcasses,i=arr.findIndex(x=>x.id===c.id);
+  const tn=autoTally(c,"carc",i<0);
   if(i>=0)arr[i]=c;else arr.push(c);
   s.last={otolith:c.otolith||s.last.otolith,dna:c.dna||s.last.dna,scaleCard:c.scaleCard,
     lineNums:c.lineNums||s.last.lineNums,rm:c.rm};
   save();closeSheet();dirty.carcass=1;paint();hap(14);
   syncPhotos();
-  toast(i>=0?"Carcass updated":"Carcass "+arr.length+" logged");
+  const undoT=c.tallied&&i<0?()=>{tallyBump(c.tallied,-1);delete c.tallied;save();paint();toast("Removed from tally — carcass kept");}:null;
+  toast((i>=0?"Carcass updated":"Carcass "+arr.length+" logged")+tn,undoT);
   if(next)openCarc();
 }
 function renderCarc(){
@@ -1754,9 +1939,9 @@ function renderCarc(){
 function delCarc(id){
   PDB.delByRecord(id).then(syncPhotos).catch(()=>{});
   const arr=S().carcasses,i=arr.findIndex(x=>x.id===id);if(i<0)return;
-  const rec=arr.splice(i,1)[0];
+  const rec=arr.splice(i,1)[0];tallyBump(rec.tallied,-1);
   save();closeSheet();dirty.carcass=1;paint();hap(20);
-  toast("Carcass deleted",()=>{arr.splice(i,0,rec);save();dirty.carcass=1;paint();toast("Restored");});
+  toast("Carcass deleted"+(rec.tallied?" \u00b7 tally \u22121":""),()=>{arr.splice(i,0,rec);tallyBump(rec.tallied,1);save();dirty.carcass=1;paint();toast("Restored");});
 }
 
 /* ══════════════ redd form (2026 Chinook Redd Form) ══════════════ */
@@ -1838,11 +2023,13 @@ function saveRedd(next){
   ["reddId","rm","waypoint","notes","lat","lon"].forEach(k=>{const el=$("#f_"+k);if(el)r[k]=el.value.trim();});
   stampRecord(r);
   const s=S(),arr=s.redds,i=arr.findIndex(x=>x.id===r.id);
+  const tn=autoTally(r,"redd",i<0);
   if(i>=0)arr[i]=r;else arr.push(r);
   s.last=Object.assign(s.last||{},{waypoint:r.waypoint,rm:r.rm});
   save();closeSheet();dirty.redds=1;paint();hap(14);
   syncPhotos();
-  toast(i>=0?"Redd updated":"Redd "+r.reddId+" logged");
+  const undoT=r.tallied&&i<0?()=>{tallyBump(r.tallied,-1);delete r.tallied;save();paint();toast("Removed from tally — redd kept");}:null;
+  toast((i>=0?"Redd updated":"Redd "+r.reddId+" logged")+tn,undoT);
   if(next)openRedd();
 }
 function renderRedds(){
@@ -1882,9 +2069,9 @@ function renderRedds(){
 function delRedd(id){
   PDB.delByRecord(id).then(syncPhotos).catch(()=>{});
   const arr=S().redds,i=arr.findIndex(x=>x.id===id);if(i<0)return;
-  const rec=arr.splice(i,1)[0];
+  const rec=arr.splice(i,1)[0];tallyBump(rec.tallied,-1);
   save();closeSheet();dirty.redds=1;paint();hap(20);
-  toast("Redd deleted",()=>{arr.splice(i,0,rec);save();dirty.redds=1;paint();toast("Restored");});
+  toast("Redd deleted"+(rec.tallied?" \u00b7 tally \u22121":""),()=>{arr.splice(i,0,rec);tallyBump(rec.tallied,1);save();dirty.redds=1;paint();toast("Restored");});
 }
 
 
@@ -2462,7 +2649,7 @@ function paintViewChips(){
 }
 
 /* ══════════════ tabs / paint ══════════════ */
-const FAB={carcass:"Add carcass",tally:"Add river mile",redds:"Add redd",obs:"Add observation"};
+const FAB={carcass:"Add carcass",redds:"Add redd",obs:"Add observation"};
 function showTab(t){
   activeTab=t;
   $$(".panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+t));
@@ -2475,7 +2662,7 @@ function showTab(t){
   paint();window.scrollTo(0,0);
 }
 function paint(){
-  if(activeTab==="tally"&&dirty.tally){renderRows();dirty.tally=0;}
+  if(activeTab==="tally"){if(dirty.tally){renderRows();dirty.tally=0;}renderReport();}
   if(activeTab==="carcass"&&dirty.carcass){renderCarc();dirty.carcass=0;}
   if(activeTab==="redds"&&dirty.redds){renderRedds();dirty.redds=0;}
   if(activeTab==="obs"&&dirty.obs){renderObs();dirty.obs=0;}
@@ -2486,7 +2673,7 @@ function paint(){
 }
 function setBadges(){
   const s=S(),t=rowTotals();
-  badge("tally",t.newRedds+t.live+t.dead);
+  badge("tally",0);
   badge("carcass",s.carcasses.length);
   badge("redds",s.redds.length);
   badge("obs",s.obs.reduce((a,o)=>a+(+o.count||0),0));
@@ -3145,9 +3332,11 @@ function openExport(){
 }
 function openSettings(){
   const ins=installState();
-  const tg=(k,on)=>'<button class="menu-item" data-act="tog" data-k="'+k+'"><span class="mt"><b>'+
-    (k==="autoGPS"?"Auto-capture GPS":"Keep screen awake")+'</b><span>'+
-    (k==="autoGPS"?"Grabs a fix when you open a new record":"Stops the phone sleeping mid-survey")+
+  const TG={autoGPS:["Auto-capture GPS","Grabs a fix when you open a new record"],
+    keepAwake:["Keep screen awake","Stops the phone sleeping mid-survey"],
+    autoTally:["Records add to the tally","A new carcass or redd adds 1 to the tally line at its river mile"],
+};
+  const tg=(k,on)=>'<button class="menu-item" data-act="tog" data-k="'+k+'"><span class="mt"><b>'+TG[k][0]+'</b><span>'+TG[k][1]+
     '</span></span><span class="toggle'+(on?" on":"")+'"></span></button>';
   sheet("Settings",
     '<div class="ct"><span class="eyebrow">This device</span></div>'+
@@ -3158,13 +3347,42 @@ function openSettings(){
     '<label class="f"><span class="lab">Theme</span><div class="seg sm">'+
       ["auto","light","dark"].map(t=>'<button data-act="theme" data-v="'+t+'" class="'+(DB.theme===t?"on":"")+'">'+
         (t==="auto"?"Auto":t==="light"?"Paper":"Night")+'</button>').join("")+'</div></label>'+
-    '<label class="f"><span class="lab">Temperature</span><div class="seg sm">'+
-      ["C","F"].map(u=>'<button data-act="unitset" data-v="'+u+'" class="'+(DB.unit===u?"on":"")+'">\u00b0'+u+'</button>').join("")+
-      '</div></label>'+
+
     '<div class="rule"></div><div class="ct"><span class="eyebrow">Field behaviour</span></div>'+
-    tg("keepAwake",DB.keepAwake)+tg("autoGPS",DB.autoGPS)+
+    tg("keepAwake",DB.keepAwake)+tg("autoGPS",DB.autoGPS)+tg("autoTally",DB.autoTally!==false)+
     mi("gpsreset","gps","GPS permission",DB.gpsAsked?(DB.gpsAllowed?"Enabled — tap to ask again":"Manual entry — tap to enable"):"Not set up yet"),
     '<button class="btn gh" data-act="close">Done</button>');
+}
+/* Is this device able to run with no network right now? */
+async function offlineReady(){
+  if(isLocalFile())
+    return{ok:true,why:"running from a local file, nothing to download"};
+  if(!("serviceWorker" in navigator)||!window.caches)
+    return{ok:false,why:"this browser cannot store the app for offline use"};
+  try{
+    const reg=await navigator.serviceWorker.getRegistration();
+    if(!reg||!reg.active)return{ok:false,why:"not stored yet \u2014 open once with a connection"};
+    const keys=await caches.keys();
+    for(const k of keys){
+      const c=await caches.open(k);
+      const hit=await c.match("./index.html")||await c.match("index.html")||await c.match("./");
+      if(hit)return{ok:true,why:"the app is stored on this device"};
+    }
+    return{ok:false,why:"stored partially \u2014 reopen once with a connection"};
+  }catch(e){return{ok:false,why:"could not verify: "+e.message};}
+}
+let _frTimer=null;
+async function renderFieldReady(){
+  const el=$("#fieldReady");if(!el)return;
+  const off=await offlineReady();
+  el.innerHTML='<div class="eod '+(off.ok?"":"bad")+'"><span class="ei">'+(off.ok?"\u2713":"!")+
+    '</span><span>'+(off.ok
+      ? '<b>Ready for the field</b> \u2014 works with no signal. '+esc(off.why)+'.'
+      : '<b>Not ready to go offline</b> \u2014 '+esc(off.why)+'.')+
+    '</span></div>';
+  /* on a first visit the app is still storing itself; re-check shortly after */
+  clearTimeout(_frTimer);
+  if(!off.ok&&!isLocalFile())_frTimer=setTimeout(renderFieldReady,2500);
 }
 async function openDiagnostics(){
   const ua=navigator.userAgent;
@@ -3223,6 +3441,8 @@ async function openDiagnostics(){
   }
   if(ios&&!saf)pwa.push("iOS: installing requires Safari, not this browser");
   rows.push(["Install check",pwa.length?pwa.join(" | "):"all checks pass"]);
+  const off=await offlineReady();
+  rows.push(["Offline ready",off.ok?("yes \u2014 "+off.why):("NO \u2014 "+off.why)]);
   window.__diag=rows.map(r=>r[0]+": "+r[1]).join("\n")+
     (window.__ERRS.length?"\n\n"+window.__ERRS.map(e=>e.t+"  "+e.m).join("\n"):"");
   sheet("Diagnostics",
@@ -3262,7 +3482,7 @@ function openTerms(){
 function openFinish(){
   const s=S(),H=hdr(),T=rowTotals();
   const drafts=["carc","redd","obs"].filter(t=>draftFor(t));
-  const missing=[["Species",H.Species],["Fork / stream",H.Fork],["Crew",H.Crew],["Date",H.Date],
+  const missing=[["Species",H.Species],["Fork / stream",H.Fork],["Tributary",s.header.waterType!=="Trib"||s.header.trib],["Crew",H.Crew],["Date",H.Date],
     ["Reach",H.Reach],["Survey type",H.SurveyType],["Visibility",H.Visibility]]
     .filter(x=>!x[1]).map(x=>x[0]);
   const rows=[
@@ -3306,6 +3526,7 @@ if("serviceWorker" in navigator && /^https?:/.test(location.protocol) && !isLoca
           if(w.state==="installed"&&navigator.serviceWorker.controller)
             toast("Update ready — reopen the app to apply");});
       });
+      navigator.serviceWorker.ready.then(()=>{setTimeout(renderFieldReady,300);}).catch(()=>{});
     }).catch(err=>{
       window.__SWERR=err&&err.message;
       window.__ERRS.push({t:new Date().toISOString(),m:"service worker: "+(err&&err.message)});
@@ -3378,8 +3599,9 @@ document.addEventListener("click",e=>{
     case "install": doInstall();break;
     case "gpsreset": {DB.gpsAsked=false;DB.gpsAllowed=false;save();closeSheet();
       toast("You'll be asked next time you capture a position");break;}
-    case "newsurvey": {const s=blankSurvey();DB.surveys[s.id]=s;DB.current=s.id;save();
-      closeSheet();fillHeader();repaintAll();showTab("survey");toast("New survey started");hap(14);break;}
+    case "newsurvey": {const s=surveyFromLast();DB.surveys[s.id]=s;DB.current=s.id;save();
+      closeSheet();fillHeader();repaintAll();showTab("survey");
+      toast(Object.keys(DB.surveys).length>1?"New survey — crew, reach and stream copied from your last one":"New survey started");hap(14);break;}
     case "switch": DB.current=id;save();closeSheet();fillHeader();repaintAll();toast("Switched");break;
     case "delsurvey": sheet("Delete survey?",'<p class="hint" style="margin:0">This permanently removes <b>'+
         esc(label(S()).t)+'</b> and every line, carcass and redd on it. Export first.</p>',
@@ -3433,11 +3655,8 @@ document.addEventListener("click",e=>{
       $("#reddLiveCt").textContent=DRAFT.liveOnRedd;revalidate();saveDraft();hap(8);break;}
     case "now": {const el=$('[data-h="'+k+'"]');el.value=nowHM();S().header[k]=el.value;save();hap(8);break;}
     case "nowdate": {const el=$('[data-h="date"]');el.value=today();S().header.date=el.value;save();renderChrome();hap(8);break;}
-    case "unit": {DB.unit=DB.unit==="C"?"F":"C";
-      $$(".unitLbl").forEach(e=>e.textContent=DB.unit);save();hap(8);break;}
-    case "unitset": {DB.unit=v;$$(".unitLbl").forEach(e=>e.textContent=v);save();openSettings();break;}
     case "theme": DB.theme=v;applyTheme();save();openSettings();break;
-    case "tog": {DB[k]=!DB[k];save();if(k==="keepAwake")setWake(DB[k]);openSettings();break;}
+    case "tog": {DB[k]=k==="autoTally"?DB[k]===false:!DB[k];save();if(k==="keepAwake")setWake(DB[k]);openSettings();break;}
     case "graph": {DB.charts=DB.charts||{};DB.charts[k]=!DB.charts[k];save();
       paintChips();paintChart(k);hap(8);break;}
     case "psm": {PSM[k]=PSM[k]===v?"":v;if(k==="origin"&&v!=="HOR")PSM.spawn="";renderPSMTool();hap(6);break;}
@@ -3555,7 +3774,78 @@ $("#importFile").addEventListener("change",ev=>{
   }catch(err){toast("Not a valid backup file")}ev.target.value="";};
   r.readAsText(f);
 });
-function doRestore(){DB=window.__imp;load();save();closeSheet();applyTheme();fillHeader();repaintAll();toast("Backup restored");}
+function doRestore(){DB=window.__imp;load(false);flush();closeSheet();applyTheme();fillHeader();repaintAll();toast("Backup restored");}
+
+
+/* ══════════════ report ══════════════
+   Built from the records: redds and sampled carcasses come straight from the forms.
+   Live fish and unsampled dead are the only counts entered here. */
+function renderReport(){
+  const el=$("#rpBox");if(!el)return;const s=S(),h=s.header,T=rowTotals();
+  const sp=h.species,C=s.carcasses.filter(c=>!c.species||c.species===sp),Rd=s.redds;
+  const others=s.carcasses.length-C.length;
+  const pct=(a,b)=>b?Math.round(a/b*100)+"%":"—";
+  const st=(n,l,auto)=>'<div class="rp-stat'+(auto?" auto":"")+'"><div class="n num">'+n+'</div><div class="l">'+l+'</div></div>';
+  /* per river mile: records + hand counts */
+  const rmKey=v=>{const n=parseFloat(v);return isFinite(n)?n.toFixed(1):"";};
+  const map={};const get=k=>map[k]||(map[k]={rm:k,redds:0,carc:0,live:0,unsamp:0,row:null});
+  s.rows.forEach(r=>{const k=rmKey(r.rm);if(!k)return;const o=get(k);o.row=r;o.live+=r.live|0;o.unsamp+=r.deadNot|0;});
+  Rd.forEach(r=>{const k=rmKey(r.rm);if(k)get(k).redds++;});
+  C.forEach(c=>{const k=rmKey(c.rm);if(k)get(k).carc++;});
+  const d=(parseFloat(h.upRM)>parseFloat(h.loRM))?-1:1;
+  const list=Object.values(map).sort((a,b)=>d*(parseFloat(a.rm)-parseFloat(b.rm)));
+  const cell=v=>'<td class="auto'+(v?"":" z")+'">'+v+'</td>';
+  const stp=(o,f,v)=>'<td><span class="rp-step"><button data-act="rpadd" data-v="'+o.rm+'" data-k="'+f+'" data-d="-1" aria-label="minus">−</button><b class="num">'+v+
+    '</b><button class="p" data-act="rpadd" data-v="'+o.rm+'" data-k="'+f+'" data-d="1" aria-label="plus">+</button></span></td>';
+  const tot=list.reduce((a,o)=>({redds:a.redds+o.redds,carc:a.carc+o.carc,live:a.live+o.live,unsamp:a.unsamp+o.unsamp}),{redds:0,carc:0,live:0,unsamp:0});
+  /* carcass + redd summaries */
+  const sex=k=>C.filter(c=>c.sex===k).length,orig=k=>C.filter(c=>originOf(c)===k).length;
+  const fl=k=>{const v=C.filter(c=>c.sex===k&&parseFloat(c.fl)>0).map(c=>parseFloat(c.fl));return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):"—";};
+  const sp0=C.filter(c=>c.spawn==="0").length,cwt=C.filter(c=>c.cwt==="Y").length;
+  const single=Rd.filter(r=>r.chanType==="Single").length,braid=Rd.filter(r=>r.chanType==="Braided").length;
+  const liveOn=Rd.reduce((a,r)=>a+(+r.liveOnRedd||0),0);
+  const e=escEstimate(),m=surveyMethod();
+  el.innerHTML=
+    '<div class="rp-stats">'+st(Rd.length,"New redds",1)+st(C.length,"Carcasses",1)+st(tot.live,"Live fish")+
+      st(tot.unsamp,"Unsamps")+st(C.length+tot.unsamp,"Total dead",1)+
+      st(e.total==null?"—":Math.round(e.total*10)/10,m.mode==="SF"?"Escapement":"Escapement",1)+'</div>'+
+    '<div class="rp-card"><h3>By river mile <small>'+esc(h.upRM&&h.loRM?"RM "+h.upRM+" → "+h.loRM:"")+'</small></h3>'+
+    (list.length?'<table class="rp-tbl"><thead><tr><th>RM</th><th>Redds</th><th>Carc.</th><th>Live</th><th>Unsamp</th></tr></thead><tbody>'+
+      list.map(o=>'<tr><td><b>'+o.rm+'</b></td>'+cell(o.redds)+cell(o.carc)+stp(o,"live",o.live)+stp(o,"deadNot",o.unsamp)+'</tr>').join("")+
+      '<tr class="tot"><td>Total</td><td>'+tot.redds+'</td><td>'+tot.carc+'</td><td>'+tot.live+'</td><td>'+tot.unsamp+'</td></tr></tbody></table>':
+      '<p class="rp-foot">Nothing yet. River miles appear here as soon as you save a redd or carcass, or add a mile with the button below.</p>')+
+    '<p class="rp-foot">Shaded columns fill in from the Redds and Carcass forms. Tap <b>+</b> for live fish and unsampled dead at each mile. '+
+      'Use <b>Add river mile</b> for a mile with only live fish or nothing seen.'+(others?' '+others+' carcass'+(others>1?"es":"")+' of other species not counted.':'')+'</p></div>'+
+    '<div class="rp-card"><h3>Carcasses <small>'+esc(spName(sp))+'</small></h3><div class="rp-kv">'+
+      '<div><span>Female / male</span><b>'+sex("F")+' / '+sex("M")+'</b></div>'+
+      '<div><span>Unknown sex</span><b>'+sex("UNK")+'</b></div>'+
+      '<div><span>NOR / HOR / unk.</span><b>'+orig("NOR")+' / '+orig("HOR")+' / '+orig("UNK")+'</b></div>'+
+      '<div><span>CWT detected</span><b>'+cwt+'</b></div>'+
+      '<div><span>Mean FL F / M (cm)</span><b>'+fl("F")+' / '+fl("M")+'</b></div>'+
+      '<div><span>0% spawned (PSM)</span><b>'+sp0+' <small style="font-size:12px">'+pct(sp0,C.length)+'</small></b></div>'+
+    '</div></div>'+
+    '<div class="rp-card"><h3>Redds</h3><div class="rp-kv">'+
+      '<div><span>New redds</span><b>'+Rd.length+'</b></div><div><span>Live on redds</span><b>'+liveOn+'</b></div>'+
+      '<div><span>Single channel</span><b>'+single+'</b></div><div><span>Braided</span><b>'+braid+'</b></div>'+
+    '</div></div>'+
+    '<div class="rp-card"><h3>Escapement <small>'+esc(m.formula)+'</small></h3><p class="rp-foot">'+esc(m.label)+'. '+
+      (e.total==null?'Enter the expansion factor on the Survey page to see the running estimate.':'Running field estimate: <b>'+(Math.round(e.total*10)/10)+'</b>. The office applies the final QA.')+'</p></div>'+
+    '<div class="rp-acts"><button data-act="rpnewrm">Add river mile</button><button class="pri" data-act="finish">Finish &amp; export</button></div>';
+}
+document.addEventListener("click",e=>{
+  const n=e.target.closest("[data-act='rpnewrm'],[data-act='rpnewrm2']");
+  if(n){if(n.dataset.act==="rpnewrm"){const rows=S().rows,last=rows[rows.length-1],h=S().header,
+      dd=(parseFloat(h.upRM)>parseFloat(h.loRM))?-0.1:0.1,
+      sug=last&&isFinite(parseFloat(last.rm))?(parseFloat(last.rm)+dd).toFixed(1):(h.upRM||"");
+    sheet("Add river mile",'<label class="f"><span class="lab">River mile</span><input type="number" inputmode="decimal" step="0.1" id="rpRm" value="'+esc(sug)+'"></label>'+
+      '<p class="hint">For a mile with live fish only, or where nothing was seen. Miles with redds or carcasses appear on their own.</p>',
+      '<button class="btn gh" data-act="close">Cancel</button><button class="btn pri" data-act="rpnewrm2">Add</button>');}
+    else{const v=parseFloat($("#rpRm").value);if(!isFinite(v)){toast("Enter a river mile");return;}
+      tallyRowAt(v.toFixed(1),true);closeSheet();dirty.tally=1;save();paint();toast("RM "+v.toFixed(1)+" added");}
+    return;}
+  const t=e.target.closest("[data-act='rpadd']");if(!t)return;
+  const r=tallyRowAt(t.dataset.v,true);step(r.id+"|"+t.dataset.k,+t.dataset.d);dirty.tally=1;renderReport();
+});
 
 /* ══════════════ boot ══════════════ */
 try{
@@ -3581,7 +3871,7 @@ try{
   try{
     const q=new URLSearchParams(location.search);
     if(q.get("new")==="1"){
-      const s=blankSurvey();DB.surveys[s.id]=s;DB.current=s.id;save();
+      const s=surveyFromLast();DB.surveys[s.id]=s;DB.current=s.id;save();
       fillHeader();repaintAll();showTab("survey");toast("New survey started");
     }else if(q.get("finish")==="1"){openFinish();}
     if(q.toString()&&history.replaceState)history.replaceState(null,"",location.pathname);
@@ -3589,6 +3879,9 @@ try{
 })();
 if(DB.keepAwake)setWake(true);
 refreshPhotoCounts().then(()=>{dirty.carcass=dirty.redds=dirty.obs=1;paint();});
+if(window.__tempMigrated)setTimeout(()=>toast(window.__tempMigrated+" water temps recorded in °F converted to °C"),900);
+storeInit().then(took=>{if(took){applyTheme();fillHeader();repaintAll();paintChips();paintViewChips();showTab(activeTab);}})
+  .catch(()=>{STORE.ready=true;if(STORE.pending)writeAll();});
 /* no sign-in popup — the recorder is a field on the survey form instead */
 window.addEventListener("pagehide",flush);
 window.addEventListener("beforeunload",flush);
