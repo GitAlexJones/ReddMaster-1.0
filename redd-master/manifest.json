@@ -1,0 +1,75 @@
+{
+  "name": "Redd Master 1.0",
+  "short_name": "Redd Master",
+  "description": "Offline field data collection for salmon spawning ground surveys.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EFEADA",
+  "theme_color": "#FFC72C",
+  "categories": [
+    "utilities",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "id": "./",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "lang": "en",
+  "screenshots": [
+    {
+      "src": "screenshot-survey.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Survey header with the escapement method"
+    },
+    {
+      "src": "screenshot-tally.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "River-mile tally with live QA cross-checks"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New survey",
+      "short_name": "New",
+      "url": "./index.html?new=1"
+    },
+    {
+      "name": "Finish & export",
+      "short_name": "Export",
+      "url": "./index.html?finish=1"
+    }
+  ]
+}

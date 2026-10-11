@@ -1,0 +1,12 @@
+{
+  "appId": "org.lummi.reddmaster",
+  "appName": "Redd Master",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "redd-master",
+  "version": "1.0.0",
+  "description": "Redd Master 1.0 — offline spawning ground survey app",
+  "private": true,
+  "scripts": {
+    "add:android": "npx cap add android",
+    "sync": "npx cap sync",
+    "open:android": "npx cap open android"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2"
+  }
+}
