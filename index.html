@@ -652,6 +652,8 @@ table.dt tfoot td{background:var(--surf3);font-weight:700;color:var(--tx);border
 .rp-stat{background:var(--surf);border:1.5px solid var(--tx);padding:9px 8px 8px;position:relative}
 .rp-stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--cover)}
 .rp-stat .n{font:800 26px/1 var(--mono);letter-spacing:-.02em}
+.rp-stat .sb{font:600 9.5px/1.25 var(--mono);color:var(--tx2);margin-top:3px}
+.rp-on{font:700 9.5px/1 var(--mono);color:var(--tx2);margin-top:3px}
 .rp-stat .l{font:700 9.5px/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-top:5px}
 .rp-stat.auto::after{content:"AUTO";position:absolute;right:5px;top:5px;font:700 8px/1 var(--mono);letter-spacing:.1em;color:var(--tx3)}
 .rp-card{background:var(--surf);border:1.5px solid var(--tx);margin-bottom:12px}
@@ -1167,7 +1169,7 @@ const dirty={tally:1,carcass:1,redds:1,obs:1};
 
 const ROWF=["newRedds","live","deadSamp","deadNot","subSamp","subNoBio"];
 function blankSurvey(name){
-  return {id:uid(),name:name||"",created:Date.now(),
+  return {id:uid(),name:name||"",created:Date.now(),auto1:true,
     header:{species:"CHIN",fork:"",forkother:"",crew:"",date:today(),reach:"",surveyType:"",
       waterType:"Mainstem",trib:"",tribother:"",visibility:"",upTime:"",upTemp:"",upRM:"",loTime:"",loTemp:"",loRM:"",
       subsampling:"",subRate:"10",gpsUnit:"",reverseNotes:"",pageNo:"",pageOf:""},
@@ -1224,7 +1226,7 @@ function writeAll(){
     toast("Storage is filling up — export and start a fresh backup");
 }
 function save(){
-  const cur=S();if(cur)cur.updatedAt=Date.now();
+  const cur=S();if(cur){cur.updatedAt=Date.now();try{syncTally(cur);}catch(e){}}
   $("#pulse").classList.add("on");
   clearTimeout(tSave);
   tSave=setTimeout(()=>{writeAll();$("#pulse").classList.remove("on");},250);
@@ -1257,6 +1259,7 @@ function load(src){
   if(!DB.deviceId)DB.deviceId="dev_"+uid()+uid().slice(0,4);
   Object.values(DB.surveys).forEach(s=>{
     s.last=s.last||{};s.rows=s.rows||[];s.carcasses=s.carcasses||[];s.redds=s.redds||[];s.obs=s.obs||[];
+    decideAuto(s);
     const h=s.header=s.header||{};
     if(h.surveyors&&!h.crew)h.crew=h.surveyors;
     if(!h.species)h.species="CHIN";
@@ -1480,6 +1483,12 @@ function renderRows(){
 function step(k,d){
   const [id,f]=k.split("|");
   const r=S().rows.find(x=>x.id===id);if(!r)return;
+  if(autoOn(S())){
+    if(f==="newRedds"||f==="deadSamp"||f==="subSamp"||f==="subNoBio"){
+      toast(f==="newRedds"?"New redds fill in from the Redds page \u2014 add or edit a redd there":"Sampled dead fill in from the Carcass page \u2014 add or edit a carcass there");return;}
+    if(f==="live"){const nh=Math.max(0,(r.liveHand|0)+d);if(nh===(r.liveHand|0))return;r.liveHand=nh;syncTally(S());
+      dirty.tally=1;save();paint();hap(9);return;}
+  }
   const v=Math.max(0,(r[f]|0)+d);
   if(v===(r[f]|0))return;
   r[f]=v;
@@ -1724,8 +1733,8 @@ function renderInterval(){
 /* ══════════════ escapement panel — on the survey page, not buried ══════════════ */
 function escEstimate(){
   const m=surveyMethod(),T=rowTotals(),n=targetCarcs();
-  if(m.mode==="SF")return{basisN:T.newRedds,basisLab:"new redds tallied",
-    factor:2.5,total:T.newRedds*2.5,showExp:false};
+  if(m.mode==="SF"){const nr=S().redds.length;return{basisN:nr,basisLab:"new redds recorded",
+    factor:2.5,total:nr*2.5,showExp:false};}
   if(m.mode==="TRIB")return{basisN:n,basisLab:"carcasses recovered",
     factor:1,total:n,showExp:false};
   const ex=parseFloat(CALC.exp);
@@ -1852,9 +1861,9 @@ function validateCarc(){
    A new carcass or redd adds 1 to the tally line at its river mile (the line is created if needed).
    The record remembers which cell it counted in, so editing its RM or deleting it keeps the tally right.
    Records made before this, or by hand on the tally, are never touched. */
-function tallyField(rec,kind){
+function tallyField(rec,kind,sv){
   if(kind==="redd")return "newRedds";
-  const h=S().header;if(rec.species&&rec.species!==h.species)return null;   /* other species: not on the form */
+  const h=(sv||S()).header;if(rec.species&&rec.species!==h.species)return null;   /* other species: not on the form */
   if(h.subsampling!=="Y")return "deadSamp";
   return (rec.otolith||rec.dna||rec.scaleCard||rec.fl)?"subSamp":"subNoBio";
 }
@@ -1864,24 +1873,49 @@ function tallyRowAt(rm,create){
   if(!r&&create){r=blankRow(String(rm));rows.push(r);}
   return r;
 }
+const rmKey=v=>{const n=parseFloat(v);return isFinite(n)?n.toFixed(1):"";};
+/* Page 1 is rebuilt from the records on every save:
+     New redds  = redd records at that RM
+     Sampled    = target-species carcass records at that RM (subsample columns when subsampling)
+     Live       = live fish counted by hand + live fish on redds at that RM
+     Not sampled (unsamps) and notes are the only things entered by hand.
+   Surveys from before this, whose tally and records disagree, stay in manual mode until switched. */
+function autoOn(sv){return DB.autoTally!==false&&sv&&sv.auto1!==false;}
+function recCounts(sv){
+  const m={},none={redds:0,live:0,carc:0},get=k=>m[k]||(m[k]={newRedds:0,deadSamp:0,subSamp:0,subNoBio:0,reddLive:0});
+  sv.redds.forEach(r=>{const k=rmKey(r.rm),l=+r.liveOnRedd||0;if(!k){none.redds++;none.live+=l;return;}const o=get(k);o.newRedds++;o.reddLive+=l;});
+  sv.carcasses.forEach(c=>{const f=tallyField(c,"carc",sv);if(!f)return;const k=rmKey(c.rm);if(!k){none.carc++;return;}get(k)[f]++;});
+  return{m,none};
+}
+function syncTally(sv){
+  sv=sv||S();if(!sv||!autoOn(sv))return;
+  const {m,none}=recCounts(sv);
+  sv.rows.forEach(r=>{if(r.liveHand==null)r.liveHand=r.live|0;});
+  Object.keys(m).forEach(k=>{if(!sv.rows.some(r=>rmKey(r.rm)===k)){const r=blankRow(k);r.liveHand=0;sv.rows.push(r);}});
+  const seen={};
+  sv.rows.forEach(r=>{const k=rmKey(r.rm),o=(k&&!seen[k])?m[k]:null;if(k)seen[k]=1;
+    r.newRedds=o?o.newRedds:0;r.deadSamp=o?o.deadSamp:0;r.subSamp=o?o.subSamp:0;r.subNoBio=o?o.subNoBio:0;
+    r.live=(r.liveHand|0)+(o?o.reddLive:0);r.reddLive=o?o.reddLive:0;});
+  sv.unplaced=none;
+}
+/* surveys from earlier versions: automatic only if their tally already matches the records */
+function decideAuto(sv){
+  if(sv.auto1!=null)return;
+  if(!sv.rows.length&&!sv.redds.length&&!sv.carcasses.length){sv.auto1=true;return;}
+  const t={newRedds:0,rec:0};sv.rows.forEach(r=>{t.newRedds+=r.newRedds|0;t.rec+=(r.deadSamp|0)+(r.subSamp|0)+(r.subNoBio|0);});
+  const sp=sv.header.species,nc=sv.carcasses.filter(c=>!c.species||c.species===sp).length;
+  /* safe to switch only if the tally never counts more than the records behind it */
+  sv.auto1=t.newRedds<=sv.redds.length&&t.rec<=nc;
+}
 function tallyBump(link,d){
   const r=link&&S().rows.find(x=>x.id===link.row);if(!r)return null;
   r[link.f]=Math.max(0,(r[link.f]|0)+d);dirty.tally=1;return r;
 }
-/* returns a short note for the toast, or "" */
-function autoTally(rec,kind,isNew){
-  if(DB.autoTally===false)return "";
-  const prev=rec.tallied;
-  if(!isNew&&!prev)return "";
-  const f=tallyField(rec,kind);
-  if(prev){const pr=S().rows.find(x=>x.id===prev.row);
-    if(pr&&prev.f===f&&Math.abs(parseFloat(pr.rm)-parseFloat(rec.rm))<0.001)return "";
-    tallyBump(prev,-1);delete rec.tallied;}
-  if(!f)return prev?" \u00b7 removed from tally":"";
-  const r=tallyRowAt(rec.rm,true);
-  if(!r)return " \u00b7 no RM, not on tally";
-  rec.tallied={row:r.id,f};tallyBump(rec.tallied,1);
-  return " \u00b7 tally RM "+r.rm+" +1 "+(CAP[f]||f).toLowerCase();
+/* toast note: where this record lands on page 1 */
+function autoTally(rec,kind){
+  if(!autoOn(S()))return "";
+  if(kind==="carc"&&!tallyField(rec,"carc"))return " \u00b7 other species, not on page 1";
+  const k=rmKey(rec.rm);return k?" \u00b7 on page 1 at RM "+k:" \u00b7 no river mile \u2014 add one to place it";
 }
 function saveCarc(next){
   const c=DRAFT;clearDraft('carc');
@@ -1890,14 +1924,13 @@ function saveCarc(next){
     .forEach(k=>{const el=$("#f_"+k);if(el)c[k]=el.value.trim();});
   stampRecord(c);
   const s=S(),arr=s.carcasses,i=arr.findIndex(x=>x.id===c.id);
-  const tn=autoTally(c,"carc",i<0);
+  const tn=autoTally(c,"carc");
   if(i>=0)arr[i]=c;else arr.push(c);
   s.last={otolith:c.otolith||s.last.otolith,dna:c.dna||s.last.dna,scaleCard:c.scaleCard,
     lineNums:c.lineNums||s.last.lineNums,rm:c.rm};
   save();closeSheet();dirty.carcass=1;paint();hap(14);
   syncPhotos();
-  const undoT=c.tallied&&i<0?()=>{tallyBump(c.tallied,-1);delete c.tallied;save();paint();toast("Removed from tally — carcass kept");}:null;
-  toast((i>=0?"Carcass updated":"Carcass "+arr.length+" logged")+tn,undoT);
+  toast((i>=0?"Carcass updated":"Carcass "+arr.length+" logged")+tn);
   if(next)openCarc();
 }
 function renderCarc(){
@@ -1939,9 +1972,9 @@ function renderCarc(){
 function delCarc(id){
   PDB.delByRecord(id).then(syncPhotos).catch(()=>{});
   const arr=S().carcasses,i=arr.findIndex(x=>x.id===id);if(i<0)return;
-  const rec=arr.splice(i,1)[0];tallyBump(rec.tallied,-1);
+  const rec=arr.splice(i,1)[0];
   save();closeSheet();dirty.carcass=1;paint();hap(20);
-  toast("Carcass deleted"+(rec.tallied?" \u00b7 tally \u22121":""),()=>{arr.splice(i,0,rec);tallyBump(rec.tallied,1);save();dirty.carcass=1;paint();toast("Restored");});
+  toast("Carcass deleted",()=>{arr.splice(i,0,rec);save();dirty.carcass=1;paint();toast("Restored");});
 }
 
 /* ══════════════ redd form (2026 Chinook Redd Form) ══════════════ */
@@ -2023,13 +2056,12 @@ function saveRedd(next){
   ["reddId","rm","waypoint","notes","lat","lon"].forEach(k=>{const el=$("#f_"+k);if(el)r[k]=el.value.trim();});
   stampRecord(r);
   const s=S(),arr=s.redds,i=arr.findIndex(x=>x.id===r.id);
-  const tn=autoTally(r,"redd",i<0);
+  const tn=autoTally(r,"redd");
   if(i>=0)arr[i]=r;else arr.push(r);
   s.last=Object.assign(s.last||{},{waypoint:r.waypoint,rm:r.rm});
   save();closeSheet();dirty.redds=1;paint();hap(14);
   syncPhotos();
-  const undoT=r.tallied&&i<0?()=>{tallyBump(r.tallied,-1);delete r.tallied;save();paint();toast("Removed from tally — redd kept");}:null;
-  toast((i>=0?"Redd updated":"Redd "+r.reddId+" logged")+tn,undoT);
+  toast((i>=0?"Redd updated":"Redd "+r.reddId+" logged")+tn);
   if(next)openRedd();
 }
 function renderRedds(){
@@ -2069,9 +2101,9 @@ function renderRedds(){
 function delRedd(id){
   PDB.delByRecord(id).then(syncPhotos).catch(()=>{});
   const arr=S().redds,i=arr.findIndex(x=>x.id===id);if(i<0)return;
-  const rec=arr.splice(i,1)[0];tallyBump(rec.tallied,-1);
+  const rec=arr.splice(i,1)[0];
   save();closeSheet();dirty.redds=1;paint();hap(20);
-  toast("Redd deleted"+(rec.tallied?" \u00b7 tally \u22121":""),()=>{arr.splice(i,0,rec);tallyBump(rec.tallied,1);save();dirty.redds=1;paint();toast("Restored");});
+  toast("Redd deleted",()=>{arr.splice(i,0,rec);save();dirty.redds=1;paint();toast("Restored");});
 }
 
 
@@ -3334,7 +3366,7 @@ function openSettings(){
   const ins=installState();
   const TG={autoGPS:["Auto-capture GPS","Grabs a fix when you open a new record"],
     keepAwake:["Keep screen awake","Stops the phone sleeping mid-survey"],
-    autoTally:["Records add to the tally","A new carcass or redd adds 1 to the tally line at its river mile"],
+    autoTally:["Page 1 fills in from records","Redds, sampled carcasses and live fish on redds are counted automatically"],
 };
   const tg=(k,on)=>'<button class="menu-item" data-act="tog" data-k="'+k+'"><span class="mt"><b>'+TG[k][0]+'</b><span>'+TG[k][1]+
     '</span></span><span class="toggle'+(on?" on":"")+'"></span></button>';
@@ -3781,41 +3813,51 @@ function doRestore(){DB=window.__imp;load(false);flush();closeSheet();applyTheme
    Built from the records: redds and sampled carcasses come straight from the forms.
    Live fish and unsampled dead are the only counts entered here. */
 function renderReport(){
-  const el=$("#rpBox");if(!el)return;const s=S(),h=s.header,T=rowTotals();
+  const el=$("#rpBox");if(!el)return;const s=S(),h=s.header,auto=autoOn(s);
+  if(auto)syncTally(s);
   const sp=h.species,C=s.carcasses.filter(c=>!c.species||c.species===sp),Rd=s.redds;
-  const others=s.carcasses.length-C.length;
+  const others=s.carcasses.length-C.length,un=s.unplaced||{redds:0,live:0,carc:0};
   const pct=(a,b)=>b?Math.round(a/b*100)+"%":"—";
-  const st=(n,l,auto)=>'<div class="rp-stat'+(auto?" auto":"")+'"><div class="n num">'+n+'</div><div class="l">'+l+'</div></div>';
-  /* per river mile: records + hand counts */
-  const rmKey=v=>{const n=parseFloat(v);return isFinite(n)?n.toFixed(1):"";};
-  const map={};const get=k=>map[k]||(map[k]={rm:k,redds:0,carc:0,live:0,unsamp:0,row:null});
-  s.rows.forEach(r=>{const k=rmKey(r.rm);if(!k)return;const o=get(k);o.row=r;o.live+=r.live|0;o.unsamp+=r.deadNot|0;});
-  Rd.forEach(r=>{const k=rmKey(r.rm);if(k)get(k).redds++;});
-  C.forEach(c=>{const k=rmKey(c.rm);if(k)get(k).carc++;});
+  const st=(n,l,auto,sub)=>'<div class="rp-stat'+(auto?" auto":"")+'"><div class="n num">'+n+'</div><div class="l">'+l+'</div>'+
+    (sub?'<div class="sb">'+sub+'</div>':'')+'</div>';
   const d=(parseFloat(h.upRM)>parseFloat(h.loRM))?-1:1;
-  const list=Object.values(map).sort((a,b)=>d*(parseFloat(a.rm)-parseFloat(b.rm)));
+  const rows=s.rows.filter(r=>rmKey(r.rm)).slice().sort((a,b)=>d*(parseFloat(a.rm)-parseFloat(b.rm)));
+  const T={redds:0,carc:0,live:0,hand:0,onRedd:0,unsamp:0};
+  rows.forEach(r=>{T.redds+=r.newRedds|0;T.carc+=(r.deadSamp|0)+(r.subSamp|0)+(r.subNoBio|0);T.live+=r.live|0;
+    T.hand+=auto?(r.liveHand|0):(r.live|0);T.onRedd+=auto?(r.reddLive|0):0;T.unsamp+=r.deadNot|0;});
+  /* records with no river mile still count in the totals, and are listed so they can be fixed */
+  const liveAll=T.live+(auto?un.live:0),reddAll=Rd.length,carcAll=C.length;
+  const oLive=s.obs.filter(o=>o.kind==="Live").reduce((a,o)=>a+(+o.count||0),0);
   const cell=v=>'<td class="auto'+(v?"":" z")+'">'+v+'</td>';
-  const stp=(o,f,v)=>'<td><span class="rp-step"><button data-act="rpadd" data-v="'+o.rm+'" data-k="'+f+'" data-d="-1" aria-label="minus">−</button><b class="num">'+v+
-    '</b><button class="p" data-act="rpadd" data-v="'+o.rm+'" data-k="'+f+'" data-d="1" aria-label="plus">+</button></span></td>';
-  const tot=list.reduce((a,o)=>({redds:a.redds+o.redds,carc:a.carc+o.carc,live:a.live+o.live,unsamp:a.unsamp+o.unsamp}),{redds:0,carc:0,live:0,unsamp:0});
-  /* carcass + redd summaries */
+  const stp=(r,f,v,extra)=>'<td><span class="rp-step"><button data-act="rpadd" data-v="'+rmKey(r.rm)+'" data-k="'+f+'" data-d="-1" aria-label="minus">−</button><b class="num">'+v+
+    '</b><button class="p" data-act="rpadd" data-v="'+rmKey(r.rm)+'" data-k="'+f+'" data-d="1" aria-label="plus">+</button></span>'+(extra||"")+'</td>';
   const sex=k=>C.filter(c=>c.sex===k).length,orig=k=>C.filter(c=>originOf(c)===k).length;
   const fl=k=>{const v=C.filter(c=>c.sex===k&&parseFloat(c.fl)>0).map(c=>parseFloat(c.fl));return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):"—";};
   const sp0=C.filter(c=>c.spawn==="0").length,cwt=C.filter(c=>c.cwt==="Y").length;
   const single=Rd.filter(r=>r.chanType==="Single").length,braid=Rd.filter(r=>r.chanType==="Braided").length;
   const liveOn=Rd.reduce((a,r)=>a+(+r.liveOnRedd||0),0);
   const e=escEstimate(),m=surveyMethod();
+  const unplacedN=un.redds+un.carc+s.obs.filter(o=>!rmKey(o.rm)).length;
   el.innerHTML=
-    '<div class="rp-stats">'+st(Rd.length,"New redds",1)+st(C.length,"Carcasses",1)+st(tot.live,"Live fish")+
-      st(tot.unsamp,"Unsamps")+st(C.length+tot.unsamp,"Total dead",1)+
-      st(e.total==null?"—":Math.round(e.total*10)/10,m.mode==="SF"?"Escapement":"Escapement",1)+'</div>'+
+    (!auto?'<div class="callout warn" style="margin-bottom:12px"><b>Page 1 is in manual mode for this survey.</b> It was started before automatic counting and its tally does not match the records. '+
+      '<button class="chip" data-act="rpauto" style="margin-top:8px">Count from records instead</button></div>':'')+
+    '<div class="rp-stats">'+st(reddAll,"New redds",1)+st(carcAll,"Carcasses",1)+
+      st(liveAll,"Live fish",1,auto?(T.hand+" counted · "+(T.onRedd+un.live)+" on redds"):"")+
+      st(T.unsamp,"Unsamps")+st(carcAll+T.unsamp,"Total dead",1)+
+      st(e.total==null?"—":Math.round(e.total*10)/10,"Escapement",1)+'</div>'+
+    (unplacedN?'<div class="callout warn" style="margin-bottom:12px"><b>'+unplacedN+' record'+(unplacedN>1?"s have":" has")+' no river mile</b> — '+
+      [un.redds?un.redds+" redd"+(un.redds>1?"s":""):"",un.carc?un.carc+" carcass"+(un.carc>1?"es":""):""].filter(Boolean).join(", ")+
+      '. They are in the totals but not on a line. Open the record and add its RM.</div>':'')+
     '<div class="rp-card"><h3>By river mile <small>'+esc(h.upRM&&h.loRM?"RM "+h.upRM+" → "+h.loRM:"")+'</small></h3>'+
-    (list.length?'<table class="rp-tbl"><thead><tr><th>RM</th><th>Redds</th><th>Carc.</th><th>Live</th><th>Unsamp</th></tr></thead><tbody>'+
-      list.map(o=>'<tr><td><b>'+o.rm+'</b></td>'+cell(o.redds)+cell(o.carc)+stp(o,"live",o.live)+stp(o,"deadNot",o.unsamp)+'</tr>').join("")+
-      '<tr class="tot"><td>Total</td><td>'+tot.redds+'</td><td>'+tot.carc+'</td><td>'+tot.live+'</td><td>'+tot.unsamp+'</td></tr></tbody></table>':
-      '<p class="rp-foot">Nothing yet. River miles appear here as soon as you save a redd or carcass, or add a mile with the button below.</p>')+
-    '<p class="rp-foot">Shaded columns fill in from the Redds and Carcass forms. Tap <b>+</b> for live fish and unsampled dead at each mile. '+
-      'Use <b>Add river mile</b> for a mile with only live fish or nothing seen.'+(others?' '+others+' carcass'+(others>1?"es":"")+' of other species not counted.':'')+'</p></div>'+
+    (rows.length?'<table class="rp-tbl"><thead><tr><th>RM</th><th>Redds</th><th>Carc.</th><th>Live</th><th>Unsamp</th></tr></thead><tbody>'+
+      rows.map(r=>'<tr><td><b>'+rmKey(r.rm)+'</b></td>'+cell(r.newRedds|0)+cell((r.deadSamp|0)+(r.subSamp|0)+(r.subNoBio|0))+
+        stp(r,"live",auto?(r.liveHand|0):(r.live|0),auto&&r.reddLive?'<div class="rp-on">+'+r.reddLive+' on redds</div>':'')+
+        stp(r,"deadNot",r.deadNot|0)+'</tr>').join("")+
+      '<tr class="tot"><td>Total</td><td>'+T.redds+'</td><td>'+T.carc+'</td><td>'+T.live+'</td><td>'+T.unsamp+'</td></tr></tbody></table>':
+      '<p class="rp-foot">Nothing yet. River miles appear here as soon as you save a redd or carcass with a river mile, or add a mile with the button below.</p>')+
+    '<p class="rp-foot">Shaded columns fill in from the Redds and Carcass pages. <b>Live</b> = fish you count here (+/−) plus live fish on redds from the Redds page, '+
+      'so count fish on a redd on the redd form only. Tap <b>+</b> for unsampled dead.'+
+      (others?' '+others+' carcass'+(others>1?"es":"")+' of other species not counted.':'')+'</p></div>'+
     '<div class="rp-card"><h3>Carcasses <small>'+esc(spName(sp))+'</small></h3><div class="rp-kv">'+
       '<div><span>Female / male</span><b>'+sex("F")+' / '+sex("M")+'</b></div>'+
       '<div><span>Unknown sex</span><b>'+sex("UNK")+'</b></div>'+
@@ -3828,6 +3870,9 @@ function renderReport(){
       '<div><span>New redds</span><b>'+Rd.length+'</b></div><div><span>Live on redds</span><b>'+liveOn+'</b></div>'+
       '<div><span>Single channel</span><b>'+single+'</b></div><div><span>Braided</span><b>'+braid+'</b></div>'+
     '</div></div>'+
+    (s.obs.length?'<div class="rp-card"><h3>Other species <small>from the Other page</small></h3><div class="rp-kv">'+
+      '<div><span>Live fish</span><b>'+oLive+'</b></div><div><span>Observations</span><b>'+s.obs.length+'</b></div>'+
+      '</div><p class="rp-foot">Kept separate from the '+esc(spName(sp))+' counts above, as on the paper form.</p></div>':'')+
     '<div class="rp-card"><h3>Escapement <small>'+esc(m.formula)+'</small></h3><p class="rp-foot">'+esc(m.label)+'. '+
       (e.total==null?'Enter the expansion factor on the Survey page to see the running estimate.':'Running field estimate: <b>'+(Math.round(e.total*10)/10)+'</b>. The office applies the final QA.')+'</p></div>'+
     '<div class="rp-acts"><button data-act="rpnewrm">Add river mile</button><button class="pri" data-act="finish">Finish &amp; export</button></div>';
@@ -3843,6 +3888,7 @@ document.addEventListener("click",e=>{
     else{const v=parseFloat($("#rpRm").value);if(!isFinite(v)){toast("Enter a river mile");return;}
       tallyRowAt(v.toFixed(1),true);closeSheet();dirty.tally=1;save();paint();toast("RM "+v.toFixed(1)+" added");}
     return;}
+  if(e.target.closest("[data-act='rpauto']")){S().auto1=true;syncTally(S());dirty.tally=1;save();paint();toast("Page 1 now counts from records");return;}
   const t=e.target.closest("[data-act='rpadd']");if(!t)return;
   const r=tallyRowAt(t.dataset.v,true);step(r.id+"|"+t.dataset.k,+t.dataset.d);dirty.tally=1;renderReport();
 });
