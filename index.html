@@ -3390,10 +3390,20 @@ async function offlineReady(){
   if(isLocalFile())
     return{ok:true,why:"running from a local file, nothing to download"};
   if(!("serviceWorker" in navigator)||!window.caches)
-    return{ok:false,why:"this browser cannot store the app for offline use"};
+    return{ok:false,why:"this browser cannot save apps for offline use. If you opened it from Canvas, Teams, email or another app, open it in Safari (iPhone) or Chrome (Android) and add it to the Home Screen"};
   try{
+    if(window.__SWERR){
+      /* tell them exactly which file the website is missing */
+      let miss="";try{const r=await fetch("sw.js",{cache:"no-store"});if(!r.ok)miss="HTTP "+r.status;
+        else if(!/javascript|text\/plain/.test(r.headers.get("content-type")||""))miss="wrong file type "+(r.headers.get("content-type")||"");}
+      catch(e){miss="no connection to check";}
+      return{ok:false,why:miss&&miss!=="no connection to check"?
+        "the website is missing sw.js ("+miss+"). Upload sw.js into the same GitHub folder as index.html, then reopen with signal":
+        "the offline file sw.js could not be started ("+window.__SWERR+")"};
+    }
     const reg=await navigator.serviceWorker.getRegistration();
-    if(!reg||!reg.active)return{ok:false,why:"not stored yet \u2014 open once with a connection"};
+    if(!reg)return{ok:false,why:"still setting up \u2014 keep the app open with signal for a few seconds"};
+    if(!reg.active)return{ok:false,why:"saving the app to this phone\u2026 keep it open with signal"};
     const keys=await caches.keys();
     for(const k of keys){
       const c=await caches.open(k);
